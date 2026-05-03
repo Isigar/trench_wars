@@ -38,9 +38,9 @@ return [
     // Source: 01-RESEARCH.md Pattern 1 + socialiteproviders.com/Discord/
     // Discord OAuth credentials (D-002). Provider registration lands in plan 01-09.
     'discord' => [
-        'client_id'     => env('DISCORD_CLIENT_ID'),
+        'client_id' => env('DISCORD_CLIENT_ID'),
         'client_secret' => env('DISCORD_CLIENT_SECRET'),
-        'redirect'      => env('DISCORD_REDIRECT_URI', 'http://localhost:8000/auth/discord/callback'),
+        'redirect' => env('DISCORD_REDIRECT_URI', 'http://localhost:8000/auth/discord/callback'),
     ],
 
 ];

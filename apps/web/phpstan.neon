@@ -1,0 +1,25 @@
+# PHPStan / Larastan config — Trenchwars
+# Source: 01-RESEARCH.md Standard Stack (larastan ^3.9 + level 8 per phase success criteria);
+#         01-CONTEXT.md "Composer dev tools day 1: Pint, Larastan/PHPStan level 8".
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    paths:
+        - app
+        - bootstrap/app.php
+        - database
+        - routes
+
+    level: 8
+
+    excludePaths:
+        - vendor/*
+        - storage/*
+        - bootstrap/cache/*
+
+    # Filament v3 + PHP 8.4 deprecations (Pitfall 9) — suppress Filament-internal findings
+    # via baseline regeneration (`phpstan analyse --generate-baseline`); do NOT add broad
+    # ignoreErrors here.
+    ignoreErrors: []
