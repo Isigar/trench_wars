@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 plan 01-06 complete — Inertia v2 + Vue 3 + Vite + Ziggy frontend pipeline live; GET / serves Home.vue via Inertia (HTTP 200 with valid data-page); InertiaSmokeTest green; Pitfall 3 CSRF mitigation in place; SSR scaffolded but disabled in dev; tsconfig.base.json bind-mounted into web container; APP_* env shadowing fixed; storage perms 0777 for php-fpm. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround).
-last_updated: "2026-05-03T20:36:00Z"
-last_activity: 2026-05-03 -- Plan 01-06 complete (Inertia v2 + Vue 3 + Vite + Ziggy frontend pipeline live; InertiaSmokeTest 2 + BootHealthcheckTest 2 = 4 passed)
+stopped_at: Phase 1 plan 01-10 complete (out-of-sequence wave-4 plan; depends only on 01-05) — UUID-PK identity schema (users, players, player_privacy) live in Postgres; HasUuidPrimaryKey trait emits UUID v4; citext email; jsonb bio; CHECK constraints on avatar_source + show_to; soft-deletes on Player; 1:1 user↔player↔privacy via UNIQUE FKs (RESTRICT on user→players, CASCADE on players→privacy). User/Player/PlayerPrivacy Eloquent models + factories + 9 model tests green. Pest 13/13, PHPStan L8 clean, Pint clean. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround) — sequential next plan.
+last_updated: "2026-05-03T20:49:00Z"
+last_activity: 2026-05-03 -- Plan 01-10 complete (UUID-PK identity schema + Eloquent models + factories; 9 model tests + 13 total Pest tests green; PHPStan L8 + Pint clean)
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 6
-  percent: 33
+  completed_plans: 7
+  percent: 39
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 7 of 18
-Status: Executing Phase 01 (6/18 plans complete)
-Last activity: 2026-05-03 -- Plan 01-06 complete (Inertia v2 + Vue 3 + Vite + Ziggy frontend pipeline live; InertiaSmokeTest + BootHealthcheckTest both green)
+Plan: 7 of 18 (sequential pointer; plan 01-10 just completed out-of-sequence as its wave-4 deps were already met)
+Status: Executing Phase 01 (7/18 plans complete — 01..06 + 10)
+Last activity: 2026-05-03 -- Plan 01-10 complete (UUID-PK identity schema + Eloquent models + factories; 9 model tests + 13 total Pest tests green; PHPStan L8 + Pint clean)
 
-Progress: [███░░░░░░░] 33%
+Progress: [████░░░░░░] 39%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
-- Average duration: ~6 min (01-06 was longer at ~12 min due to dual install batches + curl 500 diagnosis + tsconfig bind-mount fix + entrypoint perm fix)
-- Total execution time: ~0.65 hours
+- Total plans completed: 7
+- Average duration: ~5.7 min (01-10 was the fastest at ~2.8 min — pure schema + models, no install/diagnose cycles)
+- Total execution time: ~0.7 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundations | 6/18 | ~39 min | ~6.5 min |
+| 01-foundations | 7/18 | ~42 min | ~6.0 min |
 
 **Recent Trend:**
 
-- Last 6 plans: 01-01 (~3 min), 01-02 (~3 min), 01-03 (~3 min), 01-04 (~7 min), 01-05 (~7 min), 01-06 (~12 min)
-- Trend: 01-06 surfaced 4 latent bugs (tsconfig.base.json unreachable, APP_KEY shadowing, storage 0775 perms, page_paths case mismatch) that pre-existing plans never exercised because Pest runs as root + skips runtime serve
+- Last 7 plans: 01-01 (~3 min), 01-02 (~3 min), 01-03 (~3 min), 01-04 (~7 min), 01-05 (~7 min), 01-06 (~12 min), 01-10 (~2.8 min)
+- Trend: 01-10 was a clean execution — plan snippets were directly committable (only 1 Pint concat_space auto-fix needed); CHECK + FK + soft-delete behaviours all asserted via Pest in a single pass; no docker/runtime surprises
 
 *Updated after each plan completion*
 
@@ -83,6 +83,9 @@ Plan-level decisions logged during execution:
 - 01-06 customised config/inertia.php to lowercase page_paths (Pages -> pages) for both root + testing block (Inertia default disagreed with plan structure); flipped ssr.enabled default true -> false + ensure_bundle_exists default true -> false (CONTEXT.md "scaffolded but optional in dev")
 - 01-06 added @vue/server-renderer to package.json devDependencies (Rule 3 — required by ssr.ts but absent from plan's pasted pnpm-add list)
 - 01-06 reworded the Pitfall 3 reminder comment in app.blade.php from `<meta name="csrf-token">` (literal — false-matched the source-grep verify) to `CSRF-token meta tag` (descriptive prose). Same intent, no false grep match
+- 01-10 added `rememberToken()` to the users migration (plan prose mentioned it but the pasted snippet omitted it; User::$hidden references remember_token; Authenticatable contract assumes it). Followed the prose, not the snippet (Rule 2 — missing critical functionality)
+- 01-10 added `/** @use HasFactory<XFactory> */` PHPDoc tags to all 3 models so PHPStan level 8 doesn't flag HasFactory as a non-generic class usage. The plan's pasted snippets omitted these but the project's existing User model already had the pattern (Rule 2 — type-correctness for L8 gate)
+- 01-10 ran `pint database/factories/PlayerFactory.php` to apply the auto concat_space correction (Rule 1 — Pint preset compliance is a CI gate); final source spaces around `.` operator
 
 ### Pending Todos
 
@@ -104,6 +107,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-03 20:36Z
-Stopped at: Plan 01-06 complete. Inertia v2.0.24 server adapter + Ziggy v2.6.2 + HandleInertiaRequests middleware on web group; @inertiajs/vue3 v2.3.21 + vue 3.5.33 + @vitejs/plugin-vue 6.0.6 + ziggy-js 2.6.2 + @vue/server-renderer 3.5.33 + typescript 5.9.3 + vue-tsc 2.2.12 + @types/node 22.19.17 installed. vite.config.ts (Vue plugin + laravel-vite-plugin; Tailwind commented for plan 07). tsconfig.json extends ../../tsconfig.base.json (bind-mounted). app.ts createInertiaApp + ZiggyVue + glob page resolver. ssr.ts createServer scaffold (SSR off in dev). pages/Home.vue placeholder. types/inertia.d.ts typed shared props (auth + flash + ziggy). InertiaSmokeTest 2 + BootHealthcheckTest 2 = 4 passed (17 assertions, 0.19s). pint --test PASS (27 files). phpstan analyse PASS (no errors). pnpm run build produces public/build/manifest.json (763 modules). curl http://localhost:8000/ returns HTTP 200 with valid Inertia data-page (component=Home, ziggy.routes.home, no csrf meta). Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives).
+Last session: 2026-05-03 20:49Z
+Stopped at: Plan 01-10 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). UUID-PK identity schema authored: `users` (uuid PK gen_random_uuid(), discord_id text UNIQUE NOT NULL, email citext NULL, locale text DEFAULT 'en', remember_token, last_login_at + left_community_at + created_at + updated_at all timestamptz), `players` (uuid PK, user_id uuid UNIQUE FK users RESTRICT, slug text UNIQUE, bio jsonb, avatar_source CHECK in (discord,upload), softDeletes), `player_privacy` (uuid PK, player_id uuid UNIQUE FK players CASCADE, show_to text DEFAULT 'community' CHECK in (public,community,clan,private), 5 boolean section toggles per D-018 with show_real_name=false). HasUuidPrimaryKey trait at app/Concerns/ overrides HasUuids::newUniqueId() to emit Str::uuid() (v4) for parity with gen_random_uuid(). User/Player/PlayerPrivacy Eloquent models with HasUuidPrimaryKey + correct casts + relations (User hasOne Player, Player belongsTo User + hasOne PlayerPrivacy, PlayerPrivacy belongsTo Player; $table='player_privacy' override). Factories cascade through one another with D-018 defaults. 9 model tests in tests/Feature/Models/ assert UUID shape, UNIQUE constraint, hasOne null default, factory cascade, soft-delete vs withTrashed, bio array cast, CHECK constraint blocking 'galactic', cascade-on-forceDelete. Full Pest suite 13 passed (32 assertions, 0.43s). PHPStan L8 clean. Pint clean (1 auto-fix on PlayerFactory concat_space). `migrate:fresh` runs all 4 migrations cleanly. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next.
 Resume file: .planning/phases/01-foundations/01-07-PLAN.md

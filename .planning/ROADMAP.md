@@ -44,7 +44,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 01-07-PLAN.md — install Tailwind v4 (CSS-first) + Reka UI + Lucide + Fontsource; UI-SPEC token system; Public layout + primitives
 - [ ] 01-08-PLAN.md — i18n plumbing (lang/en/*.php + Inertia translations prop + useT composable + NoHardcodedStringsTest)
 - [ ] 01-09-PLAN.md — Discord OAuth via Socialite (DiscordController + ProvisionFirstLogin listener + LoginButton CTA)
-- [ ] 01-10-PLAN.md — User/Player/PlayerPrivacy models + migrations (UUID PKs, citext email, jsonb bio, soft deletes) + factories
+- [x] 01-10-PLAN.md — User/Player/PlayerPrivacy models + migrations (UUID PKs, citext email, jsonb bio, soft deletes) + factories
 - [ ] 01-11-PLAN.md — install spatie/laravel-permission v7; PermissionSeeder; trenchwars:make-admin artisan command
 - [ ] 01-12-PLAN.md — install Filament v3 with dual-Tailwind workaround (Pitfall 1); AdminPanelProvider gated by admin-access
 - [ ] 01-13-PLAN.md — Filament resources: User, Player (with inline player_privacy), Role, Permission
@@ -163,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations | 5/18 | Executing | - |
+| 1. Foundations | 7/18 | Executing | - |
 | 2. Clans & tags | 0/TBD | Not started | - |
 | 3. Games & match types | 0/TBD | Not started | - |
 | 4. Matches (manual) | 0/TBD | Not started | - |
