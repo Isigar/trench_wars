@@ -1,0 +1,20 @@
+{
+  "name": "@trenchwars/rcon-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'eslint configured in plan 16'",
+    "test": "echo 'vitest configured in plan 16'"
+  },
+  "dependencies": {
+    "@trenchwars/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
