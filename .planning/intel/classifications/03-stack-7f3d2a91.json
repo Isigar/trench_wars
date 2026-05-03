@@ -1,0 +1,29 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/03-stack.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "03 — Stack",
+  "summary": "Reference listing of language versions, frameworks, libraries, and tooling chosen for the web app, Discord bot, and RCON worker.",
+  "scope": [
+    "PHP 8.4",
+    "Laravel 12",
+    "Node.js 22 LTS",
+    "TypeScript 5",
+    "Postgres 16",
+    "Redis 7",
+    "apps/web Laravel libraries",
+    "Vue 3 + Inertia v2 frontend stack",
+    "apps/bot discord.js v14",
+    "apps/rcon-worker CRCON adapter",
+    "pnpm workspaces tooling",
+    "GitHub Actions CI",
+    "Auth via Discord OAuth (Socialite)"
+  ],
+  "cross_refs": [
+    "09-frontend.md"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

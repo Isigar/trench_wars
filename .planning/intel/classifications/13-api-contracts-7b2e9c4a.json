@@ -1,0 +1,29 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/13-api-contracts.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "13 — API Contracts",
+  "summary": "Defines the public REST API and internal RCON HMAC API surfaces, including conventions, auth, endpoints, webhook contracts, and DTOs.",
+  "scope": [
+    "public REST API /api/v1",
+    "internal RCON API /api/internal",
+    "Sanctum bearer auth",
+    "HMAC signing",
+    "pagination conventions",
+    "rate limits",
+    "versioning",
+    "Clans endpoints",
+    "Players endpoints",
+    "Matches endpoints",
+    "Tournaments endpoints",
+    "CMS endpoints",
+    "Discord webhook endpoints",
+    "spatie/laravel-data DTOs",
+    "TypeScript type generation"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

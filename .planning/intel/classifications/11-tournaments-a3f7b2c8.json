@@ -1,0 +1,27 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/11-tournaments.md",
+  "type": "SPEC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "11 — Tournaments & Brackets",
+  "summary": "Technical specification for the tournament system: data model, supported formats, bracket generation services, lifecycle, public view, and admin tools.",
+  "scope": [
+    "Tournament",
+    "TournamentStage",
+    "TournamentRound",
+    "TournamentBracket",
+    "round-robin",
+    "single elimination",
+    "double elimination",
+    "swiss",
+    "bracket generation",
+    "match materialisation",
+    "public bracket view",
+    "admin reseed/forfeit/withdraw",
+    "standings & tiebreakers"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null,
+  "notes": "No frontmatter or status markers. Classified as SPEC based on dominant technical-contract content (data model hierarchy, generation algorithms, advancement logic, route path, edge cases). Some PRD-adjacent content (lifecycle, supported formats) but no user stories or acceptance criteria. Confidence medium because doc lacks explicit type markers."
+}

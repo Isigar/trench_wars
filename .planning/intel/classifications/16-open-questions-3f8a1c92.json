@@ -1,0 +1,28 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/16-open-questions.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "16 — Open Questions",
+  "summary": "Tracker of unresolved TBD questions across branding, editorial, matches, Discord, RCON, data retention, locales, ops, and naming conventions.",
+  "scope": [
+    "branding",
+    "editorial",
+    "matches",
+    "tournaments",
+    "Discord integration",
+    "RCON / CRCON",
+    "data retention",
+    "GDPR",
+    "locales",
+    "performance",
+    "ops",
+    "naming conventions"
+  ],
+  "cross_refs": [
+    "15-decisions.md"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

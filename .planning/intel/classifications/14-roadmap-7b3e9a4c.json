@@ -1,0 +1,28 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/14-roadmap.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "14 — Roadmap",
+  "summary": "Round 1 milestone-based delivery roadmap (M1–M9) for a Laravel/Discord clan-and-match league platform, sized for one full-stack dev over 10–12 weeks.",
+  "scope": [
+    "milestones",
+    "Laravel 12 web app",
+    "Discord bot",
+    "RCON worker",
+    "Filament admin panel",
+    "clans",
+    "matches",
+    "tournaments",
+    "CMS",
+    "RCON automation",
+    "Discord OAuth",
+    "monorepo skeleton",
+    "Railway deployment",
+    "delivery sequencing"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

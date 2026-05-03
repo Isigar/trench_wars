@@ -1,0 +1,32 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/10-i18n.md",
+  "type": "SPEC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "10 — Internationalisation",
+  "summary": "Technical specification of the i18n architecture: locale resolution order, translation libraries, translatable jsonb columns, fallback rules, and locale-addition procedure.",
+  "scope": [
+    "internationalisation",
+    "locale resolution",
+    "users.locale",
+    "laravel-vue-i18n",
+    "spatie/laravel-translatable",
+    "Filament i18n",
+    "translatable models (Clan, ClanTag, Game, GameRole, GameMatchType, Article, Category, Event)",
+    "dayjs",
+    "Intl.NumberFormat",
+    "time zones",
+    "URL strategy",
+    "SEO (hreflang, sitemap)",
+    "locale onboarding procedure"
+  ],
+  "cross_refs": [
+    "lang/{locale}/*.php",
+    "config/i18n.php",
+    "lang/en/*.php",
+    "lang/{code}/*.php"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "No frontmatter or ADR/PRD/SPEC path markers. Classified as SPEC because content is dominated by implementation contracts (locale resolution order, jsonb schemas, library bindings, fallback rules, procedural steps) rather than a single decision (ADR) or user-facing requirements (PRD). Some ADR-style rationale appears (e.g., URL strategy round 1) but no Decision/Consequences structure."
+}

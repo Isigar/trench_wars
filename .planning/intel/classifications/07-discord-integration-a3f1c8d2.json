@@ -1,0 +1,24 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/07-discord-integration.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "07 — Discord Integration",
+  "summary": "Technical specification of the Discord bot integration: OAuth login, slash command routing, webhook event hooks, outbound message envelopes, and role-sync contracts.",
+  "scope": [
+    "Discord OAuth (Socialite)",
+    "Discord bot (Node.js)",
+    "Sanctum bot tokens",
+    "slash commands",
+    "Discord components and modals",
+    "Discord-to-web event hooks",
+    "Redis discord:outbound pub/sub",
+    "discord_outbound_messages durability",
+    "role sync",
+    "HMAC signing",
+    "rate limiting"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null
+}

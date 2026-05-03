@@ -1,0 +1,37 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/README.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "Trenchwars — Planning Docs",
+  "summary": "Index and glossary for the Trenchwars planning docs folder, listing 16 numbered planning documents covering vision, architecture, stack, schema, integrations, and roadmap.",
+  "scope": [
+    "Trenchwars planning docs index",
+    "Hell Let Loose competitive league platform",
+    "Discord integration",
+    "CRCON match automation",
+    "glossary of domain terms"
+  ],
+  "cross_refs": [
+    "01-overview.md",
+    "02-architecture.md",
+    "03-stack.md",
+    "04-domain-model.md",
+    "05-database-schema.md",
+    "06-permissions-and-audit.md",
+    "07-discord-integration.md",
+    "08-rcon-integration.md",
+    "09-frontend.md",
+    "10-i18n.md",
+    "11-tournaments.md",
+    "12-cms-and-events.md",
+    "13-api-contracts.md",
+    "14-roadmap.md",
+    "15-decisions.md",
+    "16-open-questions.md",
+    "https://github.com/MarechJ/hll_rcon_tool"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

@@ -1,0 +1,30 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/08-rcon-integration.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "08 — RCON Integration",
+  "summary": "Technical specification for integrating CRCON match servers, session lifecycle, normalised event schema, result computation, security (HMAC), and failure modes.",
+  "scope": [
+    "CRCON (hll_rcon_tool)",
+    "match_servers",
+    "match_server_bookings",
+    "rcon-worker",
+    "Redis stream rcon:sessions",
+    "match_events",
+    "MatchResult",
+    "MatchPlayerStat",
+    "Filament Match Servers admin",
+    "HMAC SHA-256 signing",
+    "session lifecycle",
+    "event normalisation",
+    "manual override",
+    "Test Connection action"
+  ],
+  "cross_refs": [
+    "https://github.com/MarechJ/hll_rcon_tool"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

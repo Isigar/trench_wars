@@ -1,0 +1,29 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/06-permissions-and-audit.md",
+  "type": "SPEC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "06 — Permissions & Audit",
+  "summary": "Specifies the two-layer permission model (Spatie platform roles + clan membership roles) and the activity-log audit system, including event names, subjects, surfaces, and retention.",
+  "scope": [
+    "platform roles",
+    "clan roles",
+    "Spatie permissions",
+    "policies",
+    "audit log",
+    "spatie/laravel-activitylog",
+    "AuditService",
+    "Filament admin",
+    "Discord interaction causer attribution",
+    "permission seeder",
+    "retention policy"
+  ],
+  "cross_refs": [
+    "database/seeders/PermissionSeeder.php",
+    "/admin/permissions",
+    "/admin/audit"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "No frontmatter or filename convention; classified SPEC over DOC because the document defines concrete contracts (permission naming scheme, audit subject list, canonical event names, role enums, policy logic) the implementation must honor, rather than narrative guidance. Some PRD-like elements (role power tables) are present but subordinate to the technical contracts."
+}

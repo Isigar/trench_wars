@@ -1,0 +1,22 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/01-overview.md",
+  "type": "PRD",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "01 — Overview",
+  "summary": "Vision, goals, non-goals, constraints, and round-1 success criteria for a multi-clan competitive match and tournament web platform centered on Hell Let Loose.",
+  "scope": [
+    "multi-clan league platform",
+    "Hell Let Loose",
+    "Discord integration",
+    "CRCON match capture",
+    "clan and player profiles",
+    "tournament workflows",
+    "league CMS",
+    "Railway deployment"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null,
+  "notes": "No frontmatter or filename convention; classified as PRD based on strong content signals (Vision, Goals, Non-goals, Constraints, Success criteria sections). Could overlap with high-level DOC, but PRD signal dominates due to explicit goals/non-goals/success-criteria framing."
+}

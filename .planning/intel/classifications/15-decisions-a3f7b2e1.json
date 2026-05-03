@@ -1,0 +1,39 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/15-decisions.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "15 — Decisions Log",
+  "summary": "Lightweight ADR-style log capturing 20 accepted planning decisions covering stack, auth, multi-tenancy, Discord bot, RCON, hosting, and data model choices.",
+  "scope": [
+    "Laravel 12",
+    "Inertia v2",
+    "Vue 3",
+    "Filament v3",
+    "Discord OAuth",
+    "Discord bot",
+    "CRCON / hll_rcon_tool",
+    "multi-tenant league platform",
+    "game model",
+    "clan tags",
+    "clan memberships",
+    "match signups",
+    "tournaments",
+    "audit logging",
+    "i18n",
+    "Railway hosting",
+    "pnpm monorepo",
+    "Postgres 16",
+    "auth scaffolding",
+    "player privacy",
+    "match result capture",
+    "TypeScript DTO generation"
+  ],
+  "cross_refs": [
+    "07-discord-integration.md",
+    "https://github.com/MarechJ/hll_rcon_tool"
+  ],
+  "locked": true,
+  "precedence": null,
+  "notes": "Multi-entry ADR log: 20 separate decisions (D-001 through D-020), each with Status: Accepted. Treated as a single ADR-class artifact since every entry follows ADR structure (Decision/Rationale/Trade-offs) and all are Accepted. Synthesizer should split entries by D-### heading."
+}

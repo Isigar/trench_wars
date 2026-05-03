@@ -1,0 +1,25 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/12-cms-and-events.md",
+  "type": "SPEC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "12 — CMS & Events",
+  "summary": "Specifies CMS articles, categories, events calendar, media library, and search behavior including fields, publishing flow, permissions, and image variants.",
+  "scope": [
+    "Articles",
+    "Categories",
+    "Events calendar",
+    "Filament admin",
+    "Tiptap rich text",
+    "spatie/laravel-medialibrary",
+    "Laravel scheduler",
+    "Postgres full-text search",
+    "Match/Tournament event auto-sync",
+    "Discord announce",
+    "Permissions (cms-editor, moderator)"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null,
+  "notes": "Strong SPEC signals: field schemas, polymorphic linkable_type/id, image variant sizes, scheduler behavior contract, full-text search implementation. Some PRD-flavored scope statements (out of scope for round 1) but dominant content is implementation contract. No frontmatter or filename convention — confidence medium."
+}

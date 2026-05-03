@@ -1,0 +1,32 @@
+{
+  "source_path": "/home/rtx/projects/trench-wars/.docs/02-architecture.md",
+  "type": "SPEC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "02 — Architecture",
+  "summary": "Defines the five-service Railway topology, monorepo layout, inter-service communication protocols, deployment, local dev, and CI for the trenchwars system.",
+  "scope": [
+    "Railway services",
+    "web (Laravel)",
+    "worker (Horizon)",
+    "bot (discord.js)",
+    "rcon-worker",
+    "Postgres",
+    "Redis",
+    "monorepo layout",
+    "pnpm workspaces",
+    "shared-types package",
+    "inter-service communication",
+    "Sanctum tokens",
+    "Redis pub/sub",
+    "HMAC-signed internal API",
+    "Railway deployment",
+    "GitHub Actions CI"
+  ],
+  "cross_refs": [
+    "13-api-contracts.md"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "No frontmatter and filename is descriptive rather than SPEC-prefixed, so heuristic signals are weak. Content defines concrete technical contracts (service topology, message envelopes, channel names, HMAC endpoints, deployment config), which lifts it above DOC into SPEC. Not a single decision (not ADR) and not user-facing requirements (not PRD)."
+}
