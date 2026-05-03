@@ -34,7 +34,25 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Every admin-side create/update/delete is captured in the activity log and visible per-resource and on `/admin/audit`.
   4. The UI renders only through `__()` / `t()` (no hardcoded strings) with `lang/en/*.php` and Inertia-shared `translations` working end-to-end.
   5. `web` and `worker` services run on Railway from the monorepo with Postgres + Redis plugins; CI runs Pint, PHPStan level 8, and Pest on every push.
-**Plans**: TBD
+**Plans**: 18 plans
+- [ ] 01-01-PLAN.md — pnpm monorepo skeleton (apps/bot, apps/rcon-worker, packages/shared-types stubs)
+- [ ] 01-02-PLAN.md — docker-compose.yml at repo root + per-service Dockerfiles + .env.example + Makefile
+- [ ] 01-03-PLAN.md — author CLAUDE.md (AI/dev conventions) + README.md (first-time setup walkthrough)
+- [ ] 01-04-PLAN.md — composer create-project Laravel 12 in apps/web; configure pgsql/redis/Discord env; Postgres extensions migration
+- [ ] 01-05-PLAN.md — install Pest 4 + Larastan L8 + Pint + Debugbar; tests/Pest.php + BootHealthcheckTest smoke
+- [ ] 01-06-PLAN.md — install Inertia v2 + Vue 3 + Vite; HandleInertiaRequests middleware; pages/Home.vue placeholder
+- [ ] 01-07-PLAN.md — install Tailwind v4 (CSS-first) + Reka UI + Lucide + Fontsource; UI-SPEC token system; Public layout + primitives
+- [ ] 01-08-PLAN.md — i18n plumbing (lang/en/*.php + Inertia translations prop + useT composable + NoHardcodedStringsTest)
+- [ ] 01-09-PLAN.md — Discord OAuth via Socialite (DiscordController + ProvisionFirstLogin listener + LoginButton CTA)
+- [ ] 01-10-PLAN.md — User/Player/PlayerPrivacy models + migrations (UUID PKs, citext email, jsonb bio, soft deletes) + factories
+- [ ] 01-11-PLAN.md — install spatie/laravel-permission v7; PermissionSeeder; trenchwars:make-admin artisan command
+- [ ] 01-12-PLAN.md — install Filament v3 with dual-Tailwind workaround (Pitfall 1); AdminPanelProvider gated by admin-access
+- [ ] 01-13-PLAN.md — Filament resources: User, Player (with inline player_privacy), Role, Permission
+- [ ] 01-14-PLAN.md — install spatie/laravel-activitylog v5 (uuid PK migration); per-resource Audit tab + global /admin/audit page
+- [ ] 01-15-PLAN.md — install spatie/laravel-data + typescript-transformer; UserData/PlayerData/PlayerPrivacyData DTOs; trenchwars:typescript-generate command syncing to packages/shared-types
+- [ ] 01-16-PLAN.md — GitHub Actions matrix CI (web + bot + rcon-worker + shared-types) with path filters
+- [ ] 01-17-PLAN.md — per-service Railway config (nixpacks.toml + railway.json) + RAILWAY-DEPLOY.md walkthrough
+- [ ] 01-18-PLAN.md — [BLOCKING] migrate --force on fresh DB + full quality gates + manual smoke (Filament dual-Tailwind + Discord OAuth real-app)
 **UI hint**: yes
 
 ### Phase 2: Clans & tags
