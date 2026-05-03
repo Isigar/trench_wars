@@ -1,0 +1,50 @@
+# Source: 01-RESEARCH.md Standard Stack — Node 22 + pnpm + tsc + vitest + eslint.
+name: rcon-worker
+
+on:
+  push:
+    branches: [main, develop, master]
+    paths:
+      - 'apps/rcon-worker/**'
+      - 'packages/shared-types/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - '.github/workflows/rcon-worker.yml'
+  pull_request:
+    paths:
+      - 'apps/rcon-worker/**'
+      - 'packages/shared-types/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - '.github/workflows/rcon-worker.yml'
+
+jobs:
+  rcon-worker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: pnpm install (workspace)
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @trenchwars/rcon-worker typecheck
+
+      - name: Lint
+        run: pnpm --filter @trenchwars/rcon-worker lint
+
+      - name: Test
+        run: pnpm --filter @trenchwars/rcon-worker test

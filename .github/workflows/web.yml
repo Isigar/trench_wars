@@ -1,0 +1,102 @@
+# Source: 01-RESEARCH.md "Supporting (CI / build / infra)" section + 01-VALIDATION.md commands.
+# Path filter: only run on web changes (and shared-types because DTOs are consumed via
+# the TS pipeline; per plan 01-15 the generator copies into both apps/web and packages/shared-types).
+name: web
+
+on:
+  push:
+    branches: [main, develop, master]
+    paths:
+      - 'apps/web/**'
+      - 'packages/shared-types/**'
+      - '.github/workflows/web.yml'
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'packages/shared-types/**'
+      - '.github/workflows/web.yml'
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: trenchwars_test
+          POSTGRES_USER: trenchwars
+          POSTGRES_PASSWORD: trenchwars
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U trenchwars"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: apps/web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_pgsql, pgsql, redis, gd, bcmath, zip, mbstring, pcntl, exif, opcache
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ runner.os }}-${{ hashFiles('apps/web/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-
+
+      - name: Composer install
+        run: composer install --no-progress --no-interaction --prefer-dist
+
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Enable Postgres extensions
+        env:
+          PGPASSWORD: trenchwars
+        run: |
+          psql -h 127.0.0.1 -U trenchwars -d trenchwars_test -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+          psql -h 127.0.0.1 -U trenchwars -d trenchwars_test -c "CREATE EXTENSION IF NOT EXISTS \"pgcrypto\";"
+          psql -h 127.0.0.1 -U trenchwars -d trenchwars_test -c "CREATE EXTENSION IF NOT EXISTS citext;"
+
+      - name: Pint (style check)
+        run: ./vendor/bin/pint --test
+
+      - name: PHPStan level 8
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
+
+      - name: Pest
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: trenchwars_test
+          DB_USERNAME: trenchwars
+          DB_PASSWORD: trenchwars
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379
+        run: ./vendor/bin/pest --parallel
