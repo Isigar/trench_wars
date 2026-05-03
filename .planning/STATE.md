@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 plan 01-10 complete (out-of-sequence wave-4 plan; depends only on 01-05) — UUID-PK identity schema (users, players, player_privacy) live in Postgres; HasUuidPrimaryKey trait emits UUID v4; citext email; jsonb bio; CHECK constraints on avatar_source + show_to; soft-deletes on Player; 1:1 user↔player↔privacy via UNIQUE FKs (RESTRICT on user→players, CASCADE on players→privacy). User/Player/PlayerPrivacy Eloquent models + factories + 9 model tests green. Pest 13/13, PHPStan L8 clean, Pint clean. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround) — sequential next plan.
-last_updated: "2026-05-03T20:49:00Z"
-last_activity: 2026-05-03 -- Plan 01-10 complete (UUID-PK identity schema + Eloquent models + factories; 9 model tests + 13 total Pest tests green; PHPStan L8 + Pint clean)
+stopped_at: Phase 1 plan 01-16 complete (out-of-sequence wave-4 plan; depends only on 01-05 — already satisfied). 4 GitHub Actions workflows live (.github/workflows/{web,bot,rcon-worker,shared-types}.yml) with path filters per app + postgres:16-alpine + redis:7-alpine service containers for web (with extension-creation step) + Pint --test + PHPStan L8 + Pest --parallel + Composer cache. Bot + rcon-worker have vitest@^2 + eslint@^9 (flat config) + skeleton tests importing TrenchwarsApiContract from @trenchwars/shared-types (UserData swap deferred to plan 01-15). Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround) — sequential next plan.
+last_updated: "2026-05-03T20:57:31Z"
+last_activity: 2026-05-03 -- Plan 01-16 complete (GitHub Actions CI matrix + vitest/eslint scaffolding for bot + rcon-worker)
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 7
-  percent: 39
+  completed_plans: 8
+  percent: 44
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 7 of 18 (sequential pointer; plan 01-10 just completed out-of-sequence as its wave-4 deps were already met)
-Status: Executing Phase 01 (7/18 plans complete — 01..06 + 10)
-Last activity: 2026-05-03 -- Plan 01-10 complete (UUID-PK identity schema + Eloquent models + factories; 9 model tests + 13 total Pest tests green; PHPStan L8 + Pint clean)
+Plan: 7 of 18 (sequential pointer; plans 01-10 + 01-16 completed out-of-sequence — both wave-4 with deps already satisfied)
+Status: Executing Phase 01 (8/18 plans complete — 01..06 + 10 + 16)
+Last activity: 2026-05-03 -- Plan 01-16 complete (GitHub Actions CI matrix + vitest/eslint scaffolding for bot + rcon-worker)
 
-Progress: [████░░░░░░] 39%
+Progress: [████░░░░░░] 44%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 7
-- Average duration: ~5.7 min (01-10 was the fastest at ~2.8 min — pure schema + models, no install/diagnose cycles)
-- Total execution time: ~0.7 hours
+- Total plans completed: 8
+- Average duration: ~5.2 min (01-16 was the fastest at ~2 min — pure file authoring, no install or runtime verification on host)
+- Total execution time: ~0.75 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundations | 7/18 | ~42 min | ~6.0 min |
+| 01-foundations | 8/18 | ~44 min | ~5.5 min |
 
 **Recent Trend:**
 
-- Last 7 plans: 01-01 (~3 min), 01-02 (~3 min), 01-03 (~3 min), 01-04 (~7 min), 01-05 (~7 min), 01-06 (~12 min), 01-10 (~2.8 min)
-- Trend: 01-10 was a clean execution — plan snippets were directly committable (only 1 Pint concat_space auto-fix needed); CHECK + FK + soft-delete behaviours all asserted via Pest in a single pass; no docker/runtime surprises
+- Last 8 plans: 01-01 (~3 min), 01-02 (~3 min), 01-03 (~3 min), 01-04 (~7 min), 01-05 (~7 min), 01-06 (~12 min), 01-10 (~2.8 min), 01-16 (~2 min)
+- Trend: 01-16 was the cleanest execution yet — pure YAML + config-file authoring with no install, no runtime verification (CI is the verification surface), 4 deviations all easily caught at write-time (skeleton-test type swap, pnpm flag syntax, master branch trigger, expanded Pest env)
 
 *Updated after each plan completion*
 
@@ -86,6 +86,10 @@ Plan-level decisions logged during execution:
 - 01-10 added `rememberToken()` to the users migration (plan prose mentioned it but the pasted snippet omitted it; User::$hidden references remember_token; Authenticatable contract assumes it). Followed the prose, not the snippet (Rule 2 — missing critical functionality)
 - 01-10 added `/** @use HasFactory<XFactory> */` PHPDoc tags to all 3 models so PHPStan level 8 doesn't flag HasFactory as a non-generic class usage. The plan's pasted snippets omitted these but the project's existing User model already had the pattern (Rule 2 — type-correctness for L8 gate)
 - 01-10 ran `pint database/factories/PlayerFactory.php` to apply the auto concat_space correction (Rule 1 — Pint preset compliance is a CI gate); final source spaces around `.` operator
+- 01-16 imported `TrenchwarsApiContract` (placeholder shipped in 01-01) instead of `UserData` in skeleton tests — `UserData` is shipped by plan 01-15 (wave 10) which has not run yet (Rule 3 — blocking; plan example referenced a not-yet-existing type). Plan 01-15 will swap the import as part of its task 2
+- 01-16 used `pnpm install --no-frozen-lockfile` (not `--frozen-lockfile=false` from plan; that's invalid pnpm CLI syntax) (Rule 3 — blocking; canonical pnpm 9 flag)
+- 01-16 added `master` to `on.push.branches` in all 4 workflows alongside `[main, develop]` — repo currently on `master` (Rule 2 — without it CI never runs on the active branch)
+- 01-16 expanded Pest env in web.yml to include DB_CONNECTION/DB_PORT/DB_DATABASE/DB_USERNAME/DB_PASSWORD/REDIS_PORT instead of the plan's minimal DB_HOST/REDIS_HOST — guarantees Pest targets the postgres service container regardless of .env.example defaults (Rule 2 — RefreshDatabase correctness)
 
 ### Pending Todos
 
@@ -107,6 +111,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-03 20:49Z
-Stopped at: Plan 01-10 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). UUID-PK identity schema authored: `users` (uuid PK gen_random_uuid(), discord_id text UNIQUE NOT NULL, email citext NULL, locale text DEFAULT 'en', remember_token, last_login_at + left_community_at + created_at + updated_at all timestamptz), `players` (uuid PK, user_id uuid UNIQUE FK users RESTRICT, slug text UNIQUE, bio jsonb, avatar_source CHECK in (discord,upload), softDeletes), `player_privacy` (uuid PK, player_id uuid UNIQUE FK players CASCADE, show_to text DEFAULT 'community' CHECK in (public,community,clan,private), 5 boolean section toggles per D-018 with show_real_name=false). HasUuidPrimaryKey trait at app/Concerns/ overrides HasUuids::newUniqueId() to emit Str::uuid() (v4) for parity with gen_random_uuid(). User/Player/PlayerPrivacy Eloquent models with HasUuidPrimaryKey + correct casts + relations (User hasOne Player, Player belongsTo User + hasOne PlayerPrivacy, PlayerPrivacy belongsTo Player; $table='player_privacy' override). Factories cascade through one another with D-018 defaults. 9 model tests in tests/Feature/Models/ assert UUID shape, UNIQUE constraint, hasOne null default, factory cascade, soft-delete vs withTrashed, bio array cast, CHECK constraint blocking 'galactic', cascade-on-forceDelete. Full Pest suite 13 passed (32 assertions, 0.43s). PHPStan L8 clean. Pint clean (1 auto-fix on PlayerFactory concat_space). `migrate:fresh` runs all 4 migrations cleanly. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next.
+Last session: 2026-05-03 20:57Z
+Stopped at: Plan 01-16 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). 4 GitHub Actions workflows authored under `.github/workflows/`: `web.yml` (PHP 8.4 via shivammathur/setup-php@v2 with intl/pdo_pgsql/pgsql/redis/gd/bcmath/zip/mbstring/pcntl/exif/opcache extensions; postgres:16-alpine + redis:7-alpine service containers; psql step creates uuid-ossp/pgcrypto/citext extensions; Composer cache; Pint --test, PHPStan L8, Pest --parallel quality gates). `bot.yml` + `rcon-worker.yml` (Node 22 + pnpm 9 via pnpm/action-setup@v4 + actions/setup-node@v4 with cache: pnpm; pnpm install --no-frozen-lockfile workspace then typecheck + lint + test via --filter). `shared-types.yml` (tsc --noEmit only). All 4 path-filtered (apps/{name}/** + packages/shared-types/** + workspace files + workflow file itself). Triggers on push (main/develop/master) + pull_request. Bot + rcon-worker now have `vitest.config.ts` (node env, tests/**/*.test.ts), `eslint.config.mjs` (ESLint v9 flat config with @typescript-eslint parser/plugin), `tests/skeleton.test.ts` (imports TrenchwarsApiContract from @trenchwars/shared-types — UserData swap deferred to plan 01-15), and updated package.json with vitest@^2/eslint@^9/@typescript-eslint@^8 devDeps + scripts (test: `vitest run`, lint: `eslint .`). YAML parses pass; all plan acceptance grep checks pass. CI verification surface is the first GitHub push. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next.
 Resume file: .planning/phases/01-foundations/01-07-PLAN.md

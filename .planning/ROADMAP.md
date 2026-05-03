@@ -50,7 +50,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 01-13-PLAN.md — Filament resources: User, Player (with inline player_privacy), Role, Permission
 - [ ] 01-14-PLAN.md — install spatie/laravel-activitylog v5 (uuid PK migration); per-resource Audit tab + global /admin/audit page
 - [ ] 01-15-PLAN.md — install spatie/laravel-data + typescript-transformer; UserData/PlayerData/PlayerPrivacyData DTOs; trenchwars:typescript-generate command syncing to packages/shared-types
-- [ ] 01-16-PLAN.md — GitHub Actions matrix CI (web + bot + rcon-worker + shared-types) with path filters
+- [x] 01-16-PLAN.md — GitHub Actions matrix CI (web + bot + rcon-worker + shared-types) with path filters
 - [ ] 01-17-PLAN.md — per-service Railway config (nixpacks.toml + railway.json) + RAILWAY-DEPLOY.md walkthrough
 - [ ] 01-18-PLAN.md — [BLOCKING] migrate --force on fresh DB + full quality gates + manual smoke (Filament dual-Tailwind + Discord OAuth real-app)
 **UI hint**: yes
@@ -163,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations | 7/18 | Executing | - |
+| 1. Foundations | 8/18 | Executing | - |
 | 2. Clans & tags | 0/TBD | Not started | - |
 | 3. Games & match types | 0/TBD | Not started | - |
 | 4. Matches (manual) | 0/TBD | Not started | - |
