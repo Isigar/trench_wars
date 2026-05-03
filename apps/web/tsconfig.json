@@ -1,0 +1,25 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "moduleResolution": "Bundler",
+        "module": "ESNext",
+        "target": "ES2022",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "jsx": "preserve",
+        "isolatedModules": true,
+        "allowImportingTsExtensions": false,
+        "noEmit": true,
+        "types": ["vite/client", "node"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"],
+            "ziggy-js": ["vendor/tightenco/ziggy"]
+        }
+    },
+    "include": [
+        "resources/js/**/*.ts",
+        "resources/js/**/*.vue",
+        "resources/js/**/*.d.ts"
+    ],
+    "exclude": ["node_modules", "vendor", "public"]
+}

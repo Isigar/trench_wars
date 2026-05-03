@@ -14,11 +14,16 @@ services:
       - ./apps/web:/app
       - web_vendor:/app/vendor
       - web_node_modules:/app/node_modules
+      # Plan 01-06: expose repo-root tsconfig.base.json at the path apps/web/tsconfig.json's
+      # "extends": "../../tsconfig.base.json" resolves to (= /tsconfig.base.json from /app).
+      - ./tsconfig.base.json:/tsconfig.base.json:ro
     environment:
-      APP_ENV: ${APP_ENV:-local}
-      APP_DEBUG: ${APP_DEBUG:-true}
-      APP_URL: ${APP_URL:-http://localhost:8000}
-      APP_KEY: ${APP_KEY:-}
+      # Plan 01-06: APP_* env keys removed from compose injection. They were defaulting to
+      # empty/local from the host shell (no root .env exists), and Laravel's Env::get() reads
+      # $_SERVER first — so the empty APP_KEY shadowed apps/web/.env's real key, producing
+      # MissingAppKeyException at runtime (the curl 500 — Plan 01-05 only fixed the test path
+      # via phpunit.xml <server> tags). Letting Laravel read from apps/web/.env directly is
+      # the canonical solution for local dev. Production overrides via Railway env groups.
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
