@@ -1,0 +1,17 @@
+{
+  "name": "trenchwars",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Trenchwars — multi-clan league platform for HLL.",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "pnpm -r --if-present build",
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck"
+  }
+}

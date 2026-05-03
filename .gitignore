@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Env (NEVER commit real secrets)
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+build/
+dist/
+public/build/
+public/hot
+public/storage
+
+# Laravel runtime
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/testing/*
+!storage/**/.gitkeep
+
+# Tooling
+.phpunit.cache/
+.phpunit.result.cache
+.phpstan.cache/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
