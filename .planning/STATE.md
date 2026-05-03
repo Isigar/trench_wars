@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 plan 01-05 complete — Pest 4 + Larastan L8 + Pint + Debugbar dev tooling installed; Wave 0 BootHealthcheckTest passes; phpunit.xml env-override path fixed (env+server force=true). Resume with /gsd-execute-phase to run plan 01-06 (Inertia v2 + Vue 3 + Vite).
-last_updated: "2026-05-03T20:15:00Z"
-last_activity: 2026-05-03 -- Plan 01-05 complete (Pest 4 + Larastan L8 + Pint + Debugbar + BootHealthcheckTest green-baseline)
+stopped_at: Phase 1 plan 01-06 complete — Inertia v2 + Vue 3 + Vite + Ziggy frontend pipeline live; GET / serves Home.vue via Inertia (HTTP 200 with valid data-page); InertiaSmokeTest green; Pitfall 3 CSRF mitigation in place; SSR scaffolded but disabled in dev; tsconfig.base.json bind-mounted into web container; APP_* env shadowing fixed; storage perms 0777 for php-fpm. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround).
+last_updated: "2026-05-03T20:36:00Z"
+last_activity: 2026-05-03 -- Plan 01-06 complete (Inertia v2 + Vue 3 + Vite + Ziggy frontend pipeline live; InertiaSmokeTest 2 + BootHealthcheckTest 2 = 4 passed)
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 5
-  percent: 28
+  completed_plans: 6
+  percent: 33
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 6 of 18
-Status: Executing Phase 01 (5/18 plans complete)
-Last activity: 2026-05-03 -- Plan 01-05 complete (Pest 4 + Larastan L8 + Pint + Debugbar + BootHealthcheckTest green-baseline)
+Plan: 7 of 18
+Status: Executing Phase 01 (6/18 plans complete)
+Last activity: 2026-05-03 -- Plan 01-06 complete (Inertia v2 + Vue 3 + Vite + Ziggy frontend pipeline live; InertiaSmokeTest + BootHealthcheckTest both green)
 
-Progress: [███░░░░░░░] 28%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 5
-- Average duration: ~5 min (recent plans run as autonomous file authoring; 01-04 included docker image build + composer install; 01-05 included composer require for 5 deps + env-override debugging)
-- Total execution time: ~0.5 hours
+- Total plans completed: 6
+- Average duration: ~6 min (01-06 was longer at ~12 min due to dual install batches + curl 500 diagnosis + tsconfig bind-mount fix + entrypoint perm fix)
+- Total execution time: ~0.65 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundations | 5/18 | ~27 min | ~5 min |
+| 01-foundations | 6/18 | ~39 min | ~6.5 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (~3 min), 01-02 (~3 min), 01-03 (~3 min), 01-04 (~7 min), 01-05 (~7 min)
-- Trend: stable; 01-04 + 01-05 longer due to network-bound composer installs
+- Last 6 plans: 01-01 (~3 min), 01-02 (~3 min), 01-03 (~3 min), 01-04 (~7 min), 01-05 (~7 min), 01-06 (~12 min)
+- Trend: 01-06 surfaced 4 latent bugs (tsconfig.base.json unreachable, APP_KEY shadowing, storage 0775 perms, page_paths case mismatch) that pre-existing plans never exercised because Pest runs as root + skips runtime serve
 
 *Updated after each plan completion*
 
@@ -77,6 +77,12 @@ Plan-level decisions logged during execution:
 - 01-05 committed apps/web/.env.testing with a static base64 APP_KEY (test keys are NOT secrets; .gitignore excludes .env/.env.backup/.env.production but NOT .env.testing — committing is the canonical Laravel pattern)
 - 01-05 dropped checkMissingIterableValueType + checkGenericClassInNonGenericObjectType from phpstan.neon — both options removed in PHPStan v2 (Rule 3 deviation; the plan's pasted neon was authored against PHPStan v1)
 - 01-05 ran Pint to apply 10 auto-fixes against Laravel default files alongside the install (must_have requires `pint --test` green from day 1)
+- 01-06 added repo-root tsconfig.base.json bind-mount in docker-compose.yml so apps/web/tsconfig.json's `extends "../../tsconfig.base.json"` resolves inside the web container (pnpm runs in container per D-021; bot/rcon-worker bake the base config in via Dockerfile COPY but web's bind-mount strategy needed an explicit volume entry — Rule 3 deviation; cross-cuts plan 01-02 territory but is one-line surgical)
+- 01-06 removed APP_ENV/APP_DEBUG/APP_URL/APP_KEY env injection from docker-compose.yml's web service. The empty `${APP_KEY:-}` was shadowing apps/web/.env's real key via $_SERVER (same root cause as plan 01-05's phpunit fix, but for runtime nginx requests instead of test invocations). Production overrides via Railway env groups remain unaffected
+- 01-06 bumped docker/web/entrypoint.sh chmod from 0775 to 0777 on storage + bootstrap/cache. php-fpm runs as www-data (uid 33) but bind-mount is host-uid-1000 (rtx) — without 0777 every nginx request 500s on tempnam() into storage/framework/views. Dev-only; gitignored content; production single-user containers keep 0775
+- 01-06 customised config/inertia.php to lowercase page_paths (Pages -> pages) for both root + testing block (Inertia default disagreed with plan structure); flipped ssr.enabled default true -> false + ensure_bundle_exists default true -> false (CONTEXT.md "scaffolded but optional in dev")
+- 01-06 added @vue/server-renderer to package.json devDependencies (Rule 3 — required by ssr.ts but absent from plan's pasted pnpm-add list)
+- 01-06 reworded the Pitfall 3 reminder comment in app.blade.php from `<meta name="csrf-token">` (literal — false-matched the source-grep verify) to `CSRF-token meta tag` (descriptive prose). Same intent, no false grep match
 
 ### Pending Todos
 
@@ -98,6 +104,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-03 20:15Z
-Stopped at: Plan 01-05 complete. Pest 4.7 + Larastan 3.9 (PHPStan 2.1, level 8) + Pint 1.29 + Debugbar 3.16 installed; Wave 0 BootHealthcheckTest passes (2 tests, 3 assertions, 0.16s); pint --test PASS (24 files); phpstan analyse PASS (no errors). phpunit.xml dual env+server force=true overrides container env. apps/web/.env.testing committed. composer scripts pest|pint|pint:check|phpstan added. Resume with /gsd-execute-phase to run plan 01-06 (Inertia v2 + Vue 3 + Vite).
-Resume file: .planning/phases/01-foundations/01-06-PLAN.md
+Last session: 2026-05-03 20:36Z
+Stopped at: Plan 01-06 complete. Inertia v2.0.24 server adapter + Ziggy v2.6.2 + HandleInertiaRequests middleware on web group; @inertiajs/vue3 v2.3.21 + vue 3.5.33 + @vitejs/plugin-vue 6.0.6 + ziggy-js 2.6.2 + @vue/server-renderer 3.5.33 + typescript 5.9.3 + vue-tsc 2.2.12 + @types/node 22.19.17 installed. vite.config.ts (Vue plugin + laravel-vite-plugin; Tailwind commented for plan 07). tsconfig.json extends ../../tsconfig.base.json (bind-mounted). app.ts createInertiaApp + ZiggyVue + glob page resolver. ssr.ts createServer scaffold (SSR off in dev). pages/Home.vue placeholder. types/inertia.d.ts typed shared props (auth + flash + ziggy). InertiaSmokeTest 2 + BootHealthcheckTest 2 = 4 passed (17 assertions, 0.19s). pint --test PASS (27 files). phpstan analyse PASS (no errors). pnpm run build produces public/build/manifest.json (763 modules). curl http://localhost:8000/ returns HTTP 200 with valid Inertia data-page (component=Home, ziggy.routes.home, no csrf meta). Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives).
+Resume file: .planning/phases/01-foundations/01-07-PLAN.md
