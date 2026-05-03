@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 01-02-PLAN.md — docker-compose.yml at repo root + per-service Dockerfiles + .env.example + Makefile
 - [x] 01-03-PLAN.md — author CLAUDE.md (AI/dev conventions) + README.md (first-time setup walkthrough)
 - [x] 01-04-PLAN.md — composer create-project Laravel 12 in apps/web; configure pgsql/redis/Discord env; Postgres extensions migration
-- [ ] 01-05-PLAN.md — install Pest 4 + Larastan L8 + Pint + Debugbar; tests/Pest.php + BootHealthcheckTest smoke
+- [x] 01-05-PLAN.md — install Pest 4 + Larastan L8 + Pint + Debugbar; tests/Pest.php + BootHealthcheckTest smoke
 - [ ] 01-06-PLAN.md — install Inertia v2 + Vue 3 + Vite; HandleInertiaRequests middleware; pages/Home.vue placeholder
 - [ ] 01-07-PLAN.md — install Tailwind v4 (CSS-first) + Reka UI + Lucide + Fontsource; UI-SPEC token system; Public layout + primitives
 - [ ] 01-08-PLAN.md — i18n plumbing (lang/en/*.php + Inertia translations prop + useT composable + NoHardcodedStringsTest)
@@ -163,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations | 4/18 | Executing | - |
+| 1. Foundations | 5/18 | Executing | - |
 | 2. Clans & tags | 0/TBD | Not started | - |
 | 3. Games & match types | 0/TBD | Not started | - |
 | 4. Matches (manual) | 0/TBD | Not started | - |
