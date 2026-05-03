@@ -88,10 +88,11 @@ Owner is comfortable in PHP/Vue. Round-1 is the first ship of a brand-new produc
 - **NFR — Audit retention**: Round-1 indefinite; revisit at six months (CON-audit-retention)
 - **NFR — Discord security**: HMAC + 60s replay window; bot uses scoped token; rate limits per-bot-token (CON-discord-security)
 - **NFR — RCON security**: CRCON keys encrypted at rest via Laravel encrypted casts; outbound HTTPS-only when CRCON exposed publicly; HMAC inbound (CON-rcon-security)
+- **Local dev environment**: All services run in containers via `docker-compose.yml` at repo root; host runs only Docker Desktop (with WSL integration), Node 22, and Composer-via-container. PHP/Postgres/Redis are NOT installed on host (D-021)
 
 ## Locked Decisions
 
-All 20 ADR decisions from `.docs/15-decisions.md` are LOCKED. Update protocol: append a new D-### with `Status: Supersedes D-###` rather than editing the original.
+21 ADR decisions LOCKED (D-001..D-020 from `.docs/15-decisions.md` + D-021 added 2026-05-03 during autonomous Phase 1 environment review). Update protocol: append a new D-### with `Status: Supersedes D-###` rather than editing the original.
 
 <decisions>
 | ID | Decision | Rationale | Status |
@@ -116,6 +117,7 @@ All 20 ADR decisions from `.docs/15-decisions.md` are LOCKED. Update protocol: a
 | D-018 | Per-section privacy booleans + global `show_to` tier (`public|community|clan|private`) on player profiles | Owner asked for user-controllable profile data sharing. Per-section gives granularity; global tier is a fast switch. | LOCKED |
 | D-019 | Result capture: CRCON live log auto-capture when bookable; manual entry/override always available | RCON pipelines fail; we never want a match locked to "incomplete" because of network issues. | LOCKED |
 | D-020 | TypeScript types generated from Laravel DTOs via spatie/laravel-data + `typescript:generate` artisan command | Keeps frontend, bot, and rcon-worker in lockstep with backend contracts. | LOCKED |
+| D-021 | Local dev via custom `docker-compose.yml` at repo root, with all five Railway services containerized (web/php-fpm 8.4, bot/node 22, rcon-worker/node 22, postgres 16, redis 7); host installs of PHP/Postgres/Redis are not used for development | Owner's machine has PHP 8.3 without dynamic-load support (`intl` extension fails) and no host Postgres/Redis. Containerizing all services keeps dev parity with Railway prod topology and avoids host pollution. Trade-off: requires Docker Desktop with WSL integration; first-time pull cost. Composer/pnpm/artisan run via `docker compose exec`. | LOCKED |
 </decisions>
 
 ## Open Questions

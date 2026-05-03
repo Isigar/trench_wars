@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 Phase: 1 of 9 (Foundations)
 Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-05-03 — Roadmap initialized from intel ingest (M1–M9 mirrored, 15/15 mappable requirements mapped)
+Status: Paused — environment setup required (Docker Desktop WSL integration not enabled; D-021 logged)
+Last activity: 2026-05-03 — `/gsd-autonomous` invoked; environment audit found host PHP 8.3 + missing intl/pnpm/Postgres/Redis. User chose Docker-compose-at-repo-root for local dev (D-021). Paused for user to enable Docker Desktop WSL integration. Resume with `/gsd-autonomous --from 1`.
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -47,6 +47,7 @@ Recent decisions affecting current work:
 - D-013 i18n plumbed from day one; EN at launch
 - D-014 Hosting on Railway (5 services + Postgres + Redis plugins)
 - D-017 No Laravel starter kit; hand-roll Discord Socialite auth scaffolding
+- D-021 Local dev via custom `docker-compose.yml` at repo root (all 5 services + postgres + redis containerized; host runs only Docker Desktop, Node 22, Composer-via-container)
 
 ### Pending Todos
 
@@ -54,7 +55,12 @@ None yet.
 
 ### Blockers/Concerns
 
-None yet. Several Open Questions surfaced in PROJECT.md (branding, editorial cadence, tournament tiebreakers, league-guild membership requirement) — advisory, not blockers, but worth resolving before phases that depend on them.
+**ACTIVE BLOCKER (Phase 1 dev environment, 2026-05-03):**
+- Docker Desktop WSL integration is OFF for this distro (`docker` not on PATH). User action required: Docker Desktop → Settings → Resources → WSL Integration → enable for this distro → Apply & Restart.
+- After Docker is reachable, autonomous mode resumes phase 1 and the first plan will scaffold `docker-compose.yml` (web/php-fpm 8.4 + bot/node 22 + rcon-worker/node 22 + postgres 16 + redis 7) before composer install.
+- Host installs of PHP 8.4 / Postgres / Redis / pnpm are intentionally NOT being added (D-021 — everything goes through compose; pnpm runs inside web container).
+
+Advisory (non-blocking): Open Questions in PROJECT.md (branding, editorial cadence, tournament tiebreakers, league-guild membership requirement) — worth resolving before phases that depend on them.
 
 ## Deferred Items
 
@@ -67,5 +73,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-03
-Stopped at: Wrote PROJECT.md, REQUIREMENTS.md, ROADMAP.md (9 phases mirroring M1–M9), STATE.md
+Stopped at: `/gsd-autonomous` paused at Phase 1 init — environment audit. D-021 logged. Awaiting user to enable Docker Desktop WSL integration. Resume with `/gsd-autonomous --from 1`.
 Resume file: None
