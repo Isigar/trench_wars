@@ -1,0 +1,48 @@
+# Nixpacks build config for the Railway `web` service (and the `worker` service,
+# which uses the same image and overrides startCommand to `php artisan queue:work ...`).
+#
+# Source: 01-RESEARCH.md Pitfall 6 + Nixpacks PHP provider docs.
+# Targeted at Railway nixpacks builder with `apps/web` set as the service Root Directory.
+#
+# Required Railway service env (set per service in dashboard):
+#   NIXPACKS_PHP_ROOT_DIR=/app/public   (so Caddy serves from public/)
+#
+# See: .planning/phases/01-foundations/RAILWAY-DEPLOY.md for the operator walkthrough.
+
+[phases.setup]
+nixPkgs = [
+    "php84",
+    "php84Extensions.intl",
+    "php84Extensions.pdo_pgsql",
+    "php84Extensions.redis",
+    "php84Extensions.gd",
+    "php84Extensions.bcmath",
+    "php84Extensions.zip",
+    "php84Extensions.mbstring",
+    "php84Extensions.pcntl",
+    "php84Extensions.exif",
+    "php84Extensions.opcache",
+    "nodejs_22",
+    "pnpm",
+]
+
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-progress",
+    "pnpm install --no-frozen-lockfile",
+]
+
+[phases.build]
+cmds = [
+    "pnpm run build",
+    "php artisan config:cache",
+    "php artisan route:cache",
+    "php artisan view:cache",
+]
+
+[start]
+# Default: php-fpm + Caddy via the Nixpacks PHP provider (auto-wired when
+# NIXPACKS_PHP_ROOT_DIR=/app/public is set on the Railway service).
+# The worker service (same image) overrides this to:
+#   php artisan queue:work --tries=3 --backoff=10 --timeout=120
+cmd = "/start-server.sh"

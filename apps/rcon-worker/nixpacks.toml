@@ -1,0 +1,29 @@
+# Nixpacks build config for the Railway `rcon-worker` service (CRCON event
+# normaliser → web HMAC-signed POSTs, Phase 8+).
+#
+# Source: 01-RESEARCH.md Pitfall 6 — pnpm-workspace Node services need
+# NIXPACKS_NODE_VERSION=22 set per service AND a pnpm install --filter
+# that walks UP from the service Root Directory to the monorepo root so
+# the workspace lockfile + workspace package linking resolves correctly.
+#
+# Required Railway service env:
+#   NIXPACKS_NODE_VERSION=22
+#
+# Service config (Railway dashboard):
+#   Root Directory: apps/rcon-worker
+
+[phases.setup]
+nixPkgs = ["nodejs_22", "pnpm"]
+
+[phases.install]
+cmds = [
+    "cd ../.. && pnpm install --no-frozen-lockfile --filter @trenchwars/rcon-worker...",
+]
+
+[phases.build]
+cmds = [
+    "cd ../.. && pnpm --filter @trenchwars/rcon-worker build",
+]
+
+[start]
+cmd = "node dist/index.js"

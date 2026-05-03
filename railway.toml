@@ -1,0 +1,19 @@
+# Trenchwars — Railway monorepo deploy guide.
+#
+# Railway uses PER-SERVICE Root Directory + per-service railway.json (NOT this file).
+# This file exists only as a documentation pointer.
+#
+# See: .planning/phases/01-foundations/RAILWAY-DEPLOY.md for the operator walkthrough.
+#
+# Topology (D-014 LOCKED — 5 services + 2 plugins):
+#   web         → Root Directory: apps/web         → nixpacks (PHP 8.4 + php-fpm + Caddy)
+#   worker      → Root Directory: apps/web         → nixpacks (override startCommand: php artisan queue:work)
+#   bot         → Root Directory: apps/bot         → nixpacks (Node 22)
+#   rcon-worker → Root Directory: apps/rcon-worker → nixpacks (Node 22)
+#   db          → Postgres 16 plugin
+#   redis       → Redis 7 plugin
+#
+# Per-service config lives in:
+#   apps/web/railway.json + apps/web/nixpacks.toml
+#   apps/bot/railway.json + apps/bot/nixpacks.toml
+#   apps/rcon-worker/railway.json + apps/rcon-worker/nixpacks.toml

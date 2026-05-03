@@ -1,0 +1,30 @@
+# Nixpacks build config for the Railway `bot` service (Discord bot, Phase 5+).
+#
+# Source: 01-RESEARCH.md Pitfall 6 — pnpm-workspace Node services need
+# NIXPACKS_NODE_VERSION=22 set per service AND a pnpm install --filter
+# that walks UP from the service Root Directory to the monorepo root so
+# the workspace lockfile + workspace package linking resolves correctly.
+#
+# Required Railway service env:
+#   NIXPACKS_NODE_VERSION=22
+#
+# Service config (Railway dashboard):
+#   Root Directory: apps/bot
+
+[phases.setup]
+nixPkgs = ["nodejs_22", "pnpm"]
+
+[phases.install]
+cmds = [
+    # Service Root Directory is `apps/bot`, but the workspace root is two
+    # levels up. Install from the monorepo root with --filter to prune.
+    "cd ../.. && pnpm install --no-frozen-lockfile --filter @trenchwars/bot...",
+]
+
+[phases.build]
+cmds = [
+    "cd ../.. && pnpm --filter @trenchwars/bot build",
+]
+
+[start]
+cmd = "node dist/index.js"
