@@ -5,8 +5,12 @@
 --}}
 @php
     /** @var \Illuminate\Database\Eloquent\Model|null $subject */
+    // WR-08 (01-REVIEW.md): eager-load `causer` so the @foreach loop below does
+    // not emit one extra `users` query per row. Otherwise rendering 50 rows
+    // costs 51 queries.
     $activities = $subject
         ? \Spatie\Activitylog\Models\Activity::query()
+            ->with('causer')
             ->where('subject_type', $subject::class)
             ->where('subject_id', $subject->getKey())
             ->orderByDesc('id')
