@@ -12,7 +12,7 @@ Round 1 of Trenchwars walks from a deployable Laravel skeleton with Discord logi
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundations** — Deployable Laravel app with Discord login, admin panel, audit infrastructure, i18n plumbing, and Railway deploy.
+- [x] **Phase 1: Foundations** — Deployable Laravel app with Discord login, admin panel, audit infrastructure, i18n plumbing, and Railway deploy.
 - [ ] **Phase 2: Clans & tags** — Clans exist as first-class entities; players have public profiles with privacy controls.
 - [ ] **Phase 3: Games & match types** — Admin can model any game's roles and match types fully in Filament; HLL is seeded.
 - [ ] **Phase 4: Matches (manual)** — Matches can be created, signed up to, played, and results entered manually.
@@ -163,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations | 16/18 | In Progress | - |
+| 1. Foundations | 18/18 | Complete | 2026-05-04 |
 | 2. Clans & tags | 0/TBD | Not started | - |
 | 3. Games & match types | 0/TBD | Not started | - |
 | 4. Matches (manual) | 0/TBD | Not started | - |
