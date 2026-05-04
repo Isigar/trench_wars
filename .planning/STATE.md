@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Plan 01-16 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). 4 GitHub Actions workflows authored under `.github/workflows/`: `web.yml` (PHP 8.4 via shivammathur/setup-php@v2 with intl/pdo_pgsql/pgsql/redis/gd/bcmath/zip/mbstring/pcntl/exif/opcache extensions; postgres:16-alpine + redis:7-alpine service containers; psql step creates uuid-ossp/pgcrypto/citext extensions; Composer cache; Pint --test, PHPStan L8, Pest --parallel quality gates). `bot.yml` + `rcon-worker.yml` (Node 22 + pnpm 9 via pnpm/action-setup@v4 + actions/setup-node@v4 with cache: pnpm; pnpm install --no-frozen-lockfile workspace then typecheck + lint + test via --filter). `shared-types.yml` (tsc --noEmit only). All 4 path-filtered (apps/{name}/** + packages/shared-types/** + workspace files + workflow file itself). Triggers on push (main/develop/master) + pull_request. Bot + rcon-worker now have `vitest.config.ts` (node env, tests/**/*.test.ts), `eslint.config.mjs` (ESLint v9 flat config with @typescript-eslint parser/plugin), `tests/skeleton.test.ts` (imports TrenchwarsApiContract from @trenchwars/shared-types — UserData swap deferred to plan 01-15), and updated package.json with vitest@^2/eslint@^9/@typescript-eslint@^8 devDeps + scripts (test: `vitest run`, lint: `eslint .`). YAML parses pass; all plan acceptance grep checks pass. CI verification surface is the first GitHub push. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next."
-last_updated: "2026-05-04T17:33:00.871Z"
+last_updated: "2026-05-04T17:33:51.065Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
@@ -26,19 +26,19 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 8 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied)
+Plan: 8 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 56%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 8
-- Average duration: ~5.2 min (01-16 was the fastest at ~2 min — pure file authoring, no install or runtime verification on host)
-- Total execution time: ~0.75 hours
+- Total plans completed: 10
+- Average duration: ~5 min (01-16 was the fastest at ~2 min — pure file authoring; 01-07 took ~5 min including pnpm add + Vite build verification inside the web container)
+- Total execution time: ~0.85 hours
 
 **By Phase:**
 
