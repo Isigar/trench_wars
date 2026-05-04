@@ -17,6 +17,9 @@ services:
       # Plan 01-06: expose repo-root tsconfig.base.json at the path apps/web/tsconfig.json's
       # "extends": "../../tsconfig.base.json" resolves to (= /tsconfig.base.json from /app).
       - ./tsconfig.base.json:/tsconfig.base.json:ro
+      # Plan 01-15: bind-mount packages/shared-types so trenchwars:typescript-generate can
+      # sync the emitted api.d.ts to /repo/packages/shared-types/src/api.d.ts (D-020).
+      - ./packages/shared-types:/repo/packages/shared-types
     environment:
       # Plan 01-06: APP_* env keys removed from compose injection. They were defaulting to
       # empty/local from the host shell (no root .env exists), and Laravel's Env::get() reads
