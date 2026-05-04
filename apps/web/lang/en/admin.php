@@ -61,6 +61,8 @@ return [
             'avatar_path' => 'Avatar path',
             'country_code' => 'Country code',
             'bio' => 'Bio (JSONB, locale-keyed)',
+            'bio_locale' => 'Locale',
+            'bio_text' => 'Bio text',
             'show_to' => 'Show to',
             'show_real_name' => 'Show real name',
             'show_discord_tag' => 'Show Discord tag',

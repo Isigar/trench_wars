@@ -79,9 +79,15 @@ class PlayerResource extends Resource
                                     Forms\Components\TextInput::make('country_code')
                                         ->label(__('admin.player.fields.country_code'))
                                         ->maxLength(2),
-                                    Forms\Components\Textarea::make('bio')
+                                    // bio is JSONB with an Eloquent `array` cast (locale → text).
+                                    // Textarea would coerce the form input to a string scalar and
+                                    // silently corrupt the locale-keyed shape. Use KeyValue to
+                                    // round-trip the array until Phase 2's structured editor lands.
+                                    Forms\Components\KeyValue::make('bio')
                                         ->label(__('admin.player.fields.bio'))
-                                        ->rows(4)
+                                        ->keyLabel(__('admin.player.fields.bio_locale'))
+                                        ->valueLabel(__('admin.player.fields.bio_text'))
+                                        ->reorderable(false)
                                         ->helperText(__('admin.player.help.bio_jsonb')),
                                 ]),
 
