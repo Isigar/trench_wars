@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Listeners\ProvisionFirstLogin;
 use App\Models\Player;
 use App\Models\PlayerPrivacy;
 use App\Models\User;
+use Illuminate\Auth\Events\Login;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
@@ -90,10 +92,10 @@ it('absorbs concurrent first-login race without surfacing 500 (WR-01)', function
     // UniqueConstraintViolationException and bubbles out of Auth::login.
     $user = User::factory()->create(['discord_id' => '777111222']);
 
-    $listener = new \App\Listeners\ProvisionFirstLogin;
+    $listener = new ProvisionFirstLogin;
 
     // First invocation creates player + privacy.
-    $listener->handle(new \Illuminate\Auth\Events\Login('web', $user, false));
+    $listener->handle(new Login('web', $user, false));
     expect(Player::where('user_id', $user->id)->count())->toBe(1);
 
     // Force the second invocation to *also* see player === null (simulates
@@ -102,7 +104,7 @@ it('absorbs concurrent first-login race without surfacing 500 (WR-01)', function
 
     // Should NOT throw — the unique violation is the expected outcome of the
     // race, and the listener treats it as idempotent success.
-    $listener->handle(new \Illuminate\Auth\Events\Login('web', $user, false));
+    $listener->handle(new Login('web', $user, false));
 
     // Still exactly one player row — DB UNIQUE held the line.
     expect(Player::where('user_id', $user->id)->count())->toBe(1);

@@ -54,11 +54,13 @@ it('shares auth as a flat user object for authenticated users (WR-03)', function
                 // The auth prop is the user object DIRECTLY — not nested under
                 // an `auth.user` envelope. This must stay in sync with the
                 // TypeScript declaration in resources/js/types/inertia.d.ts.
-                ->has('auth', fn (Assert $auth) => $auth
-                    ->where('id', $user->id)
-                    ->where('discord_id', '123456789012345678')
-                    ->where('username', 'commander_one')
-                    ->where('avatar_url', 'https://cdn.discordapp.com/avatars/123/abc.png')
+                ->has(
+                    'auth',
+                    fn (Assert $auth) => $auth
+                        ->where('id', $user->id)
+                        ->where('discord_id', '123456789012345678')
+                        ->where('username', 'commander_one')
+                        ->where('avatar_url', 'https://cdn.discordapp.com/avatars/123/abc.png')
                 )
                 ->missing('auth.user')
         );

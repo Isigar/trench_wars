@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function (): void {
     $this->seed(PermissionSeeder::class);
@@ -56,12 +58,12 @@ it('writes an activity_log row when granting super-admin (D-012)', function (): 
 
 it('does not grant unrelated permissions to super-admin (whitelist enforced)', function (): void {
     // Simulate a permission that should NOT auto-attach to super-admin.
-    \Spatie\Permission\Models\Permission::findOrCreate('rogue.permission', 'web');
+    Permission::findOrCreate('rogue.permission', 'web');
 
     $user = User::factory()->create(['discord_id' => '123987654']);
     $this->artisan('trenchwars:make-admin', ['discord_id' => '123987654'])->assertExitCode(0);
 
-    $role = \Spatie\Permission\Models\Role::findByName('super-admin', 'web');
+    $role = Role::findByName('super-admin', 'web');
     $names = $role->permissions()->pluck('name')->all();
 
     expect($names)->toContain('admin-access');

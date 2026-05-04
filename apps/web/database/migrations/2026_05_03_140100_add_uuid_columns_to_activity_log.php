@@ -29,9 +29,9 @@ return new class extends Migration
         // operator to author a manual data migration when one is needed.
         $rowCount = (int) DB::scalar('SELECT COUNT(*) FROM activity_log');
         if ($rowCount > 0) {
-            throw new \RuntimeException(
-                "activity_log has {$rowCount} rows — UUID column conversion would destroy data. ".
-                'Author a manual data migration first (cast existing bigint IDs to uuid via a '.
+            throw new RuntimeException(
+                "activity_log has {$rowCount} rows — UUID column conversion would destroy data. " .
+                'Author a manual data migration first (cast existing bigint IDs to uuid via a ' .
                 'staging column) and re-run this migration with the table emptied.'
             );
         }
