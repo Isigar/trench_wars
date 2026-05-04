@@ -1,5 +1,111 @@
-/* Placeholder — replaced with full Tailwind v4 @theme block in plan 07. */
+/* Source: 01-UI-SPEC.md Token authoring contract; 01-RESEARCH.md Pattern 2.
+   Tailwind v4 CSS-first — NO tailwind.config.js. */
+
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+/* Tell Tailwind v4 where to look for utility class usage. */
+@source "../views/**/*.blade.php";
+@source "../js/**/*.{ts,vue}";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+
+/* Dark mode strategy — data-theme attr on <html>. Dark is default. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+    /* Fonts — UI-SPEC § Typography */
+    --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+
+    /* Spacing base — UI-SPEC § Spacing Scale (multiples of 4) */
+    --spacing: 0.25rem;
+
+    /* Radii — UI-SPEC § Layout & Interaction Contract */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+
+    /* Motion — UI-SPEC § Motion Contract */
+    --ease-default: cubic-bezier(0.2, 0, 0, 1);
+    --motion-duration-fast: 150ms;
+    --motion-duration-base: 200ms;
+}
+
+/* Dark default lives on :root so a missing data-theme attribute STILL gets dark.
+   Source: UI-SPEC.md § Color (60/30/10 trench-military palette). */
+:root,
+[data-theme="dark"] {
+    --color-bg: #1A1B16;
+    --color-surface: #232518;
+    --color-surface-elevated: #2C2E20;
+    --color-border: #3A3D2C;
+    --color-text: #EDEAD9;
+    --color-text-muted: #A8A693;
+    --color-accent: #A4262C;
+    --color-accent-fg: #FFFFFF;
+    --color-danger: #C03A2B;
+    --color-success: #6B8E3D;
+    --color-warning: #C8932A;
+    --color-focus-ring: #C7A23A;
+}
+
+[data-theme="light"] {
+    --color-bg: #F5F2E6;
+    --color-surface: #FFFFFF;
+    --color-surface-elevated: #FFFFFF;
+    --color-border: #D6D2BE;
+    --color-text: #1A1B16;
+    --color-text-muted: #5C5D4A;
+    --color-accent: #8E1E22;
+    --color-accent-fg: #FFFFFF;
+    --color-danger: #A6271A;
+    --color-success: #4F6E25;
+    --color-warning: #9C7220;
+    --color-focus-ring: #6B5210;
+}
+
+/* Body baseline — UI-SPEC § Typography body 16px / weight 400 / lh 1.5 */
+html {
+    font-family: var(--font-sans);
+    color-scheme: dark light;
+}
+
 body {
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.5;
     margin: 0;
+    transition: background-color var(--motion-duration-base) var(--ease-default),
+                color var(--motion-duration-base) var(--ease-default);
+}
+
+/* Reduced motion override — UI-SPEC § Motion Contract */
+@media (prefers-reduced-motion: reduce) {
+    body {
+        transition: none;
+    }
+}
+
+/* Focus ring — UI-SPEC § Accessibility Contract (2px, 2px offset, focus-visible only) */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Skip link — UI-SPEC § Accessibility Contract (visually hidden until focused) */
+.skip-link {
+    position: absolute;
+    left: -10000px;
+    top: 0;
+    padding: 8px 16px;
+    background: var(--color-surface-elevated);
+    color: var(--color-text);
+}
+.skip-link:focus {
+    left: 8px;
+    top: 8px;
+    z-index: 9999;
 }
