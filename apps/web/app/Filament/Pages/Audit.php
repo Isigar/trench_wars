@@ -65,7 +65,21 @@ class Audit extends Page implements HasTable
                     ->badge(),
                 Tables\Columns\TextColumn::make('subject_type')
                     ->label(__('admin.audit.col.subject_type'))
-                    ->formatStateUsing(fn (?string $state): string => $state === null ? '—' : class_basename($state)),
+                    ->formatStateUsing(function (?string $state): string {
+                        if ($state === null) {
+                            return '—';
+                        }
+
+                        // Translate the class basename via the
+                        // `admin.audit.subject.*` namespace; fall back to the
+                        // raw basename when no translation is registered.
+                        $basename = class_basename($state);
+                        $translated = __('admin.audit.subject.' . $basename);
+
+                        return is_string($translated) && $translated !== 'admin.audit.subject.' . $basename
+                            ? $translated
+                            : $basename;
+                    }),
                 Tables\Columns\TextColumn::make('subject_id')
                     ->label(__('admin.audit.col.subject_id'))
                     ->fontFamily('mono')
@@ -75,23 +89,35 @@ class Audit extends Page implements HasTable
                     ->wrap(),
             ])
             ->filters([
+                // WR-06 (01-REVIEW.md): every UI string must flow through __()
+                // (D-013). Subject_type values are class strings — they're
+                // structural identifiers, but the visible label was leaking
+                // class_basename() output un-translated. Now every visible
+                // string in this page is i18n-bound.
                 SelectFilter::make('event')
+                    ->label(__('admin.audit.filter.event'))
                     ->options([
-                        'created' => 'created',
-                        'updated' => 'updated',
-                        'deleted' => 'deleted',
+                        'created' => __('admin.audit.event.created'),
+                        'updated' => __('admin.audit.event.updated'),
+                        'deleted' => __('admin.audit.event.deleted'),
                     ]),
                 SelectFilter::make('subject_type')
+                    ->label(__('admin.audit.filter.subject_type'))
                     ->options(fn (): array => Activity::query()
                         ->whereNotNull('subject_type')
                         ->distinct()
                         ->pluck('subject_type', 'subject_type')
-                        ->mapWithKeys(fn (string $cls): array => [$cls => class_basename($cls)])
+                        ->mapWithKeys(fn (string $cls): array => [
+                            $cls => __('admin.audit.subject.' . class_basename($cls), [], null),
+                        ])
                         ->all()),
                 Filter::make('date_range')
+                    ->label(__('admin.audit.filter.date_range'))
                     ->form([
-                        DatePicker::make('from'),
-                        DatePicker::make('until'),
+                        DatePicker::make('from')
+                            ->label(__('admin.audit.filter.from')),
+                        DatePicker::make('until')
+                            ->label(__('admin.audit.filter.until')),
                     ])
                     ->query(fn (Builder $q, array $data): Builder => $q
                         ->when($data['from'] ?? null, fn (Builder $q, string $from): Builder => $q->whereDate('created_at', '>=', $from))

@@ -29,6 +29,24 @@ return [
             'body' => 'Admin actions across the panel will appear here as they happen.',
         ],
         'no_activity_yet' => 'No activity logged for this record yet.',
+        'event' => [
+            'created' => 'Created',
+            'updated' => 'Updated',
+            'deleted' => 'Deleted',
+        ],
+        'filter' => [
+            'event' => 'Event',
+            'subject_type' => 'Subject type',
+            'date_range' => 'Date range',
+            'from' => 'From',
+            'until' => 'Until',
+        ],
+        'subject' => [
+            'User' => 'User',
+            'Player' => 'Player',
+            'Role' => 'Role',
+            'Permission' => 'Permission',
+        ],
     ],
     'tab' => [
         'profile' => 'Profile',
