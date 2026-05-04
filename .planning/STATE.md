@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-11 complete (wave 5; depends on 01-10 satisfied). spatie/laravel-permission ^7.4 installed (v7.4.1) inside web container; published migration customised to use uuid('model_id') matching User UUID-PK (D-002); config/permission.php pins default_guard_name='web' AND User::$guard_name='web' (Pitfall 4 mitigation for plan 12 Filament gate). PermissionSeeder seeds admin-access + audit.view permissions, super-admin role (all permissions), cms-editor placeholder; idempotent. DatabaseSeeder rewired (replaced obsolete User::factory() call that referenced non-existent 'name' field). MakeAdminCommand (trenchwars:make-admin <discord_id>) is idempotent — findOrCreate permission/role + spatie givePermissionTo/assignRole. 6 new Pest tests (3 MakeAdminCommandTest + 3 PermissionSeederTest); full suite 28/28 green; pint clean; phpstan L8 no errors. 12/18 plans done (67%). Resume with /gsd-execute-phase to run plan 01-12 (Filament v3 install) — wave 5, depends on 01-11. Plan 01-09 (Discord OAuth) still pending — wave 7, depends on 01-06+01-08+01-10 (all satisfied)."
-last_updated: "2026-05-04T18:02:21.427Z"
+stopped_at: "Plan 01-12 complete (wave 6; deps 01-07 + 01-11 satisfied). Filament v3.3.50 installed via composer; AdminPanelProvider customised (id=admin, accent #A4262C, dark mode, Inter font, viteTheme to build/filament, no ->login(), Pages\Dashboard kept as default landing); RedirectFilamentAuthToDiscord middleware subclasses Filament's Authenticate so unauthenticated /admin redirects to /auth/discord/redirect; User model implements FilamentUser + HasName (canAccessPanel checks hasPermissionTo('admin-access','web'); getFilamentName returns username). Dual-Tailwind workaround proven: tailwindcss-v3 alias install + separate vite.filament.config.ts (PostCSS+Tailwind v3) + main vite.config.ts pinned to css.postcss:{plugins:[]}. 5 new Pest tests (FilamentBootTest 2 + FilamentPanelAccessTest 3); full suite 40/40 green; pint + phpstan L8 clean. 14/18 plans done (78%). Resume with /gsd-execute-phase to run plan 01-13 (Filament resources for User/Player/Role/Permission) — wave 7, depends on 01-12."
+last_updated: "2026-05-04T18:15:55.421Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 13
-  percent: 72
+  completed_plans: 14
+  percent: 78
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 11 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
+Plan: 12 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
@@ -56,6 +56,7 @@ Progress: [██████░░░░] 56%
 | Phase 01 P08 | 5min | 2 tasks | 19 files |
 | Phase 01 P11 | 4min | 2 tasks | 10 files |
 | Phase 01 P09 | 5min | 3 tasks | 12 files |
+| Phase 01 P12 | 9 | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,10 @@ Plan-level decisions logged during execution:
 - [Phase 01]: AbstractProvider type-narrow on Socialite::driver('discord') so PHPStan L8 can resolve scopes() (Contracts\Provider has no scopes()) — Plan 01-09 deviation Rule 3
 - [Phase 01]: Slug derivation = Str::slug(username) + '-' + 4 random lowercase chars; collision-tolerant for P1 scale — Plan 01-09
 - [Phase 01]: OAuth credentials configured in tests via config()->set rather than phpunit.xml — keeps committed config secret-shape-free — Plan 01-09
+- [Phase ?]: [Phase 01]: Plan 01-12 dual-Tailwind workaround proven — Tailwind v4 main pipeline + Tailwind v3 ('tailwindcss-v3' alias) Filament theme pipeline build cleanly into separate manifests; main vite.config.ts pinned to css.postcss:{plugins:[]} to avoid auto-detected postcss.config.js bleed-over
+- [Phase ?]: [Phase 01]: Plan 01-12 RedirectFilamentAuthToDiscord middleware subclasses Filament's Authenticate::redirectTo() to return route('auth.discord.redirect') — Filament's getLoginUrl() returns null when ->login() is dropped, which would otherwise resolve to the undefined 'login' named route
+- [Phase ?]: [Phase 01]: Plan 01-12 dropped @import vendor/filament/.../theme.css — Vite CSS resolver follows the inner @import 'tailwindcss/base' chain through Tailwind v4 (no /base subpath) and fails. Filament preset's content array still scans Filament blade files; small base-layer overrides inlined directly
+- [Phase ?]: [Phase 01]: Plan 01-12 User implements FilamentUser + HasName; getFilamentName returns username (Discord username — D-002 means schema has no 'name' field; getUserName fallback via HasName)
 
 ### Pending Todos
 
@@ -129,6 +134,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-04T18:01:53.259Z
-Stopped at: Plan 01-11 complete (wave 5; depends on 01-10 satisfied). spatie/laravel-permission ^7.4 installed (v7.4.1) inside web container; published migration customised to use uuid('model_id') matching User UUID-PK (D-002); config/permission.php pins default_guard_name='web' AND User::$guard_name='web' (Pitfall 4 mitigation for plan 12 Filament gate). PermissionSeeder seeds admin-access + audit.view permissions, super-admin role (all permissions), cms-editor placeholder; idempotent. DatabaseSeeder rewired (replaced obsolete User::factory() call that referenced non-existent 'name' field). MakeAdminCommand (trenchwars:make-admin <discord_id>) is idempotent — findOrCreate permission/role + spatie givePermissionTo/assignRole. 6 new Pest tests (3 MakeAdminCommandTest + 3 PermissionSeederTest); full suite 28/28 green; pint clean; phpstan L8 no errors. 12/18 plans done (67%). Resume with /gsd-execute-phase to run plan 01-12 (Filament v3 install) — wave 5, depends on 01-11. Plan 01-09 (Discord OAuth) still pending — wave 7, depends on 01-06+01-08+01-10 (all satisfied).
+Last session: 2026-05-04T18:15:55.419Z
+Stopped at: Plan 01-12 complete (wave 6; deps 01-07 + 01-11 satisfied). Filament v3.3.50 installed via composer; AdminPanelProvider customised (id=admin, accent #A4262C, dark mode, Inter font, viteTheme to build/filament, no ->login(), Pages\Dashboard kept as default landing); RedirectFilamentAuthToDiscord middleware subclasses Filament's Authenticate so unauthenticated /admin redirects to /auth/discord/redirect; User model implements FilamentUser + HasName (canAccessPanel checks hasPermissionTo('admin-access','web'); getFilamentName returns username). Dual-Tailwind workaround proven: tailwindcss-v3 alias install + separate vite.filament.config.ts (PostCSS+Tailwind v3) + main vite.config.ts pinned to css.postcss:{plugins:[]}. 5 new Pest tests (FilamentBootTest 2 + FilamentPanelAccessTest 3); full suite 40/40 green; pint + phpstan L8 clean. 14/18 plans done (78%). Resume with /gsd-execute-phase to run plan 01-13 (Filament resources for User/Player/Role/Permission) — wave 7, depends on 01-12.
 Resume file: None

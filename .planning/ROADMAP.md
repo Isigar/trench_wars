@@ -46,7 +46,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 01-09-PLAN.md — Discord OAuth via Socialite (DiscordController + ProvisionFirstLogin listener + LoginButton CTA)
 - [x] 01-10-PLAN.md — User/Player/PlayerPrivacy models + migrations (UUID PKs, citext email, jsonb bio, soft deletes) + factories
 - [ ] 01-11-PLAN.md — install spatie/laravel-permission v7; PermissionSeeder; trenchwars:make-admin artisan command
-- [ ] 01-12-PLAN.md — install Filament v3 with dual-Tailwind workaround (Pitfall 1); AdminPanelProvider gated by admin-access
+- [x] 01-12-PLAN.md — install Filament v3 with dual-Tailwind workaround (Pitfall 1); AdminPanelProvider gated by admin-access
 - [ ] 01-13-PLAN.md — Filament resources: User, Player (with inline player_privacy), Role, Permission
 - [ ] 01-14-PLAN.md — install spatie/laravel-activitylog v5 (uuid PK migration); per-resource Audit tab + global /admin/audit page
 - [ ] 01-15-PLAN.md — install spatie/laravel-data + typescript-transformer; UserData/PlayerData/PlayerPrivacyData DTOs; trenchwars:typescript-generate command syncing to packages/shared-types
