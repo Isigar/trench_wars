@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Plan 01-11 complete (wave 5; depends on 01-10 satisfied). spatie/laravel-permission ^7.4 installed (v7.4.1) inside web container; published migration customised to use uuid('model_id') matching User UUID-PK (D-002); config/permission.php pins default_guard_name='web' AND User::$guard_name='web' (Pitfall 4 mitigation for plan 12 Filament gate). PermissionSeeder seeds admin-access + audit.view permissions, super-admin role (all permissions), cms-editor placeholder; idempotent. DatabaseSeeder rewired (replaced obsolete User::factory() call that referenced non-existent 'name' field). MakeAdminCommand (trenchwars:make-admin <discord_id>) is idempotent — findOrCreate permission/role + spatie givePermissionTo/assignRole. 6 new Pest tests (3 MakeAdminCommandTest + 3 PermissionSeederTest); full suite 28/28 green; pint clean; phpstan L8 no errors. 12/18 plans done (67%). Resume with /gsd-execute-phase to run plan 01-12 (Filament v3 install) — wave 5, depends on 01-11. Plan 01-09 (Discord OAuth) still pending — wave 7, depends on 01-06+01-08+01-10 (all satisfied)."
-last_updated: "2026-05-04T17:52:47.854Z"
+last_updated: "2026-05-04T18:02:21.427Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 12
-  percent: 67
+  completed_plans: 13
+  percent: 72
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 10 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
+Plan: 11 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
@@ -55,6 +55,7 @@ Progress: [██████░░░░] 56%
 | Phase 01 P07 | 5min | 2 tasks | 12 files |
 | Phase 01 P08 | 5min | 2 tasks | 19 files |
 | Phase 01 P11 | 4min | 2 tasks | 10 files |
+| Phase 01 P09 | 5min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,10 @@ Plan-level decisions logged during execution:
 - [Phase 01]: 01-08 copied Laravel 12 default lang/en/validation.php verbatim into our custody (apps/web/lang/en/validation.php) — ValidationMessagesLocalizedTest asserts validation.{required,unique,email} resolve from our copy not the framework default, so tomorrow's CS/SK locale drop has a complete set of keys to override
 - [Phase 01]: Plan 01-11: pin spatie permission default_guard='web' (config + model) — Pitfall 4 mitigation for plan 12 Filament gate
 - [Phase 01]: Plan 01-11: override Spatie published migration to use uuid('model_id') for both model_has_permissions + model_has_roles (D-002 alignment)
+- [Phase 01]: Native <a href> rather than Inertia <Link> in LoginButton — Inertia XHR would never complete the cross-origin Discord redirect — Plan 01-09
+- [Phase 01]: AbstractProvider type-narrow on Socialite::driver('discord') so PHPStan L8 can resolve scopes() (Contracts\Provider has no scopes()) — Plan 01-09 deviation Rule 3
+- [Phase 01]: Slug derivation = Str::slug(username) + '-' + 4 random lowercase chars; collision-tolerant for P1 scale — Plan 01-09
+- [Phase 01]: OAuth credentials configured in tests via config()->set rather than phpunit.xml — keeps committed config secret-shape-free — Plan 01-09
 
 ### Pending Todos
 
@@ -124,6 +129,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-04T17:52:47.851Z
+Last session: 2026-05-04T18:01:53.259Z
 Stopped at: Plan 01-11 complete (wave 5; depends on 01-10 satisfied). spatie/laravel-permission ^7.4 installed (v7.4.1) inside web container; published migration customised to use uuid('model_id') matching User UUID-PK (D-002); config/permission.php pins default_guard_name='web' AND User::$guard_name='web' (Pitfall 4 mitigation for plan 12 Filament gate). PermissionSeeder seeds admin-access + audit.view permissions, super-admin role (all permissions), cms-editor placeholder; idempotent. DatabaseSeeder rewired (replaced obsolete User::factory() call that referenced non-existent 'name' field). MakeAdminCommand (trenchwars:make-admin <discord_id>) is idempotent — findOrCreate permission/role + spatie givePermissionTo/assignRole. 6 new Pest tests (3 MakeAdminCommandTest + 3 PermissionSeederTest); full suite 28/28 green; pint clean; phpstan L8 no errors. 12/18 plans done (67%). Resume with /gsd-execute-phase to run plan 01-12 (Filament v3 install) — wave 5, depends on 01-11. Plan 01-09 (Discord OAuth) still pending — wave 7, depends on 01-06+01-08+01-10 (all satisfied).
-Resume file: .planning/phases/01-foundations/01-12-PLAN.md
+Resume file: None

@@ -43,7 +43,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 01-06-PLAN.md — install Inertia v2 + Vue 3 + Vite; HandleInertiaRequests middleware; pages/Home.vue placeholder
 - [x] 01-07-PLAN.md — install Tailwind v4 (CSS-first) + Reka UI + Lucide + Fontsource; UI-SPEC token system; Public layout + primitives
 - [x] 01-08-PLAN.md — i18n plumbing (lang/en/*.php + Inertia translations prop + useT composable + NoHardcodedStringsTest)
-- [ ] 01-09-PLAN.md — Discord OAuth via Socialite (DiscordController + ProvisionFirstLogin listener + LoginButton CTA)
+- [x] 01-09-PLAN.md — Discord OAuth via Socialite (DiscordController + ProvisionFirstLogin listener + LoginButton CTA)
 - [x] 01-10-PLAN.md — User/Player/PlayerPrivacy models + migrations (UUID PKs, citext email, jsonb bio, soft deletes) + factories
 - [ ] 01-11-PLAN.md — install spatie/laravel-permission v7; PermissionSeeder; trenchwars:make-admin artisan command
 - [ ] 01-12-PLAN.md — install Filament v3 with dual-Tailwind workaround (Pitfall 1); AdminPanelProvider gated by admin-access
