@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Listeners\ProvisionFirstLogin;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use SocialiteProviders\Discord\Provider;
@@ -29,6 +30,12 @@ class AppServiceProvider extends ServiceProvider
      *
      * Also binds the Login event to ProvisionFirstLogin so first-login user/player/
      * player_privacy creation runs inside DB::transaction (D-018, T-1-03 mitigation).
+     *
+     * Plan 12: redirect unauthenticated panel hits to Discord OAuth (Open Question #4)
+     * by overriding Laravel's `auth` middleware default redirect target. Filament's
+     * AdminPanelProvider drops the built-in ->login() form, so the auth middleware
+     * stack must redirect to /auth/discord/redirect instead of the (non-existent)
+     * `login` named route.
      */
     public function boot(): void
     {
@@ -37,5 +44,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Event::listen(Login::class, ProvisionFirstLogin::class);
+
+        Authenticate::redirectUsing(fn () => route('auth.discord.redirect'));
     }
 }
