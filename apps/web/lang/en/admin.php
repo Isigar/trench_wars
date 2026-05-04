@@ -14,10 +14,25 @@ return [
         'name' => 'Trenchwars',
     ],
     'audit' => [
+        'nav' => 'Audit log',
+        'title' => 'Audit log',
+        'col' => [
+            'created_at' => 'When',
+            'causer' => 'Who',
+            'event' => 'Event',
+            'subject_type' => 'Subject',
+            'subject_id' => 'Subject ID',
+            'description' => 'Description',
+        ],
         'empty' => [
             'heading' => 'No activity yet',
             'body' => 'Admin actions across the panel will appear here as they happen.',
         ],
+        'no_activity_yet' => 'No activity logged for this record yet.',
+    ],
+    'tab' => [
+        'profile' => 'Profile',
+        'audit' => 'Audit log',
     ],
     'user' => [
         'label' => 'User',

@@ -12,6 +12,7 @@ use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
 
 /**
  * Source: .planning/phases/01-foundations/01-13-PLAN.md task 1 + CONTEXT.md "P1 Filament resources".
@@ -41,31 +42,49 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('discord_id')
-                ->label(__('admin.user.fields.discord_id'))
-                ->disabled()
-                ->dehydrated(false),
-            Forms\Components\TextInput::make('username')
-                ->label(__('admin.user.fields.username'))
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('email')
-                ->label(__('admin.user.fields.email'))
-                ->email()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('avatar_url')
-                ->label(__('admin.user.fields.avatar_url'))
-                ->url()
-                ->maxLength(2048),
-            Forms\Components\Select::make('locale')
-                ->label(__('admin.user.fields.locale'))
-                ->options(self::localeOptions())
-                ->default('en')
-                ->required(),
-            Forms\Components\DateTimePicker::make('last_login_at')
-                ->label(__('admin.user.fields.last_login_at'))
-                ->disabled()
-                ->dehydrated(false),
+            Forms\Components\Tabs::make('user_tabs')
+                ->tabs([
+                    Forms\Components\Tabs\Tab::make(__('admin.tab.profile'))
+                        ->icon('heroicon-o-user')
+                        ->schema([
+                            Forms\Components\TextInput::make('discord_id')
+                                ->label(__('admin.user.fields.discord_id'))
+                                ->disabled()
+                                ->dehydrated(false),
+                            Forms\Components\TextInput::make('username')
+                                ->label(__('admin.user.fields.username'))
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('email')
+                                ->label(__('admin.user.fields.email'))
+                                ->email()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('avatar_url')
+                                ->label(__('admin.user.fields.avatar_url'))
+                                ->url()
+                                ->maxLength(2048),
+                            Forms\Components\Select::make('locale')
+                                ->label(__('admin.user.fields.locale'))
+                                ->options(self::localeOptions())
+                                ->default('en')
+                                ->required(),
+                            Forms\Components\DateTimePicker::make('last_login_at')
+                                ->label(__('admin.user.fields.last_login_at'))
+                                ->disabled()
+                                ->dehydrated(false),
+                        ]),
+
+                    Forms\Components\Tabs\Tab::make(__('admin.tab.audit'))
+                        ->icon('heroicon-o-archive-box')
+                        ->schema([
+                            Forms\Components\Placeholder::make('audit_log')
+                                ->label('')
+                                ->content(fn ($record): View => view('filament.partials.audit-tab', [
+                                    'subject' => $record,
+                                ])),
+                        ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 

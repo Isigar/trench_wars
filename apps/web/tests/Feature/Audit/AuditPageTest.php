@@ -17,7 +17,7 @@ use Spatie\Activitylog\Models\Activity;
 beforeEach(function (): void {
     $this->seed(PermissionSeeder::class);
     $this->admin = User::factory()->create();
-    $this->admin->givePermissionTo('admin-access');
+    $this->admin->givePermissionTo(['admin-access', 'audit.view']);
     $this->actingAs($this->admin);
 });
 

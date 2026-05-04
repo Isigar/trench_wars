@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Audit;
 use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\PlayerResource;
 use App\Filament\Resources\RoleResource;
@@ -56,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->pages([
                 Dashboard::class,
-                // Plan 14 registers the Audit page.
+                Audit::class,
             ])
             ->middleware([
                 EncryptCookies::class,
