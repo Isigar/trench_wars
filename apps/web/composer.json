@@ -13,7 +13,9 @@
         "laravel/socialite": "^5.27",
         "laravel/tinker": "^2.10.1",
         "socialiteproviders/discord": "^4.2",
+        "spatie/laravel-data": "^4.22",
         "spatie/laravel-permission": "^7.4",
+        "spatie/laravel-typescript-transformer": "^3.0",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
