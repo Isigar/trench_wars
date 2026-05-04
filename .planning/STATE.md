@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-08 complete (wave 6; depends on 01-07 which was satisfied). i18n end-to-end live: PHP arrays-only EN bundle at apps/web/lang/en/{auth,common,admin,home,validation}.php with full UI-SPEC Copywriting Contract keys; config/i18n.php declares available_locales=['en'], resolution_order, shared_namespaces; HandleInertiaRequests::share() exposes locale (app()->getLocale()) + flat dot-keyed translations dictionary built from the 5 namespaces; in-house useT() composable at apps/web/resources/js/composables/useT.ts resolves from usePage().props.translations with :?param interpolation + dev-only missing-key warn; PageProps types updated. Wordmark / PublicLayout (skip-link + footer) / Home (tagline + subcopy + button + Head title) / ThemeToggle (Rule 2 — aria-label) all routed through t(). Three Pest tests under tests/Feature/I18n/: TranslationsSharedTest, NoHardcodedStringsTest (permanent CI gate per D-013), ValidationMessagesLocalizedTest. laravel-vue-i18n@^2.8 installed but unwired (sidesteps RESEARCH Pitfall 8 SSR async-glob trap; kept for Phase 2+ client-side use). Pint + PHPStan L8 + Vite build all green; full Pest suite 22/22 (15 prior + 7 new I18n). 11/18 plans done. Resume with /gsd-execute-phase to run plan 01-09 (Discord Socialite OAuth) — sequential next, depends on 01-06 + 01-08 + 01-10. Note 01-09 also depends on 01-10 (User model, wave 7) which is not done — runner should pick 01-10 next or 01-11 depending on wave sequencing."
-last_updated: "2026-05-04T17:45:10.758Z"
+stopped_at: "Plan 01-11 complete (wave 5; depends on 01-10 satisfied). spatie/laravel-permission ^7.4 installed (v7.4.1) inside web container; published migration customised to use uuid('model_id') matching User UUID-PK (D-002); config/permission.php pins default_guard_name='web' AND User::$guard_name='web' (Pitfall 4 mitigation for plan 12 Filament gate). PermissionSeeder seeds admin-access + audit.view permissions, super-admin role (all permissions), cms-editor placeholder; idempotent. DatabaseSeeder rewired (replaced obsolete User::factory() call that referenced non-existent 'name' field). MakeAdminCommand (trenchwars:make-admin <discord_id>) is idempotent — findOrCreate permission/role + spatie givePermissionTo/assignRole. 6 new Pest tests (3 MakeAdminCommandTest + 3 PermissionSeederTest); full suite 28/28 green; pint clean; phpstan L8 no errors. 12/18 plans done (67%). Resume with /gsd-execute-phase to run plan 01-12 (Filament v3 install) — wave 5, depends on 01-11. Plan 01-09 (Discord OAuth) still pending — wave 7, depends on 01-06+01-08+01-10 (all satisfied)."
+last_updated: "2026-05-04T17:52:47.854Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 11
-  percent: 61
+  completed_plans: 12
+  percent: 67
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 9 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
+Plan: 10 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
@@ -54,6 +54,7 @@ Progress: [██████░░░░] 56%
 *Updated after each plan completion*
 | Phase 01 P07 | 5min | 2 tasks | 12 files |
 | Phase 01 P08 | 5min | 2 tasks | 19 files |
+| Phase 01 P11 | 4min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,8 @@ Plan-level decisions logged during execution:
 - [Phase 01]: 01-08 made Inertia translations prop a flat dot-keyed Record<string,string> rather than a nested tree — gives useT an O(1) lookup with no path parser; middleware's flatten() helper recursively walks the 5 namespaces (auth/common/admin/home/validation) into composite keys like auth.discord.button_label
 - [Phase 01]: 01-08 localised ThemeToggle.vue aria-label via Rule 2 deviation — the NoHardcodedStringsTest scope is <template> only so <script setup> literals would have escaped, but D-013 ('every UI string flows through t() / __()') is unambiguous and aria-label is a UI string; added common.theme.switch_to_{light,dark} keys
 - [Phase 01]: 01-08 copied Laravel 12 default lang/en/validation.php verbatim into our custody (apps/web/lang/en/validation.php) — ValidationMessagesLocalizedTest asserts validation.{required,unique,email} resolve from our copy not the framework default, so tomorrow's CS/SK locale drop has a complete set of keys to override
+- [Phase 01]: Plan 01-11: pin spatie permission default_guard='web' (config + model) — Pitfall 4 mitigation for plan 12 Filament gate
+- [Phase 01]: Plan 01-11: override Spatie published migration to use uuid('model_id') for both model_has_permissions + model_has_roles (D-002 alignment)
 
 ### Pending Todos
 
@@ -121,6 +124,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-04T17:45:10.756Z
-Stopped at: Plan 01-08 complete (wave 6; depends on 01-07 which was satisfied). i18n end-to-end live: PHP arrays-only EN bundle at apps/web/lang/en/{auth,common,admin,home,validation}.php with full UI-SPEC Copywriting Contract keys; config/i18n.php declares available_locales=['en'], resolution_order, shared_namespaces; HandleInertiaRequests::share() exposes locale (app()->getLocale()) + flat dot-keyed translations dictionary built from the 5 namespaces; in-house useT() composable at apps/web/resources/js/composables/useT.ts resolves from usePage().props.translations with :?param interpolation + dev-only missing-key warn; PageProps types updated. Wordmark / PublicLayout (skip-link + footer) / Home (tagline + subcopy + button + Head title) / ThemeToggle (Rule 2 — aria-label) all routed through t(). Three Pest tests under tests/Feature/I18n/: TranslationsSharedTest, NoHardcodedStringsTest (permanent CI gate per D-013), ValidationMessagesLocalizedTest. laravel-vue-i18n@^2.8 installed but unwired (sidesteps RESEARCH Pitfall 8 SSR async-glob trap; kept for Phase 2+ client-side use). Pint + PHPStan L8 + Vite build all green; full Pest suite 22/22 (15 prior + 7 new I18n). 11/18 plans done. Resume with /gsd-execute-phase to run plan 01-09 (Discord Socialite OAuth) — sequential next, depends on 01-06 + 01-08 + 01-10. Note 01-09 also depends on 01-10 (User model, wave 7) which is not done — runner should pick 01-10 next or 01-11 depending on wave sequencing.
-Resume file: None
+Last session: 2026-05-04T17:52:47.851Z
+Stopped at: Plan 01-11 complete (wave 5; depends on 01-10 satisfied). spatie/laravel-permission ^7.4 installed (v7.4.1) inside web container; published migration customised to use uuid('model_id') matching User UUID-PK (D-002); config/permission.php pins default_guard_name='web' AND User::$guard_name='web' (Pitfall 4 mitigation for plan 12 Filament gate). PermissionSeeder seeds admin-access + audit.view permissions, super-admin role (all permissions), cms-editor placeholder; idempotent. DatabaseSeeder rewired (replaced obsolete User::factory() call that referenced non-existent 'name' field). MakeAdminCommand (trenchwars:make-admin <discord_id>) is idempotent — findOrCreate permission/role + spatie givePermissionTo/assignRole. 6 new Pest tests (3 MakeAdminCommandTest + 3 PermissionSeederTest); full suite 28/28 green; pint clean; phpstan L8 no errors. 12/18 plans done (67%). Resume with /gsd-execute-phase to run plan 01-12 (Filament v3 install) — wave 5, depends on 01-11. Plan 01-09 (Discord OAuth) still pending — wave 7, depends on 01-06+01-08+01-10 (all satisfied).
+Resume file: .planning/phases/01-foundations/01-12-PLAN.md
