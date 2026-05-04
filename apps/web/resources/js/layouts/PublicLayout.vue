@@ -1,11 +1,16 @@
-<!-- Source: 01-UI-SPEC.md § Layout primitives + § Page chrome diagram. -->
+<!-- Source: 01-UI-SPEC.md § Layout primitives + § Page chrome diagram.
+     Plan 08 routes the skip-link label and footer copy through `t()` per D-013. -->
 <script setup lang="ts">
-import Wordmark from '@/components/Wordmark.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import Wordmark from '@/components/Wordmark.vue';
+import { useT } from '@/composables/useT';
+
+const { t } = useT();
+const year = new Date().getFullYear();
 </script>
 
 <template>
-    <a href="#main" class="skip-link">Skip to content</a>
+    <a href="#main" class="skip-link">{{ t('common.actions.skip_to_content') }}</a>
 
     <div class="min-h-screen flex flex-col">
         <header
@@ -34,7 +39,7 @@ import ThemeToggle from '@/components/ThemeToggle.vue';
         <footer class="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
             <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 text-sm text-[var(--color-text-muted)]">
                 <slot name="footer">
-                    &copy; {{ new Date().getFullYear() }} Trenchwars
+                    {{ `© ${year} ${t('common.brand.name')}` }}
                 </slot>
             </div>
         </footer>
