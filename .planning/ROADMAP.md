@@ -41,7 +41,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 01-04-PLAN.md — composer create-project Laravel 12 in apps/web; configure pgsql/redis/Discord env; Postgres extensions migration
 - [x] 01-05-PLAN.md — install Pest 4 + Larastan L8 + Pint + Debugbar; tests/Pest.php + BootHealthcheckTest smoke
 - [x] 01-06-PLAN.md — install Inertia v2 + Vue 3 + Vite; HandleInertiaRequests middleware; pages/Home.vue placeholder
-- [ ] 01-07-PLAN.md — install Tailwind v4 (CSS-first) + Reka UI + Lucide + Fontsource; UI-SPEC token system; Public layout + primitives
+- [x] 01-07-PLAN.md — install Tailwind v4 (CSS-first) + Reka UI + Lucide + Fontsource; UI-SPEC token system; Public layout + primitives
 - [ ] 01-08-PLAN.md — i18n plumbing (lang/en/*.php + Inertia translations prop + useT composable + NoHardcodedStringsTest)
 - [ ] 01-09-PLAN.md — Discord OAuth via Socialite (DiscordController + ProvisionFirstLogin listener + LoginButton CTA)
 - [x] 01-10-PLAN.md — User/Player/PlayerPrivacy models + migrations (UUID PKs, citext email, jsonb bio, soft deletes) + factories
@@ -51,7 +51,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 01-14-PLAN.md — install spatie/laravel-activitylog v5 (uuid PK migration); per-resource Audit tab + global /admin/audit page
 - [ ] 01-15-PLAN.md — install spatie/laravel-data + typescript-transformer; UserData/PlayerData/PlayerPrivacyData DTOs; trenchwars:typescript-generate command syncing to packages/shared-types
 - [x] 01-16-PLAN.md — GitHub Actions matrix CI (web + bot + rcon-worker + shared-types) with path filters
-- [ ] 01-17-PLAN.md — per-service Railway config (nixpacks.toml + railway.json) + RAILWAY-DEPLOY.md walkthrough
+- [x] 01-17-PLAN.md — per-service Railway config (nixpacks.toml + railway.json) + RAILWAY-DEPLOY.md walkthrough
 - [ ] 01-18-PLAN.md — [BLOCKING] migrate --force on fresh DB + full quality gates + manual smoke (Filament dual-Tailwind + Discord OAuth real-app)
 **UI hint**: yes
 

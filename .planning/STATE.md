@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 plan 01-17 complete (per-service Railway nixpacks.toml + railway.json for web/bot/rcon-worker + 204-line RAILWAY-DEPLOY.md operator runbook + 19-line documentation-only railway.toml stub at repo root). Closes out a previous out-of-band 01-17 commit pair (2668a31 + be8cbdb) by adding the missing SUMMARY.md retroactively. 9 plans complete (01-01..06, 10, 16, 17). Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround for Filament v3) — sequential next plan in wave 5.
-last_updated: "2026-05-04T00:00:00Z"
-last_activity: 2026-05-04 -- Plan 01-17 retroactive summary committed (Railway per-service deploy config + RAILWAY-DEPLOY.md walkthrough). Resuming Phase 1 from plan 01-07.
+stopped_at: "Plan 01-16 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). 4 GitHub Actions workflows authored under `.github/workflows/`: `web.yml` (PHP 8.4 via shivammathur/setup-php@v2 with intl/pdo_pgsql/pgsql/redis/gd/bcmath/zip/mbstring/pcntl/exif/opcache extensions; postgres:16-alpine + redis:7-alpine service containers; psql step creates uuid-ossp/pgcrypto/citext extensions; Composer cache; Pint --test, PHPStan L8, Pest --parallel quality gates). `bot.yml` + `rcon-worker.yml` (Node 22 + pnpm 9 via pnpm/action-setup@v4 + actions/setup-node@v4 with cache: pnpm; pnpm install --no-frozen-lockfile workspace then typecheck + lint + test via --filter). `shared-types.yml` (tsc --noEmit only). All 4 path-filtered (apps/{name}/** + packages/shared-types/** + workspace files + workflow file itself). Triggers on push (main/develop/master) + pull_request. Bot + rcon-worker now have `vitest.config.ts` (node env, tests/**/*.test.ts), `eslint.config.mjs` (ESLint v9 flat config with @typescript-eslint parser/plugin), `tests/skeleton.test.ts` (imports TrenchwarsApiContract from @trenchwars/shared-types — UserData swap deferred to plan 01-15), and updated package.json with vitest@^2/eslint@^9/@typescript-eslint@^8 devDeps + scripts (test: `vitest run`, lint: `eslint .`). YAML parses pass; all plan acceptance grep checks pass. CI verification surface is the first GitHub push. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next."
+last_updated: "2026-05-04T17:33:00.871Z"
+last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 9
-  percent: 50
+  completed_plans: 10
+  percent: 56
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 7 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied)
-Status: Executing Phase 01 (9/18 plans complete — 01..06 + 10 + 16 + 17)
-Last activity: 2026-05-04 -- Plan 01-17 retroactive summary (Railway per-service deploy config + RAILWAY-DEPLOY.md walkthrough). Resuming from plan 01-07.
+Plan: 8 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied)
+Status: Ready to execute
+Last activity: 2026-05-04
 
 Progress: [█████░░░░░] 50%
 
@@ -52,6 +52,7 @@ Progress: [█████░░░░░] 50%
 - Trend: 01-16 was the cleanest execution yet — pure YAML + config-file authoring with no install, no runtime verification (CI is the verification surface), 4 deviations all easily caught at write-time (skeleton-test type swap, pnpm flag syntax, master branch trigger, expanded Pest env)
 
 *Updated after each plan completion*
+| Phase 01 P07 | 5min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,10 @@ Plan-level decisions logged during execution:
 - 01-16 used `pnpm install --no-frozen-lockfile` (not `--frozen-lockfile=false` from plan; that's invalid pnpm CLI syntax) (Rule 3 — blocking; canonical pnpm 9 flag)
 - 01-16 added `master` to `on.push.branches` in all 4 workflows alongside `[main, develop]` — repo currently on `master` (Rule 2 — without it CI never runs on the active branch)
 - 01-16 expanded Pest env in web.yml to include DB_CONNECTION/DB_PORT/DB_DATABASE/DB_USERNAME/DB_PASSWORD/REDIS_PORT instead of the plan's minimal DB_HOST/REDIS_HOST — guarantees Pest targets the postgres service container regardless of .env.example defaults (Rule 2 — RefreshDatabase correctness)
+- [Phase ?]: Tailwind v4 CSS-first authoring (no tailwind.config.js); semantic tokens declared in @theme + :root + [data-theme=light]
+- [Phase ?]: Dark default at both <html data-theme=dark> SSR root and useTheme ref initial value; localStorage('trenchwars.theme') persistence
+- [Phase ?]: Components reference semantic tokens via var(--color-*); no raw hex outside app.css :root/[data-theme=*] blocks
+- [Phase ?]: IconButton 44x44 mobile / 36x36 desktop touch target (UI-SPEC); aria-label required prop
 
 ### Pending Todos
 
@@ -111,6 +116,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-03 20:57Z
+Last session: 2026-05-04T17:32:32.479Z
 Stopped at: Plan 01-16 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). 4 GitHub Actions workflows authored under `.github/workflows/`: `web.yml` (PHP 8.4 via shivammathur/setup-php@v2 with intl/pdo_pgsql/pgsql/redis/gd/bcmath/zip/mbstring/pcntl/exif/opcache extensions; postgres:16-alpine + redis:7-alpine service containers; psql step creates uuid-ossp/pgcrypto/citext extensions; Composer cache; Pint --test, PHPStan L8, Pest --parallel quality gates). `bot.yml` + `rcon-worker.yml` (Node 22 + pnpm 9 via pnpm/action-setup@v4 + actions/setup-node@v4 with cache: pnpm; pnpm install --no-frozen-lockfile workspace then typecheck + lint + test via --filter). `shared-types.yml` (tsc --noEmit only). All 4 path-filtered (apps/{name}/** + packages/shared-types/** + workspace files + workflow file itself). Triggers on push (main/develop/master) + pull_request. Bot + rcon-worker now have `vitest.config.ts` (node env, tests/**/*.test.ts), `eslint.config.mjs` (ESLint v9 flat config with @typescript-eslint parser/plugin), `tests/skeleton.test.ts` (imports TrenchwarsApiContract from @trenchwars/shared-types — UserData swap deferred to plan 01-15), and updated package.json with vitest@^2/eslint@^9/@typescript-eslint@^8 devDeps + scripts (test: `vitest run`, lint: `eslint .`). YAML parses pass; all plan acceptance grep checks pass. CI verification surface is the first GitHub push. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next.
-Resume file: .planning/phases/01-foundations/01-07-PLAN.md
+Resume file: None

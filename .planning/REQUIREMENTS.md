@@ -38,11 +38,11 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### Internationalisation
 
-- [ ] **REQ-constraint-en-launch-i18n-ready**: All UI strings via `__()` / `t()`; translatable models use jsonb keyed by locale; adding a locale is config + content task. English at launch; multi-language possible without refactor. (D-013)
+- [x] **REQ-constraint-en-launch-i18n-ready**: All UI strings via `__()` / `t()`; translatable models use jsonb keyed by locale; adding a locale is config + content task. English at launch; multi-language possible without refactor. (D-013)
 
 ### Hosting & Constraints
 
-- [ ] **REQ-constraint-railway-deploy**: Five-service Railway topology (web, worker, bot, rcon-worker, db, redis); secrets in Railway env groups; `.env.example` documents shape. Not optimised for self-hosting elsewhere round 1. (D-014)
+- [x] **REQ-constraint-railway-deploy**: Five-service Railway topology (web, worker, bot, rcon-worker, db, redis); secrets in Railway env groups; `.env.example` documents shape. Not optimised for self-hosting elsewhere round 1. (D-014)
 - [ ] **REQ-constraint-single-guild**: Single Discord guild for the entire league. (Reinforces REQ-tenancy-single-guild and D-003.)
 
 ### Round-1 Acceptance Gates
@@ -107,8 +107,8 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REQ-constraint-railway-deploy | Phase 1 | Pending |
-| REQ-constraint-en-launch-i18n-ready | Phase 1 | Pending |
+| REQ-constraint-railway-deploy | Phase 1 | Complete |
+| REQ-constraint-en-launch-i18n-ready | Phase 1 | Complete |
 | REQ-tenancy-single-guild | Phase 2 | Pending |
 | REQ-constraint-single-guild | Phase 2 | Pending |
 | REQ-tenancy-multi-clan | Phase 2 | Pending |
