@@ -82,6 +82,32 @@ it('does NOT create duplicate rows on re-login (idempotent)', function (): void 
     expect(PlayerPrivacy::count())->toBe(1);
 });
 
+it('absorbs concurrent first-login race without surfacing 500 (WR-01)', function (): void {
+    // Real concurrent HTTP would need a parallel test runner; we simulate the
+    // race deterministically by invoking the listener twice on a user whose
+    // `player` relation is freshly null in memory both times. Without the
+    // try/catch around player()->create(), the second invocation throws
+    // UniqueConstraintViolationException and bubbles out of Auth::login.
+    $user = User::factory()->create(['discord_id' => '777111222']);
+
+    $listener = new \App\Listeners\ProvisionFirstLogin;
+
+    // First invocation creates player + privacy.
+    $listener->handle(new \Illuminate\Auth\Events\Login('web', $user, false));
+    expect(Player::where('user_id', $user->id)->count())->toBe(1);
+
+    // Force the second invocation to *also* see player === null (simulates
+    // two web workers racing on the same User row before either has committed).
+    $user->setRelation('player', null);
+
+    // Should NOT throw — the unique violation is the expected outcome of the
+    // race, and the listener treats it as idempotent success.
+    $listener->handle(new \Illuminate\Auth\Events\Login('web', $user, false));
+
+    // Still exactly one player row — DB UNIQUE held the line.
+    expect(Player::where('user_id', $user->id)->count())->toBe(1);
+});
+
 it('updates last_login_at on every login', function (): void {
     Socialite::shouldReceive('user')->andReturn(fakeDiscordUser('999000444'));
 
