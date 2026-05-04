@@ -10,8 +10,12 @@ use Tighten\Ziggy\Ziggy;
 
 /**
  * Source: 01-RESEARCH.md Pattern 5 (i18n end-to-end via Inertia shared props).
- * Note: `locale` and `translations` props are added in plan 08 (i18n plumbing).
- *       This plan ships auth + flash + ziggy props only.
+ *
+ * Plan 08 adds the `locale` and `translations` shared props on top of the
+ * auth + flash + ziggy props from plan 06. The four UI namespaces declared in
+ * `config/i18n.php` (`auth`, `common`, `admin`, `home`, `validation`) are loaded
+ * via `trans()` and flat-merged into a dot-keyed dictionary so Vue's `t()` helper
+ * can resolve `auth.discord.button_label` directly off `usePage().props.translations`.
  */
 class HandleInertiaRequests extends Middleware
 {
@@ -38,6 +42,9 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'auth' => fn () => $request->user()?->only(['id', 'discord_id', 'username', 'avatar_url']),
 
+            'locale' => fn () => app()->getLocale(),
+            'translations' => fn () => $this->translations(app()->getLocale()),
+
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
@@ -48,5 +55,46 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
         ]);
+    }
+
+    /**
+     * Build the flat namespace→key dictionary from PHP lang files.
+     *
+     * Output shape: `{ 'auth.discord.button_label': 'Log in with Discord', ... }`.
+     *
+     * @return array<string, string>
+     */
+    protected function translations(string $locale): array
+    {
+        /** @var array<int, string> $namespaces */
+        $namespaces = (array) config('i18n.shared_namespaces', ['auth', 'common', 'admin', 'home', 'validation']);
+
+        $flat = [];
+        foreach ($namespaces as $ns) {
+            $values = trans($ns, [], $locale);
+            if (is_array($values)) {
+                $this->flatten($flat, $ns, $values);
+            }
+        }
+
+        return $flat;
+    }
+
+    /**
+     * Recursively flatten a nested translations array into a dot-keyed dictionary.
+     *
+     * @param  array<string, string>  $out
+     * @param  array<string, mixed>  $values
+     */
+    protected function flatten(array &$out, string $prefix, array $values): void
+    {
+        foreach ($values as $key => $value) {
+            $compositeKey = $prefix === '' ? (string) $key : $prefix . '.' . $key;
+            if (is_array($value)) {
+                $this->flatten($out, $compositeKey, $value);
+            } else {
+                $out[$compositeKey] = (string) $value;
+            }
+        }
     }
 }

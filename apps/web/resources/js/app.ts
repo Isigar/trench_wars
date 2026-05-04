@@ -1,6 +1,9 @@
 // Source: 01-RESEARCH.md Pattern 2 (createInertiaApp + ZiggyVue).
-// laravel-vue-i18n plugin is wired in plan 08.
-// Tailwind import is wired in plan 07.
+//
+// Plan 08 wires i18n via the in-house `useT()` composable that reads from Inertia's
+// shared `translations` prop — no Vue plugin install needed. `laravel-vue-i18n` is
+// installed for forward use (Phase 2+ client-side validation rendering) but not wired
+// here, which sidesteps the RESEARCH Pitfall 8 SSR async-glob trap.
 
 import './bootstrap';
 import '../css/app.css';
@@ -8,7 +11,6 @@ import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h, type DefineComponent } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
-// import { i18nVue } from 'laravel-vue-i18n'; // ← plan 08
 
 const appName = (import.meta.env.VITE_APP_NAME as string | undefined) ?? 'Trenchwars';
 
@@ -26,7 +28,6 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            // .use(i18nVue, { ... }) // ← plan 08
             .mount(el);
     },
     progress: {
