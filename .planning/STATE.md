@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 plan 01-16 complete (out-of-sequence wave-4 plan; depends only on 01-05 — already satisfied). 4 GitHub Actions workflows live (.github/workflows/{web,bot,rcon-worker,shared-types}.yml) with path filters per app + postgres:16-alpine + redis:7-alpine service containers for web (with extension-creation step) + Pint --test + PHPStan L8 + Pest --parallel + Composer cache. Bot + rcon-worker have vitest@^2 + eslint@^9 (flat config) + skeleton tests importing TrenchwarsApiContract from @trenchwars/shared-types (UserData swap deferred to plan 01-15). Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround) — sequential next plan.
-last_updated: "2026-05-03T20:57:31Z"
-last_activity: 2026-05-03 -- Plan 01-16 complete (GitHub Actions CI matrix + vitest/eslint scaffolding for bot + rcon-worker)
+stopped_at: Phase 1 plan 01-17 complete (per-service Railway nixpacks.toml + railway.json for web/bot/rcon-worker + 204-line RAILWAY-DEPLOY.md operator runbook + 19-line documentation-only railway.toml stub at repo root). Closes out a previous out-of-band 01-17 commit pair (2668a31 + be8cbdb) by adding the missing SUMMARY.md retroactively. 9 plans complete (01-01..06, 10, 16, 17). Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + dual-Tailwind workaround for Filament v3) — sequential next plan in wave 5.
+last_updated: "2026-05-04T00:00:00Z"
+last_activity: 2026-05-04 -- Plan 01-17 retroactive summary committed (Railway per-service deploy config + RAILWAY-DEPLOY.md walkthrough). Resuming Phase 1 from plan 01-07.
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 8
-  percent: 44
+  completed_plans: 9
+  percent: 50
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 7 of 18 (sequential pointer; plans 01-10 + 01-16 completed out-of-sequence — both wave-4 with deps already satisfied)
-Status: Executing Phase 01 (8/18 plans complete — 01..06 + 10 + 16)
-Last activity: 2026-05-03 -- Plan 01-16 complete (GitHub Actions CI matrix + vitest/eslint scaffolding for bot + rcon-worker)
+Plan: 7 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied)
+Status: Executing Phase 01 (9/18 plans complete — 01..06 + 10 + 16 + 17)
+Last activity: 2026-05-04 -- Plan 01-17 retroactive summary (Railway per-service deploy config + RAILWAY-DEPLOY.md walkthrough). Resuming from plan 01-07.
 
-Progress: [████░░░░░░] 44%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
