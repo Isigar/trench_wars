@@ -1,0 +1,51 @@
+/* Source: 01-RESEARCH.md Pitfall 1 + 01-UI-SPEC.md § Filament panel & gating
+   ("placeholder accent #A4262C on muted olive") + filamentphp.com/docs/3.x/panels/themes.
+   Tailwind v3 directives — required by Filament v3 theme compiler.
+
+   Note: we deliberately do NOT `@import 'vendor/filament/.../theme.css'`. Vite's
+   CSS resolver runs before PostCSS and tries to resolve the inner
+   `@import 'tailwindcss/base'` chain that Filament's vendor theme.css emits;
+   that bare specifier resolves to Tailwind v4 in our project (no /base subpath)
+   and the build fails. The Filament tailwind preset already includes Filament's
+   blade content paths in its `content` array, so all Filament classes are
+   extracted by Tailwind v3 + autoprefixer scanning the blade templates directly.
+   The handful of vendor scroll-margin overrides we need are inlined below. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Filament vendor base-layer overrides (cf. vendor/filament/filament/resources/css/base.css). */
+@layer base {
+    :root.dark {
+        color-scheme: dark;
+    }
+
+    [data-field-wrapper] {
+        scroll-margin-top: 8rem;
+    }
+}
+
+/* Bridge UI-SPEC tokens into the Filament panel via CSS custom properties.
+   The dark/light mode toggling on the public site uses [data-theme=...]. Filament has
+   its own dark-class strategy; we keep both in lockstep by re-declaring our palette
+   variables on Filament's expected selectors. */
+
+:root {
+    /* Filament inherits the same trench palette as the public site — see app.css :root. */
+    --color-bg: #1A1B16;
+    --color-surface: #232518;
+    --color-surface-elevated: #2C2E20;
+    --color-border: #3A3D2C;
+    --color-text: #EDEAD9;
+    --color-text-muted: #A8A693;
+    --color-accent: #A4262C;
+    --color-accent-fg: #FFFFFF;
+    --color-focus-ring: #C7A23A;
+}
+
+.fi-body,
+.fi-main {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
