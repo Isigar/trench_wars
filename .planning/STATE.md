@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap)."
-last_updated: "2026-05-04T18:26:07.205Z"
+last_updated: "2026-05-04T18:28:50.786Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 15
-  percent: 83
+  completed_plans: 16
+  percent: 89
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 13 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
+Plan: 14 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
@@ -58,6 +58,7 @@ Progress: [██████░░░░] 56%
 | Phase 01 P09 | 5min | 3 tasks | 12 files |
 | Phase 01 P12 | 9 | 2 tasks | 17 files |
 | Phase 01 P13 | 6min | 2 tasks tasks | 18 files files |
+| Phase 01 P15 | 8min | 2 tasks tasks | 19 files files |
 
 ## Accumulated Context
 
@@ -118,6 +119,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: 01-13: RoleResource pins guard_name='web' twice (Form Select disabled+dehydrated AND CreateRole::mutateFormDataBeforeCreate) — Pitfall 4 defence-in-depth.
 - [Phase ?]: 01-13: PermissionResource is List+Edit only (no Create) — admin grants permissions via PermissionSeeder + trenchwars:make-admin (CONTEXT.md), so surfacing Create in Filament would let admins mint unreferenced permission strings.
 - [Phase ?]: 01-13: UserResource locale Select sourced from config('i18n.available_locales') via private localeOptions() helper — typed @var array<int,string> annotation needed because raw config() return is mixed (PHPStan L8 fix, Rule 1).
+- [Phase ?]: Plan 01-15: spatie/laravel-typescript-transformer v3.0 dropped config/typescript-transformer.php; configure via subclass of TypeScriptTransformerApplicationServiceProvider with configure(TypeScriptTransformerConfigFactory)
+- [Phase ?]: Plan 01-15: composer require -W needed; phpdocumentor/reflection-docblock locked at 6.0.3 had to downgrade to 5.6.7 for phpdocumentor/reflection ^6.1 (Rule 3 deviation)
+- [Phase ?]: Plan 01-15: GlobalNamespaceWriter path is relative to outputDirectory — use bare filename ('api.d.ts') + outputDirectory=resources/js/types so the writer doesn't double-prefix
+- [Phase ?]: Plan 01-15: typescript:install register-check (Str::contains for fully-qualified namespace) misreads bootstrap/providers.php's use-imports format and reports 'already registered' without writing the entry — manual registration required
+- [Phase ?]: Plan 01-15: cross-package shared-types sync via in-container artisan command + extra docker bind mount (./packages/shared-types -> /repo/packages/shared-types on web service); host-side packages/shared-types/scripts/sync-types.sh as fallback for environments without the bind mount
+- [Phase ?]: Plan 01-15: packages/shared-types/src/index.ts uses '/// <reference path>' + type aliases ('export type UserData = App.Data.UserData') so consumers can import without spelling out the ambient App.Data.* namespace
 
 ### Pending Todos
 
@@ -139,6 +146,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-04T18:26:07.203Z
+Last session: 2026-05-04T18:28:50.782Z
 Stopped at: Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap).
-Resume file: .planning/phases/01-foundations/01-foundations-13-SUMMARY.md
+Resume file: None
