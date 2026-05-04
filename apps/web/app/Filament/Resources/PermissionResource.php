@@ -43,16 +43,22 @@ class PermissionResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            // WR-05 (01-REVIEW.md): permission `name` MUST be read-only via the
+            // admin UI. Codebase paths (User::canAccessPanel, MakeAdminCommand,
+            // FilamentPanelAccessTest, etc.) hard-code the string `admin-access`
+            // — renaming via Filament would lock every existing admin out of
+            // the panel until someone hand-edits the DB or re-runs the seeder.
+            // Permissions are a developer concern; admins use roles to grant.
             Forms\Components\TextInput::make('name')
                 ->label(__('admin.permission.fields.name'))
-                ->required()
-                ->unique(ignoreRecord: true)
+                ->disabled()
+                ->dehydrated(false)
                 ->maxLength(255),
             Forms\Components\Select::make('guard_name')
                 ->label(__('admin.permission.fields.guard_name'))
                 ->options(['web' => 'web'])
-                ->default('web')
-                ->required(),
+                ->disabled()
+                ->dehydrated(false),
         ]);
     }
 
