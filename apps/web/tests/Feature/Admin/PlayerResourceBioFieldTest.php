@@ -38,6 +38,10 @@ it('preserves the locale-keyed bio shape across save + reload', function (): voi
 
     $reloaded = $player->fresh();
 
+    // Postgres JSONB does not preserve key insertion order, so compare the
+    // associative contents rather than the exact array order.
     expect($reloaded->bio)->toBeArray();
-    expect($reloaded->bio)->toBe(['en' => 'Hello world', 'cs' => 'Ahoj svete']);
+    expect($reloaded->bio)->toHaveKey('en', 'Hello world');
+    expect($reloaded->bio)->toHaveKey('cs', 'Ahoj svete');
+    expect($reloaded->bio)->toHaveCount(2);
 });
