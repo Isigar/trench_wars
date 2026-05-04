@@ -6,21 +6,16 @@
 import LoginButton from '@/components/LoginButton.vue';
 import { useT } from '@/composables/useT';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import type { AuthUser } from '@/types/inertia';
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-interface AuthUser {
-    id: string;
-    discord_id: string;
-    username: string;
-    avatar_url: string | null;
-}
-
 const { t } = useT();
 const page = usePage();
-const user = computed<AuthUser | null>(
-    () => (page.props.auth as AuthUser | null) ?? null,
-);
+// page.props.auth is typed as AuthUser | null by inertia.d.ts (WR-03 fix).
+// Coalesce undefined → null for safety even though the declared type doesn't
+// include undefined.
+const user = computed<AuthUser | null>(() => page.props.auth ?? null);
 </script>
 
 <template>

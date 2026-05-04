@@ -2,16 +2,21 @@
 // `locale` + `translations` props added in plan 08; flat dot-keyed dictionary built
 // server-side from `lang/en/*.php` and resolved by `useT()`.
 
+// WR-03 (01-REVIEW.md): the previous shape wrapped the user inside an
+// `auth.user` envelope that HandleInertiaRequests::share() never produces.
+// The PHP side returns `$request->user()?->only([...])` — i.e., the user
+// fields directly under `auth`, OR `null`. This declaration now matches.
+
+export interface AuthUser {
+    id: string;
+    discord_id: string;
+    username: string;
+    avatar_url: string | null;
+}
+
 declare module '@inertiajs/core' {
     interface PageProps {
-        auth: {
-            user: {
-                id: string;
-                discord_id: string;
-                username: string;
-                avatar_url: string | null;
-            } | null;
-        };
+        auth: AuthUser | null;
         locale: string;
         translations: Record<string, string>;
         flash: {
@@ -27,5 +32,3 @@ declare module '@inertiajs/core' {
         };
     }
 }
-
-export {};
