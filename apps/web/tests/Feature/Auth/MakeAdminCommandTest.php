@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
+use Spatie\Activitylog\Models\Activity;
 
 beforeEach(function (): void {
     $this->seed(PermissionSeeder::class);
@@ -35,4 +36,35 @@ it('is idempotent on re-run', function (): void {
 
     expect($user->fresh()->permissions()->count())->toBe(1);
     expect($user->fresh()->roles()->count())->toBe(1);
+});
+
+it('writes an activity_log row when granting super-admin (D-012)', function (): void {
+    $user = User::factory()->create(['discord_id' => '777888999']);
+
+    $this->artisan('trenchwars:make-admin', ['discord_id' => '777888999'])->assertExitCode(0);
+
+    $activity = Activity::query()
+        ->where('subject_type', User::class)
+        ->where('subject_id', $user->id)
+        ->where('description', 'Super-admin granted via CLI')
+        ->first();
+
+    expect($activity)->not->toBeNull();
+    expect($activity->properties->get('command'))->toBe('trenchwars:make-admin');
+    expect($activity->properties->get('discord_id'))->toBe('777888999');
+});
+
+it('does not grant unrelated permissions to super-admin (whitelist enforced)', function (): void {
+    // Simulate a permission that should NOT auto-attach to super-admin.
+    \Spatie\Permission\Models\Permission::findOrCreate('rogue.permission', 'web');
+
+    $user = User::factory()->create(['discord_id' => '123987654']);
+    $this->artisan('trenchwars:make-admin', ['discord_id' => '123987654'])->assertExitCode(0);
+
+    $role = \Spatie\Permission\Models\Role::findByName('super-admin', 'web');
+    $names = $role->permissions()->pluck('name')->all();
+
+    expect($names)->toContain('admin-access');
+    expect($names)->toContain('audit.view');
+    expect($names)->not->toContain('rogue.permission');
 });

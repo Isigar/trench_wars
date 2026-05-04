@@ -41,11 +41,28 @@ class MakeAdminCommand extends Command
         // Ensure permission and role exist (defence-in-depth — PermissionSeeder normally creates them).
         Permission::findOrCreate('admin-access', 'web');
         $role = Role::findOrCreate('super-admin', 'web');
-        $role->givePermissionTo(Permission::all());
+
+        // Whitelist the permissions super-admin holds. NEVER use Permission::all() —
+        // future migrations or admin-edited rows would silently inherit privileges.
+        $superAdminPermissions = ['admin-access', 'audit.view'];
+        $role->syncPermissions(
+            Permission::whereIn('name', $superAdminPermissions)->get()
+        );
 
         // givePermissionTo / assignRole are idempotent in spatie/laravel-permission.
         $user->givePermissionTo('admin-access');
         $user->assignRole('super-admin');
+
+        // D-012 audit-trail: every super-admin grant must leave an activity_log row.
+        // spatie/laravel-permission's grant methods are silent by default
+        // (config/permission.php events_enabled=false), so we log explicitly.
+        activity()
+            ->performedOn($user)
+            ->withProperties([
+                'command' => 'trenchwars:make-admin',
+                'discord_id' => $discordId,
+            ])
+            ->log('Super-admin granted via CLI');
 
         $registrar->forgetCachedPermissions();
 
