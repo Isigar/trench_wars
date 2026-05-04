@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -20,7 +22,7 @@ use Spatie\Permission\Traits\HasRoles;
  *
  * P1 user model — Discord-OAuth-only identity (D-002). FilamentUser contract +
  * canAccessPanel are added in plan 12 (this commit). spatie/laravel-permission
- * HasRoles trait was added in plan 11.
+ * HasRoles trait was added in plan 11. Plan 14 adds LogsActivity (D-012).
  *
  * No `password` field — Discord OAuth is the only auth path (D-017). Notifiable is
  * retained because spatie/laravel-permission and Filament both call notify() in
@@ -36,6 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     use HasRoles;
     use HasUuidPrimaryKey;
+    use LogsActivity;
     use Notifiable;
 
     protected string $guard_name = 'web';
@@ -63,6 +66,22 @@ class User extends Authenticatable implements FilamentUser, HasName
             'last_login_at' => 'datetime',
             'left_community_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Activity log options for User mutations.
+     *
+     * Source: 01-RESEARCH.md Pattern 3 + plan 14 must_haves —
+     * suppress login-spam by ignoring last_login_at-only changes (CLAUDE.md §6
+     * "Activity log writes are append-only via the LogsActivity trait").
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontLogIfAttributesChangedOnly(['last_login_at'])
+            ->setDescriptionForEvent(fn (string $event): string => "User {$event}");
     }
 
     /**

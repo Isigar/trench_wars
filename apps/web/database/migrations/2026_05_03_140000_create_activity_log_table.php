@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+| Source: spatie/laravel-activitylog v5 published stub
+| (vendor/spatie/laravel-activitylog/database/migrations/create_activity_log_table.php.stub).
+|
+| v5 consolidates the v4 sequence (create + add_event + add_batch_uuid) into a single
+| migration with attribute_changes + properties columns. The follow-up migration
+| 2026_05_03_140100_add_uuid_columns_to_activity_log.php converts subject_id +
+| causer_id from bigint to uuid to match our HasUuidPrimaryKey models (D-002).
+*/
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('activity_log', function (Blueprint $table): void {
+            $table->id();
+            $table->string('log_name')->nullable()->index();
+            $table->text('description');
+            $table->nullableMorphs('subject', 'subject');
+            $table->string('event')->nullable();
+            $table->nullableMorphs('causer', 'causer');
+            $table->json('attribute_changes')->nullable();
+            $table->json('properties')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('activity_log');
+    }
+};

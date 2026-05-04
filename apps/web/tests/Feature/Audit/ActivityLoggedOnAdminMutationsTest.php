@@ -36,7 +36,9 @@ it('logs an activity row when a User is updated', function (): void {
 
     expect($log)->not->toBeNull();
     expect($log->causer_id)->toBe($this->admin->id);
-    expect($log->properties->toArray())->toHaveKey('attributes');
+    // v5 writes attribute diffs to `attribute_changes` (was `properties.attributes` in v4).
+    expect($log->attribute_changes->toArray())->toHaveKey('attributes');
+    expect($log->attribute_changes->toArray()['attributes'])->toHaveKey('username');
 });
 
 it('does NOT log when only last_login_at changes', function (): void {
