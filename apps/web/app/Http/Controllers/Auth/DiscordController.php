@@ -49,13 +49,26 @@ class DiscordController extends Controller
             return redirect()->route('home')->with('error', __('auth.discord.error.provider'));
         }
 
+        // Reject Discord identities with no usable username — both nickname and
+        // global name can be null on edge accounts (pre-username-migration users
+        // or stripped OAuth scopes). Persisting `''` would corrupt downstream
+        // slug generation (`-a3k9`), Filament's getFilamentName(), and the
+        // success flash. CR-04 in 01-REVIEW.md.
+        $rawUsername = trim((string) ($discordUser->getNickname() ?: $discordUser->getName() ?: ''));
+        if ($rawUsername === '') {
+            return redirect()->route('home')->with(
+                'error',
+                __('auth.discord.error.provider'),
+            );
+        }
+
         // Upsert by discord_id (D-002 — canonical identity, UNIQUE at DB level — T-1-03).
         // The Login event fires after Auth::login() — ProvisionFirstLogin listener
         // creates the player + privacy row inside DB::transaction (idempotent on re-login).
         $user = User::updateOrCreate(
             ['discord_id' => (string) $discordUser->getId()],
             [
-                'username' => (string) ($discordUser->getNickname() ?: $discordUser->getName()),
+                'username' => $rawUsername,
                 'email' => $discordUser->getEmail(),
                 'avatar_url' => $discordUser->getAvatar(),
                 'locale' => $discordUser->user['locale'] ?? config('app.locale', 'en'),

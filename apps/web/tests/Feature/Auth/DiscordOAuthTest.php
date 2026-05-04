@@ -66,3 +66,27 @@ it('redirects with cancellation message when Discord OAuth state is invalid', fu
     $response->assertRedirect(route('home'));
     $response->assertSessionHas('error');
 });
+
+it('rejects callback when Discord returns no usable username (CR-04)', function (): void {
+    // Both nickname and name null is rare but possible — pre-username-migration
+    // accounts or stripped scopes. Persisting empty username would corrupt
+    // slug generation, Filament chrome, and the success flash.
+    $fakeUser = (new SocialiteUser)->map([
+        'id' => '999000888777666555',
+        'nickname' => null,
+        'name' => null,
+        'email' => 'silent@example.com',
+        'avatar' => null,
+        'user' => ['locale' => 'en'],
+    ]);
+
+    Socialite::shouldReceive('driver')->with('discord')->andReturnSelf();
+    Socialite::shouldReceive('user')->andReturn($fakeUser);
+
+    $response = $this->get('/auth/discord/callback');
+
+    $response->assertRedirect(route('home'));
+    $response->assertSessionHas('error');
+    expect(auth()->check())->toBeFalse();
+    expect(User::where('discord_id', '999000888777666555')->exists())->toBeFalse();
+});
