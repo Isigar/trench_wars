@@ -32,7 +32,12 @@ class PermissionSeeder extends Seeder
         }
 
         $superAdmin = Role::findOrCreate('super-admin', 'web');
-        $superAdmin->syncPermissions(Permission::all());
+        // Whitelist explicitly — never sync Permission::all(). Future migrations
+        // or admin-edited rows must not silently inherit super-admin privileges.
+        // Keep this list in lockstep with MakeAdminCommand::handle().
+        $superAdmin->syncPermissions(
+            Permission::whereIn('name', $permissions)->get()
+        );
 
         // Phase 7+ role placeholder — no permissions yet.
         Role::findOrCreate('cms-editor', 'web');
