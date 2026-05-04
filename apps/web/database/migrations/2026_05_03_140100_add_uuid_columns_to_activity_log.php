@@ -23,12 +23,29 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Hard-fail if the table already has rows. The `USING NULL`-based cast
+        // we used previously would discard every existing subject_id / causer_id
+        // value, silently nuking the audit trail. Refusing to proceed forces an
+        // operator to author a manual data migration when one is needed.
+        $rowCount = (int) DB::scalar('SELECT COUNT(*) FROM activity_log');
+        if ($rowCount > 0) {
+            throw new \RuntimeException(
+                "activity_log has {$rowCount} rows — UUID column conversion would destroy data. ".
+                'Author a manual data migration first (cast existing bigint IDs to uuid via a '.
+                'staging column) and re-run this migration with the table emptied.'
+            );
+        }
+
         // Drop indexes that reference the columns we're altering (Postgres requires this).
         DB::statement('DROP INDEX IF EXISTS subject;');
         DB::statement('DROP INDEX IF EXISTS causer;');
 
-        DB::statement('ALTER TABLE activity_log ALTER COLUMN subject_id TYPE uuid USING NULL;');
-        DB::statement('ALTER TABLE activity_log ALTER COLUMN causer_id  TYPE uuid USING NULL;');
+        // Use a real cast (text -> uuid) instead of `USING NULL`. With the
+        // row-count guard above, the table is empty so the cast is a no-op on
+        // data, but the safer expression survives a future code reorder where
+        // the guard moves elsewhere.
+        DB::statement('ALTER TABLE activity_log ALTER COLUMN subject_id TYPE uuid USING subject_id::text::uuid;');
+        DB::statement('ALTER TABLE activity_log ALTER COLUMN causer_id  TYPE uuid USING causer_id::text::uuid;');
 
         // Re-create the indexes Spatie's migration originally created.
         DB::statement('CREATE INDEX subject ON activity_log (subject_type, subject_id);');
@@ -37,6 +54,16 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Down-migration not provided — would lose UUID data; manual rollback required if needed.
+        // Reverse the cast back to bigint. The data is unrecoverable on
+        // rollback (uuid -> bigint has no safe cast), so we use USING NULL on
+        // the way down — operators rolling back accept the loss.
+        DB::statement('DROP INDEX IF EXISTS subject;');
+        DB::statement('DROP INDEX IF EXISTS causer;');
+
+        DB::statement('ALTER TABLE activity_log ALTER COLUMN subject_id TYPE bigint USING NULL;');
+        DB::statement('ALTER TABLE activity_log ALTER COLUMN causer_id  TYPE bigint USING NULL;');
+
+        DB::statement('CREATE INDEX subject ON activity_log (subject_type, subject_id);');
+        DB::statement('CREATE INDEX causer  ON activity_log (causer_type, causer_id);');
     }
 };
