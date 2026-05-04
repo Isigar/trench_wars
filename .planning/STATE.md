@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-12 complete (wave 6; deps 01-07 + 01-11 satisfied). Filament v3.3.50 installed via composer; AdminPanelProvider customised (id=admin, accent #A4262C, dark mode, Inter font, viteTheme to build/filament, no ->login(), Pages\Dashboard kept as default landing); RedirectFilamentAuthToDiscord middleware subclasses Filament's Authenticate so unauthenticated /admin redirects to /auth/discord/redirect; User model implements FilamentUser + HasName (canAccessPanel checks hasPermissionTo('admin-access','web'); getFilamentName returns username). Dual-Tailwind workaround proven: tailwindcss-v3 alias install + separate vite.filament.config.ts (PostCSS+Tailwind v3) + main vite.config.ts pinned to css.postcss:{plugins:[]}. 5 new Pest tests (FilamentBootTest 2 + FilamentPanelAccessTest 3); full suite 40/40 green; pint + phpstan L8 clean. 14/18 plans done (78%). Resume with /gsd-execute-phase to run plan 01-13 (Filament resources for User/Player/Role/Permission) — wave 7, depends on 01-12."
-last_updated: "2026-05-04T18:15:55.421Z"
+stopped_at: "Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap)."
+last_updated: "2026-05-04T18:26:07.205Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 14
-  percent: 78
+  completed_plans: 15
+  percent: 83
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 12 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
+Plan: 13 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
@@ -57,6 +57,7 @@ Progress: [██████░░░░] 56%
 | Phase 01 P11 | 4min | 2 tasks | 10 files |
 | Phase 01 P09 | 5min | 3 tasks | 12 files |
 | Phase 01 P12 | 9 | 2 tasks | 17 files |
+| Phase 01 P13 | 6min | 2 tasks tasks | 18 files files |
 
 ## Accumulated Context
 
@@ -113,6 +114,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 01]: Plan 01-12 RedirectFilamentAuthToDiscord middleware subclasses Filament's Authenticate::redirectTo() to return route('auth.discord.redirect') — Filament's getLoginUrl() returns null when ->login() is dropped, which would otherwise resolve to the undefined 'login' named route
 - [Phase ?]: [Phase 01]: Plan 01-12 dropped @import vendor/filament/.../theme.css — Vite CSS resolver follows the inner @import 'tailwindcss/base' chain through Tailwind v4 (no /base subpath) and fails. Filament preset's content array still scans Filament blade files; small base-layer overrides inlined directly
 - [Phase ?]: [Phase 01]: Plan 01-12 User implements FilamentUser + HasName; getFilamentName returns username (Discord username — D-002 means schema has no 'name' field; getUserName fallback via HasName)
+- [Phase ?]: 01-13: Used getModelLabel/getPluralModelLabel overrides on all 4 Filament resources to keep i18n end-to-end (D-013 — sidebar labels via __('admin.<r>.label')).
+- [Phase ?]: 01-13: RoleResource pins guard_name='web' twice (Form Select disabled+dehydrated AND CreateRole::mutateFormDataBeforeCreate) — Pitfall 4 defence-in-depth.
+- [Phase ?]: 01-13: PermissionResource is List+Edit only (no Create) — admin grants permissions via PermissionSeeder + trenchwars:make-admin (CONTEXT.md), so surfacing Create in Filament would let admins mint unreferenced permission strings.
+- [Phase ?]: 01-13: UserResource locale Select sourced from config('i18n.available_locales') via private localeOptions() helper — typed @var array<int,string> annotation needed because raw config() return is mixed (PHPStan L8 fix, Rule 1).
 
 ### Pending Todos
 
@@ -134,6 +139,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-04T18:15:55.419Z
-Stopped at: Plan 01-12 complete (wave 6; deps 01-07 + 01-11 satisfied). Filament v3.3.50 installed via composer; AdminPanelProvider customised (id=admin, accent #A4262C, dark mode, Inter font, viteTheme to build/filament, no ->login(), Pages\Dashboard kept as default landing); RedirectFilamentAuthToDiscord middleware subclasses Filament's Authenticate so unauthenticated /admin redirects to /auth/discord/redirect; User model implements FilamentUser + HasName (canAccessPanel checks hasPermissionTo('admin-access','web'); getFilamentName returns username). Dual-Tailwind workaround proven: tailwindcss-v3 alias install + separate vite.filament.config.ts (PostCSS+Tailwind v3) + main vite.config.ts pinned to css.postcss:{plugins:[]}. 5 new Pest tests (FilamentBootTest 2 + FilamentPanelAccessTest 3); full suite 40/40 green; pint + phpstan L8 clean. 14/18 plans done (78%). Resume with /gsd-execute-phase to run plan 01-13 (Filament resources for User/Player/Role/Permission) — wave 7, depends on 01-12.
-Resume file: None
+Last session: 2026-05-04T18:26:07.203Z
+Stopped at: Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap).
+Resume file: .planning/phases/01-foundations/01-foundations-13-SUMMARY.md
