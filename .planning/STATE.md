@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-16 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). 4 GitHub Actions workflows authored under `.github/workflows/`: `web.yml` (PHP 8.4 via shivammathur/setup-php@v2 with intl/pdo_pgsql/pgsql/redis/gd/bcmath/zip/mbstring/pcntl/exif/opcache extensions; postgres:16-alpine + redis:7-alpine service containers; psql step creates uuid-ossp/pgcrypto/citext extensions; Composer cache; Pint --test, PHPStan L8, Pest --parallel quality gates). `bot.yml` + `rcon-worker.yml` (Node 22 + pnpm 9 via pnpm/action-setup@v4 + actions/setup-node@v4 with cache: pnpm; pnpm install --no-frozen-lockfile workspace then typecheck + lint + test via --filter). `shared-types.yml` (tsc --noEmit only). All 4 path-filtered (apps/{name}/** + packages/shared-types/** + workspace files + workflow file itself). Triggers on push (main/develop/master) + pull_request. Bot + rcon-worker now have `vitest.config.ts` (node env, tests/**/*.test.ts), `eslint.config.mjs` (ESLint v9 flat config with @typescript-eslint parser/plugin), `tests/skeleton.test.ts` (imports TrenchwarsApiContract from @trenchwars/shared-types — UserData swap deferred to plan 01-15), and updated package.json with vitest@^2/eslint@^9/@typescript-eslint@^8 devDeps + scripts (test: `vitest run`, lint: `eslint .`). YAML parses pass; all plan acceptance grep checks pass. CI verification surface is the first GitHub push. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next."
-last_updated: "2026-05-04T17:33:51.065Z"
+stopped_at: "Plan 01-08 complete (wave 6; depends on 01-07 which was satisfied). i18n end-to-end live: PHP arrays-only EN bundle at apps/web/lang/en/{auth,common,admin,home,validation}.php with full UI-SPEC Copywriting Contract keys; config/i18n.php declares available_locales=['en'], resolution_order, shared_namespaces; HandleInertiaRequests::share() exposes locale (app()->getLocale()) + flat dot-keyed translations dictionary built from the 5 namespaces; in-house useT() composable at apps/web/resources/js/composables/useT.ts resolves from usePage().props.translations with :?param interpolation + dev-only missing-key warn; PageProps types updated. Wordmark / PublicLayout (skip-link + footer) / Home (tagline + subcopy + button + Head title) / ThemeToggle (Rule 2 — aria-label) all routed through t(). Three Pest tests under tests/Feature/I18n/: TranslationsSharedTest, NoHardcodedStringsTest (permanent CI gate per D-013), ValidationMessagesLocalizedTest. laravel-vue-i18n@^2.8 installed but unwired (sidesteps RESEARCH Pitfall 8 SSR async-glob trap; kept for Phase 2+ client-side use). Pint + PHPStan L8 + Vite build all green; full Pest suite 22/22 (15 prior + 7 new I18n). 11/18 plans done. Resume with /gsd-execute-phase to run plan 01-09 (Discord Socialite OAuth) — sequential next, depends on 01-06 + 01-08 + 01-10. Note 01-09 also depends on 01-10 (User model, wave 7) which is not done — runner should pick 01-10 next or 01-11 depending on wave sequencing."
+last_updated: "2026-05-04T17:45:10.758Z"
 last_activity: 2026-05-04
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 18
-  completed_plans: 10
-  percent: 56
+  completed_plans: 11
+  percent: 61
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 01 (Foundations) — EXECUTING
-Plan: 8 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
+Plan: 9 of 18 (sequential pointer; plans 01-10, 01-16, 01-17 completed out-of-sequence — wave-4/wave-4 with deps already satisfied; 10/18 summaries on disk)
 Status: Ready to execute
 Last activity: 2026-05-04
 
@@ -53,6 +53,7 @@ Progress: [██████░░░░] 56%
 
 *Updated after each plan completion*
 | Phase 01 P07 | 5min | 2 tasks | 12 files |
+| Phase 01 P08 | 5min | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Dark default at both <html data-theme=dark> SSR root and useTheme ref initial value; localStorage('trenchwars.theme') persistence
 - [Phase ?]: Components reference semantic tokens via var(--color-*); no raw hex outside app.css :root/[data-theme=*] blocks
 - [Phase ?]: IconButton 44x44 mobile / 36x36 desktop touch target (UI-SPEC); aria-label required prop
+- [Phase 01]: 01-08 chose in-house useT() composable over laravel-vue-i18n's Vite plugin path — reads directly from Inertia's shared translations prop, sidestepping RESEARCH Pitfall 8 SSR async-glob trap; the package stays installed (kept on dep graph for Phase 2+ client-side validation rendering needs) but unwired in P1
+- [Phase 01]: 01-08 made Inertia translations prop a flat dot-keyed Record<string,string> rather than a nested tree — gives useT an O(1) lookup with no path parser; middleware's flatten() helper recursively walks the 5 namespaces (auth/common/admin/home/validation) into composite keys like auth.discord.button_label
+- [Phase 01]: 01-08 localised ThemeToggle.vue aria-label via Rule 2 deviation — the NoHardcodedStringsTest scope is <template> only so <script setup> literals would have escaped, but D-013 ('every UI string flows through t() / __()') is unambiguous and aria-label is a UI string; added common.theme.switch_to_{light,dark} keys
+- [Phase 01]: 01-08 copied Laravel 12 default lang/en/validation.php verbatim into our custody (apps/web/lang/en/validation.php) — ValidationMessagesLocalizedTest asserts validation.{required,unique,email} resolve from our copy not the framework default, so tomorrow's CS/SK locale drop has a complete set of keys to override
 
 ### Pending Todos
 
@@ -116,6 +121,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-04T17:32:32.479Z
-Stopped at: Plan 01-16 complete (out-of-sequence; wave 4 of 11; depends only on 01-05 which was satisfied). 4 GitHub Actions workflows authored under `.github/workflows/`: `web.yml` (PHP 8.4 via shivammathur/setup-php@v2 with intl/pdo_pgsql/pgsql/redis/gd/bcmath/zip/mbstring/pcntl/exif/opcache extensions; postgres:16-alpine + redis:7-alpine service containers; psql step creates uuid-ossp/pgcrypto/citext extensions; Composer cache; Pint --test, PHPStan L8, Pest --parallel quality gates). `bot.yml` + `rcon-worker.yml` (Node 22 + pnpm 9 via pnpm/action-setup@v4 + actions/setup-node@v4 with cache: pnpm; pnpm install --no-frozen-lockfile workspace then typecheck + lint + test via --filter). `shared-types.yml` (tsc --noEmit only). All 4 path-filtered (apps/{name}/** + packages/shared-types/** + workspace files + workflow file itself). Triggers on push (main/develop/master) + pull_request. Bot + rcon-worker now have `vitest.config.ts` (node env, tests/**/*.test.ts), `eslint.config.mjs` (ESLint v9 flat config with @typescript-eslint parser/plugin), `tests/skeleton.test.ts` (imports TrenchwarsApiContract from @trenchwars/shared-types — UserData swap deferred to plan 01-15), and updated package.json with vitest@^2/eslint@^9/@typescript-eslint@^8 devDeps + scripts (test: `vitest run`, lint: `eslint .`). YAML parses pass; all plan acceptance grep checks pass. CI verification surface is the first GitHub push. Resume with /gsd-execute-phase to run plan 01-07 (Tailwind v4 CSS-first + Reka UI + Lucide + Fontsource + UI-SPEC tokens + Public layout + primitives) — sequential next.
+Last session: 2026-05-04T17:45:10.756Z
+Stopped at: Plan 01-08 complete (wave 6; depends on 01-07 which was satisfied). i18n end-to-end live: PHP arrays-only EN bundle at apps/web/lang/en/{auth,common,admin,home,validation}.php with full UI-SPEC Copywriting Contract keys; config/i18n.php declares available_locales=['en'], resolution_order, shared_namespaces; HandleInertiaRequests::share() exposes locale (app()->getLocale()) + flat dot-keyed translations dictionary built from the 5 namespaces; in-house useT() composable at apps/web/resources/js/composables/useT.ts resolves from usePage().props.translations with :?param interpolation + dev-only missing-key warn; PageProps types updated. Wordmark / PublicLayout (skip-link + footer) / Home (tagline + subcopy + button + Head title) / ThemeToggle (Rule 2 — aria-label) all routed through t(). Three Pest tests under tests/Feature/I18n/: TranslationsSharedTest, NoHardcodedStringsTest (permanent CI gate per D-013), ValidationMessagesLocalizedTest. laravel-vue-i18n@^2.8 installed but unwired (sidesteps RESEARCH Pitfall 8 SSR async-glob trap; kept for Phase 2+ client-side use). Pint + PHPStan L8 + Vite build all green; full Pest suite 22/22 (15 prior + 7 new I18n). 11/18 plans done. Resume with /gsd-execute-phase to run plan 01-09 (Discord Socialite OAuth) — sequential next, depends on 01-06 + 01-08 + 01-10. Note 01-09 also depends on 01-10 (User model, wave 7) which is not done — runner should pick 01-10 next or 01-11 depending on wave sequencing.
 Resume file: None
