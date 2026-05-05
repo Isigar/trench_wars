@@ -1,0 +1,54 @@
+{
+  "phase": "02-clans-tags",
+  "phase_number": "2",
+  "phase_name": "Clans & tags",
+  "checkpoint_version": 1,
+  "interrupted": true,
+  "interrupted_at": "2026-05-05",
+  "status": "discuss-in-progress (interrupted by user)",
+  "areas_proposed": [
+    {
+      "id": "member-mgmt-ui-surface",
+      "label": "Member-management UI surface",
+      "description": "Where clan leaders/officers manage their clan: Filament-only / dedicated /my-clan / hybrid / defer-to-polish",
+      "selected": true,
+      "answered": false
+    },
+    {
+      "id": "slug-url-strategy",
+      "label": "Slug + URL strategy",
+      "description": "Clan slug source (tag vs name; user-editable vs auto). Player slug source (Discord username is not stable; custom slug, UUID, sequential). Routes /clans/{slug}, /players/{slug} and slug-collision policy.",
+      "selected": false,
+      "answered": false
+    },
+    {
+      "id": "privacy-tier-semantics",
+      "label": "Privacy tier semantics",
+      "description": "Precise definition of public/community/clan/private for /players/{slug}. Specifically what 'community' resolves to for an authenticated visitor; what 'clan' means relative to the player's CURRENT active membership.",
+      "selected": false,
+      "answered": false
+    },
+    {
+      "id": "invite-application-flow",
+      "label": "Invite/application flow + notifications",
+      "description": "Invite (clan->player) vs Application (player->clan) UX. Notifications (in-app only for P2? Discord bot DM deferred to P5?). Multi-pending/cancel/expire policy. Self-cancel.",
+      "selected": false,
+      "answered": false
+    }
+  ],
+  "areas_answered": [],
+  "decisions_so_far": [],
+  "prior_decisions_loaded": [
+    "PROJECT.md D-001..D-021 (all LOCKED)",
+    "Phase 1 CONTEXT.md (Filament panel guard=web, Player+PlayerPrivacy schema with per-section flags + show_to tier defaults)",
+    "Phase 1 SUMMARYs (UserResource/PlayerResource shipped; activitylog wired; spatie/laravel-permission installed with default_guard=web)"
+  ],
+  "canonical_refs_seen": [
+    ".docs/04-domain-model.md (Clans & taxonomy section: Clan, ClanTag, ClanMembership, ClanInvite, ClanApplication)",
+    ".docs/05-database-schema.md (clans, clan_tags, clan_clan_tag pivot, clan_memberships with partial unique index, clan_invites, clan_applications)",
+    ".docs/16-open-questions.md (Clan tag length cap suggested 2-8 chars; HLL match-type initial set)",
+    ".planning/REQUIREMENTS.md (REQ-tenancy-multi-clan, REQ-tenancy-single-guild, REQ-constraint-single-guild, REQ-goal-public-profiles)",
+    ".planning/ROADMAP.md (Phase 2 goal + 5 success criteria)"
+  ],
+  "next_step": "Resume by re-running /gsd-discuss-phase 2 — checkpoint will be detected and the workflow will offer 'Resume' / 'Start fresh'. The single selected area (member-management UI surface) had its options drafted (Filament-only / /my-clan / hybrid / defer) but no answer was captured before user interrupted."
+}
