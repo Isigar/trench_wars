@@ -68,7 +68,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 14 plans
 - [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
 - [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
 - [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
@@ -92,8 +92,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Seeded HLL data exists out of the box (Commander, Officer, SL, Rifleman, Assault, AR, Medic, Engineer, Support, HMG, AT, Sniper, Spotter, Tank Cmdr, Crewman + starter match types: Scrim 50v50, Skirmish 6v6, Friendly, Tournament, Clan War) and is fully editable post-seed.
   4. Adding a new game requires zero code changes — only Filament data entry.
 **Plans**: 14 plans
-- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
 - [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests

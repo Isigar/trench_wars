@@ -26,7 +26,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### Profiles & Privacy
 
-- [ ] **REQ-goal-public-profiles**: Player profiles render under user-controlled per-section flags (`show_real_name`, `show_discord_tag`, `show_clan_history`, `show_match_history`, `show_stats`) plus global tier (`public|community|clan|private`). (D-018)
+- [x] **REQ-goal-public-profiles**: Player profiles render under user-controlled per-section flags (`show_real_name`, `show_discord_tag`, `show_clan_history`, `show_match_history`, `show_stats`) plus global tier (`public|community|clan|private`). (D-018)
 
 ### CMS & Editorial
 
@@ -112,7 +112,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-tenancy-single-guild | Phase 2 | Complete |
 | REQ-constraint-single-guild | Phase 2 | Complete |
 | REQ-tenancy-multi-clan | Phase 2 | Complete |
-| REQ-goal-public-profiles | Phase 2 | Pending |
+| REQ-goal-public-profiles | Phase 2 | Complete |
 | REQ-platform-vision | Phase 3 | Pending |
 | REQ-goal-match-workflows | Phase 4 | Pending |
 | REQ-goal-discord-ux | Phase 5 | Pending |

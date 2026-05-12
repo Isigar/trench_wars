@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: "Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap)."
-last_updated: "2026-05-12T18:24:32.019Z"
+last_updated: "2026-05-12T18:30:41.330Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 9
   completed_phases: 1
   total_plans: 32
-  completed_plans: 20
+  completed_plans: 21
   percent: 11
 ---
 
@@ -154,6 +154,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-12T18:24:32.016Z
+Last session: 2026-05-12T18:30:41.326Z
 Stopped at: Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap).
 Resume file: None
