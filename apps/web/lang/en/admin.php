@@ -196,4 +196,15 @@ return [
             'decided_at' => 'Decided at',
         ],
     ],
+
+    // Added by plan 02-13 task 2 (Rule 2 — plan 02-06 missed this key group).
+    'discord_guild' => [
+        'label' => 'Discord guild',
+        'plural_label' => 'Discord guild',
+        'fields' => [
+            'guild_id' => 'Discord guild ID',
+            'name' => 'Guild name',
+            'icon_url' => 'Icon URL',
+        ],
+    ],
 ];
