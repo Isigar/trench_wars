@@ -89,7 +89,7 @@ final class PublicPlayerData extends Data
             : null;
 
         $currentClan = $activeMembership !== null
-            ? ClanMembershipData::from($activeMembership)
+            ? ClanMembershipData::fromModel($activeMembership)
             : null;
 
         // Clan history — show_clan_history flag.

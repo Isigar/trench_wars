@@ -65,6 +65,14 @@ class Player extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Route model binding uses slug (e.g. /players/{slug}).
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     /** @return HasOne<PlayerPrivacy, $this> */
     public function privacy(): HasOne
     {
