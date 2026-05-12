@@ -5,7 +5,11 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\DiscordController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\ClanDirectoryController;
+use App\Http\Controllers\Clans\ClanCreateController;
 use App\Http\Controllers\ClanShowController;
+use App\Http\Controllers\MyClan\MyClanController;
+use App\Http\Controllers\MyClan\MyClanMemberController;
+use App\Http\Controllers\MyClan\MyClanProfileController;
 use App\Http\Controllers\PlayerProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,4 +34,15 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/auth/logout', LogoutController::class)->name('auth.logout');
+
+    // Clan create — any authenticated user may create one clan (D-009 one-active enforced in controller).
+    Route::post('/clans', ClanCreateController::class)->name('clans.store');
+
+    // My Clan management — auth + active Leader/Officer check inside MyClanController.
+    Route::prefix('my-clan')->name('my-clan.')->group(function (): void {
+        Route::get('/', MyClanController::class)->name('index');
+        Route::patch('/profile/{clan:slug}', [MyClanProfileController::class, 'update'])->name('profile.update');
+        Route::patch('/members/{membership}/role', [MyClanMemberController::class, 'updateRole'])->name('members.role');
+        Route::delete('/members/{membership}', [MyClanMemberController::class, 'remove'])->name('members.remove');
+    });
 });

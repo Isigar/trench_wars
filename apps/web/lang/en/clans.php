@@ -33,6 +33,14 @@ return [
         'leader_transfer_warning' => 'You are about to transfer leadership of this clan. This cannot be undone without admin action.',
         'remove_confirm' => 'Remove :name from the clan?',
         'remove_yes' => 'Yes, remove',
+        'role' => [
+            'update' => [
+                'success' => 'Member role updated.',
+            ],
+        ],
+        'remove' => [
+            'success' => 'Member removed from the clan.',
+        ],
     ],
 
     'section' => [
@@ -49,6 +57,12 @@ return [
         'roster_hidden_all' => 'This clan\'s member list is private.',
     ],
 
+    'profile' => [
+        'update' => [
+            'success' => 'Clan profile updated.',
+        ],
+    ],
+
     'my_clan' => [
         'title' => 'Manage your clan',
         'tab' => [
@@ -62,6 +76,9 @@ return [
     'form' => [
         'name' => [
             'label' => 'Clan name',
+            'errors' => [
+                'reserved' => 'That name is reserved and cannot be used as a clan name.',
+            ],
         ],
         'tag' => [
             'label' => 'Clan tag',
@@ -81,6 +98,8 @@ return [
 
     'create' => [
         'cta' => 'Create your clan',
+        'success' => 'Your clan has been created.',
+        'already_member' => 'You are already a member of a clan. Leave your current clan before creating a new one.',
     ],
 
     'no_clan' => [
