@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PermissionSeeder::class,
+            DiscordGuildSeeder::class,
+            ClanTagSeeder::class,
             // Phase 3+ adds GameSeeder etc.
         ]);
     }
