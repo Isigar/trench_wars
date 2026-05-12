@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: "Plan 02-05 complete (Wave 2). PlayerPrivacyGate service + 6 DTOs. 23 gate tests + 11 DTO tests GREEN. Optional::create() strategy for absent-vs-null. api.d.ts regenerated. PHPStan + Pint clean. 23/32 plans complete."
-last_updated: "2026-05-12T19:17:53.326Z"
+stopped_at: Plan 02-10 complete (Wave 4). ClanInviteService state machine + controller + 4 routes. 16 invite tests GREEN. MyClanController invites prop wired. PHPStan + Pint clean. 28/32 plans complete.
+last_updated: "2026-05-12T19:24:29.882Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 9
   completed_phases: 1
   total_plans: 32
-  completed_plans: 27
+  completed_plans: 28
   percent: 11
 ---
 
@@ -67,6 +67,7 @@ Progress: [██████████] 100%
 | Phase 02-clans-tags P07 | 12min | 2 tasks | 16 files |
 | Phase 02-clans-tags P08 | 273s | 3 tasks | 8 files |
 | Phase 02-clans-tags P09 | 468s | 3 tasks | 14 files |
+| Phase 02-clans-tags P10 | 253s | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -143,6 +144,7 @@ Plan-level decisions logged during execution:
 - [Phase 02]: Plan 02-04: DiscordGuildSingleRowTest documents operational-only enforcement contract (RESEARCH.md Pattern 4 — DB layer accepts second row; gate is seeder+Filament no-Create page in plan 02-13)
 - [Phase ?]: Plan 02-05: Optional|T|null union types on PublicPlayerData — required by PHP type system to store Optional in typed properties; VisibleDataFieldsResolver strips Optional from toArray()
 - [Phase ?]: Plan 02-05: PlayerPrivacyGate is stateless — no constructor injection, auto-resolved by Laravel container; own-profile bypass always grants full access regardless of tier or section flags
+- [Phase ?]: Plan 02-10: ClanInviteService stateless; accept() uses DB::transaction; Clan::invites() HasMany added (Rule 2)
 
 ### Pending Todos
 
@@ -164,6 +166,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-12T19:17:53.322Z
-Stopped at: Plan 02-05 complete (Wave 2). PlayerPrivacyGate service + 6 DTOs. 23 gate tests + 11 DTO tests GREEN. Optional::create() strategy for absent-vs-null. api.d.ts regenerated. PHPStan + Pint clean. 23/32 plans complete.
+Last session: 2026-05-12T19:24:29.878Z
+Stopped at: Plan 02-10 complete (Wave 4). ClanInviteService state machine + controller + 4 routes. 16 invite tests GREEN. MyClanController invites prop wired. PHPStan + Pint clean. 28/32 plans complete.
 Resume file: None
