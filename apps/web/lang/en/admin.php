@@ -5,6 +5,7 @@ declare(strict_types=1);
 /*
 | Source: 01-UI-SPEC.md § Copywriting Contract / § Page: /admin /admin/audit
 | + 01-13-PLAN.md task 1 (User/Player resource labels) + task 2 (Role/Permission resource labels).
+| Extended: 02-UI-SPEC.md § Copywriting Contract — clan resource labels, audit subjects, and fields.
 |
 | Admin-namespace English strings — Filament chrome (via __()) + audit-page copy.
 */
@@ -46,6 +47,12 @@ return [
             'Player' => 'Player',
             'Role' => 'Role',
             'Permission' => 'Permission',
+            // Phase 2 additions (02-UI-SPEC.md § Filament Admin Resources)
+            'Clan' => 'Clan',
+            'ClanTag' => 'Tag',
+            'ClanMembership' => 'Membership',
+            'ClanInvite' => 'Invite',
+            'ClanApplication' => 'Application',
         ],
     ],
     'tab' => [
@@ -109,6 +116,84 @@ return [
         'fields' => [
             'name' => 'Name',
             'guard_name' => 'Guard',
+        ],
+    ],
+
+    // -------------------------------------------------------------------------
+    // Phase 2 clan domain resources (02-UI-SPEC.md § Filament Admin Resources)
+    // -------------------------------------------------------------------------
+
+    'clan' => [
+        'label' => 'Clan',
+        'plural_label' => 'Clans',
+        'section' => [
+            'profile' => 'Profile',
+        ],
+        'fields' => [
+            'name' => 'Clan name',
+            'slug' => 'Slug',
+            'tag' => 'Tag',
+            'description' => 'Description (JSONB, locale-keyed)',
+            'description_locale' => 'Locale',
+            'description_text' => 'Description text',
+            'country_code' => 'Country code',
+            'owner' => 'Owner',
+            'status' => 'Status',
+            'tags' => 'Tags',
+            'discord_role_id' => 'Discord role ID',
+            'discord_announce_channel_id' => 'Discord announce channel ID',
+        ],
+        'help' => [
+            'description_jsonb' => 'Translatable JSON content (locale → text). Phase 7 adds a structured locale editor.',
+        ],
+    ],
+
+    'clan_tag' => [
+        'label' => 'Clan tag',
+        'plural_label' => 'Clan tags',
+        'fields' => [
+            'slug' => 'Slug',
+            'label' => 'Label (JSONB, locale-keyed)',
+            'label_locale' => 'Locale',
+            'label_text' => 'Label text',
+            'color' => 'Color',
+        ],
+    ],
+
+    'clan_membership' => [
+        'label' => 'Membership',
+        'plural_label' => 'Memberships',
+        'fields' => [
+            'user' => 'User',
+            'clan' => 'Clan',
+            'role' => 'Role',
+            'joined_at' => 'Joined',
+            'left_at' => 'Left',
+        ],
+    ],
+
+    'clan_invite' => [
+        'label' => 'Invite',
+        'plural_label' => 'Invites',
+        'fields' => [
+            'clan' => 'Clan',
+            'user' => 'Invited user',
+            'invited_by' => 'Invited by',
+            'status' => 'Status',
+            'message' => 'Message',
+            'decided_at' => 'Decided at',
+        ],
+    ],
+
+    'clan_application' => [
+        'label' => 'Application',
+        'plural_label' => 'Applications',
+        'fields' => [
+            'clan' => 'Clan',
+            'user' => 'Applicant',
+            'status' => 'Status',
+            'message' => 'Message',
+            'decided_at' => 'Decided at',
         ],
     ],
 ];
