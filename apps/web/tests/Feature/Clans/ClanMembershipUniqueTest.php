@@ -60,7 +60,7 @@ it('rejects a second active membership when the first exists (service layer defe
     // Service-layer guard must throw a DomainException (invitee_in_clan).
     $service = app(ClanInviteService::class);
     expect(fn () => $service->accept($inviteB, $user))
-        ->toThrow(\DomainException::class);
+        ->toThrow(DomainException::class);
 
     // Only the first membership should exist.
     expect(ClanMembership::where('user_id', $user->id)->whereNull('left_at')->count())->toBe(1);
