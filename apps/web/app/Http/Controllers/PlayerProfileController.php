@@ -35,7 +35,7 @@ class PlayerProfileController extends Controller
             abort(404);
         }
 
-        $player->load(['privacy', 'user', 'memberships.clan']);
+        $player->load(['privacy', 'user']);
 
         return Inertia::render('Players/Show', [
             'player' => PublicPlayerData::fromPlayer($player, $viewer, $gate),
