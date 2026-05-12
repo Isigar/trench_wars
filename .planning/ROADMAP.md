@@ -13,7 +13,7 @@ Round 1 of Trenchwars walks from a deployable Laravel skeleton with Discord logi
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundations** — Deployable Laravel app with Discord login, admin panel, audit infrastructure, i18n plumbing, and Railway deploy.
-- [ ] **Phase 2: Clans & tags** — Clans exist as first-class entities; players have public profiles with privacy controls.
+- [x] **Phase 2: Clans & tags** — Clans exist as first-class entities; players have public profiles with privacy controls.
 - [ ] **Phase 3: Games & match types** — Admin can model any game's roles and match types fully in Filament; HLL is seeded.
 - [ ] **Phase 4: Matches (manual)** — Matches can be created, signed up to, played, and results entered manually.
 - [ ] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync).
@@ -79,7 +79,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
 - [x] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
 - [x] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+- [x] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ### Phase 3: Games & match types
@@ -276,7 +276,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations | 18/18 | Complete | 2026-05-04 |
-| 2. Clans & tags | 12/14 | In Progress|  |
+| 2. Clans & tags | 14/14 | Complete | 2026-05-12 |
 | 3. Games & match types | 0/TBD | Not started | - |
 | 4. Matches (manual) | 0/TBD | Not started | - |
 | 5. Discord bot v1 | 0/TBD | Not started | - |
