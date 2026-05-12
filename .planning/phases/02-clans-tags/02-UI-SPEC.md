@@ -1,10 +1,11 @@
 ---
 phase: 2
 slug: clans-tags
-status: draft
+status: approved
 shadcn_initialized: false
 preset: not applicable
 created: 2026-05-12
+reviewed_at: 2026-05-12T00:00:00Z
 ---
 
 # Phase 2 — UI Design Contract
