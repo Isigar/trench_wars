@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Source: .docs/05-database-schema.md § players.
@@ -26,9 +27,13 @@ class Player extends Model
     /** @use HasFactory<PlayerFactory> */
     use HasFactory;
 
+    use HasTranslations;
     use HasUuidPrimaryKey;
     use LogsActivity;
     use SoftDeletes;
+
+    /** @var list<string> */
+    public array $translatable = ['bio'];
 
     /** @var list<string> */
     protected $fillable = [
@@ -40,14 +45,6 @@ class Player extends Model
         'bio',
         'country_code',
     ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'bio' => 'array',
-        ];
-    }
 
     /**
      * Activity log options for Player mutations.

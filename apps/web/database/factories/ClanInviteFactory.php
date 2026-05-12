@@ -4,26 +4,31 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Clan;
+use App\Models\ClanInvite;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 
 /**
- * Wave 0 stub — plan 02-03 (Wave 1, Models) replaces this with the real definition.
- * Source analog: apps/web/database/factories/PlayerPrivacyFactory.php (FK pattern).
- *
- * String form of $model so PHP does not eager-load App\Models\ClanInvite before Wave 1 ships.
- * Wave 1 replaces $model with ClanInvite::class once the model exists.
- *
- * @extends Factory<Model>
+ * @extends Factory<ClanInvite>
  */
-final class ClanInviteFactory extends Factory
+class ClanInviteFactory extends Factory
 {
-    /** @phpstan-ignore-next-line */
-    protected $model = 'App\\Models\\ClanInvite';
+    protected $model = ClanInvite::class;
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
-        throw new \RuntimeException('Wave 0 stub - plan 02-03 (Models) replaces this with real definitions.');
+        return [
+            'clan_id' => Clan::factory(),
+            'invited_user_id' => User::factory(),
+            'inviting_user_id' => User::factory(),
+            'status' => 'pending',
+            'message' => fake()->sentence(),
+            'decided_at' => null,
+            'expires_at' => null,
+        ];
     }
 }

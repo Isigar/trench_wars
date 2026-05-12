@@ -33,15 +33,18 @@ it('preserves the locale-keyed bio shape across save + reload', function (): voi
     PlayerPrivacy::create(['player_id' => $player->id]);
 
     // Simulate what KeyValue dehydrates: an associative array of locale → text.
-    $player->bio = ['en' => 'Hello world', 'cs' => 'Ahoj svete'];
+    $player->setTranslation('bio', 'en', 'Hello world');
+    $player->setTranslation('bio', 'cs', 'Ahoj svete');
     $player->save();
 
     $reloaded = $player->fresh();
 
+    // HasTranslations resolves current locale via ->bio; use getTranslations() for the full map.
     // Postgres JSONB does not preserve key insertion order, so compare the
     // associative contents rather than the exact array order.
-    expect($reloaded->bio)->toBeArray();
-    expect($reloaded->bio)->toHaveKey('en', 'Hello world');
-    expect($reloaded->bio)->toHaveKey('cs', 'Ahoj svete');
-    expect($reloaded->bio)->toHaveCount(2);
+    $bioTranslations = $reloaded->getTranslations('bio');
+    expect($bioTranslations)->toBeArray();
+    expect($bioTranslations)->toHaveKey('en', 'Hello world');
+    expect($bioTranslations)->toHaveKey('cs', 'Ahoj svete');
+    expect($bioTranslations)->toHaveCount(2);
 });

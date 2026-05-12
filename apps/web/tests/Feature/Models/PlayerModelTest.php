@@ -18,8 +18,11 @@ it('soft-deletes', function (): void {
     expect(Player::withTrashed()->find($id))->not->toBeNull();
 });
 
-it('casts bio to array', function (): void {
+it('stores bio as translatable JSONB and resolves current locale', function (): void {
     $player = Player::factory()->create(['bio' => ['en' => 'hello']]);
     $player->refresh();
-    expect($player->bio)->toBe(['en' => 'hello']);
+    // HasTranslations resolves current locale — default locale is 'en'
+    expect($player->bio)->toBe('hello');
+    expect($player->getTranslation('bio', 'en'))->toBe('hello');
+    expect($player->getTranslations('bio'))->toBe(['en' => 'hello']);
 });
