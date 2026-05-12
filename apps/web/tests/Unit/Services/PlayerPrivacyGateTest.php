@@ -234,11 +234,11 @@ it('allowsSection: own profile always passes regardless of flag value', function
     $user = User::factory()->create();
     $player = Player::factory()
         ->has(PlayerPrivacy::factory()->state([
-            'show_discord_tag'   => false,
-            'show_clan_history'  => false,
+            'show_discord_tag' => false,
+            'show_clan_history' => false,
             'show_match_history' => false,
-            'show_stats'         => false,
-            'show_real_name'     => false,
+            'show_stats' => false,
+            'show_real_name' => false,
         ]), 'privacy')
         ->create(['user_id' => $user->id]);
 
@@ -269,7 +269,7 @@ it('allowsSection: throws InvalidArgumentException for unknown flag', function (
     $gate = new PlayerPrivacyGate;
 
     expect(fn () => $gate->allowsSection($player, $viewer, 'show_unknown_field'))
-        ->toThrow(\InvalidArgumentException::class);
+        ->toThrow(InvalidArgumentException::class);
 });
 
 // --------------------------------------------------------------------------
