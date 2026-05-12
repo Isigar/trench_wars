@@ -108,13 +108,15 @@ Accent (`var(--color-accent)`) is used **only** for:
 2. **Active nav item** — left-border 3px accent strip on the active nav link (Clans / Players), consistent with Phase 1's nav contract.
 3. **Clan tag badge border** — 1px border in `var(--color-accent)` on selected/applied filter tags on `/clans`; unselected tags use `--color-border`.
 4. **Filament primary** — inherited; no additional uses in new Filament resources.
+5. **Leader role badge border** — `1px border var(--color-accent)` on `ClanRoleBadge` when `role=leader` (semantic: Leader is the elevated authority on the clan; the accent border distinguishes them at a glance without a separate color).
+6. **Invite modal selected search result border** — `border border-[var(--color-accent)]` on the highlighted/selected result item in the player search list (semantic: keyboard navigation focus indicator within the search results list, distinct from the global focus ring).
 
 Accent is **NOT** used for:
 - Clan cards hover state (use `--color-surface-elevated` lift)
 - Player profile links
 - Tag badges in the "unselected" state on the directory filter bar
 - Privacy tier badges (use semantic status colors or `--color-text-muted`)
-- Role badges (Leader/Officer/Member/Recruit) — use `--color-surface-elevated` bg + `--color-text-muted` fg
+- Role badges for Officer/Member/Recruit — use `--color-surface-elevated` bg + `--color-text-muted` fg
 
 ### Status pill color assignments
 
@@ -174,7 +176,8 @@ Auth slot: when logged in, a `UserMenu` component (avatar + username + dropdown 
 │  └──────────┘  └──────────┘  └──────────┘                  │
 │  (responsive grid: 1 col mobile, 2 col sm+, 3 col lg+)      │
 │                                                              │
-│  [empty state if 0 results]                                  │
+│  [empty state — see copy below]                             │
+│  Two variants: filtered zero-results vs. no clans at all    │
 │                                                              │
 │  ── or when logged in + no active clan ──────────────────── │
 │  [ Create your clan ]   ← primary CTA, accent fill          │
@@ -188,6 +191,10 @@ Auth slot: when logged in, a `UserMenu` component (avatar + username + dropdown 
 - Tag filter pills: horizontal scroll row (overflow-x-auto, no scrollbar) of `ClanTagBadge` components. Selected tag gets accent border (`border-[var(--color-accent)]`); unselected gets `border-[var(--color-border)]`.
 - Clear link: ghost text `t('clans.filter.clear')` shown only when any filter is active. Label size, muted color.
 - Filter is client-side on the initial page data; deep-linking via query string `?tag=eu&q=search-term` is supported via Inertia `router.get`.
+
+**Empty state — two cases:**
+- **Filtered zero results** (search/tag active, no matches): render `role="status"` container with Body text `t('clans.directory.empty_results')`. Show the Clear filters link below the copy.
+- **Default zero clans** (no clans exist in the system, no filters active): render `role="status"` container with Body text `t('clans.directory.empty_default')`.
 
 **ClanCard component:**
 ```
@@ -261,7 +268,7 @@ Auth slot: when logged in, a `UserMenu` component (avatar + username + dropdown 
 - Member rows: `bg-[var(--color-surface)]`, border-b `border-[var(--color-border)]`, `p-3` (12px), `flex items-center gap-3`.
 - Avatar: 32×32px, `rounded-full`, initials fallback.
 - Name: Body (16px, 400). Clicking opens `/players/{slug}` if player has a public-facing profile.
-- Role badge: `ClanRoleBadge` — Label size (14px, 600), `font-mono`, `px-2 py-0.5`, `rounded-sm`. Leader gets accent border; others get standard surface-elevated bg.
+- Role badge: `ClanRoleBadge` — Label size (14px, 600), `font-mono`, `px-2 py-1`, `rounded-sm`. Leader gets accent border; others get standard surface-elevated bg.
 - Pagination: show max 20 members; if >20, show "Show all N members" link (ghost style, `t('clans.members.show_all', { count: N })`). Inertia partial reload on click.
 
 **Recent activity placeholder:**
@@ -399,7 +406,7 @@ Access gate: this route requires authentication AND an active clan membership wi
 **Applications tab:**
 - List of pending applications: `[Player name]`, message (truncated to 120 chars), submitted date, [Accept] primary small button, [Decline] ghost-danger small button.
 - Accept fires Inertia `router.post /my-clan/applications/{id}/accept`. Decline fires `router.post /my-clan/applications/{id}/decline`.
-- Empty state: `t('clans.applications.empty')` — "No pending applications."
+- Empty state: `t('clans.applications.empty')` — "No pending applications. Members can apply to join from the clan directory."
 
 **No clan state** (logged-in user visits `/my-clan` with no active membership):
 ```
@@ -532,9 +539,12 @@ All copy flows through `t()` (Vue) or `__()` (Blade/PHP). New namespace: `clans.
 | Directory filter clear | `clans.filter.clear` | **Clear filters** |
 | Directory filter tag label | `clans.filter.tag_label` | **Filter by tag** |
 | Directory search placeholder | `clans.directory.search_placeholder` | **Search clans…** |
+| Directory empty: filtered no results | `clans.directory.empty_results` | **No clans match your search. Try different keywords or clear the filters.** |
+| Directory empty: no clans exist | `clans.directory.empty_default` | **No clans have been created yet.** |
 | Member count (singular) | `clans.members.count_one` | **1 member** |
 | Member count (plural) | `clans.members.count_other` | **:count members** |
 | Show all members link | `clans.members.show_all` | **Show all :count members** |
+| Invite member button | `clans.members.invite_button` | **Invite member** |
 | Section: members | `clans.section.members` | **Members** |
 | Section: recent activity | `clans.section.recent_activity` | **Recent activity** |
 | Recent activity placeholder | `clans.activity.placeholder` | **Match history will appear here once this clan plays their first match.** |
@@ -557,7 +567,7 @@ All copy flows through `t()` (Vue) or `__()` (Blade/PHP). New namespace: `clans.
 | Create clan: not in clan body | `clans.no_clan.body` | **Join an existing clan from the directory or create your own.** |
 | Create clan: browse link | `clans.no_clan.browse` | **Browse clans** |
 | Invites tab empty | `clans.invites.empty` | **No pending invites. Invite members from the Members tab.** |
-| Applications tab empty | `clans.applications.empty` | **No pending applications.** |
+| Applications tab empty | `clans.applications.empty` | **No pending applications. Members can apply to join from the clan directory.** |
 | Invite modal title | `clans.invites.modal_title` | **Invite a member** |
 | Invite modal search label | `clans.invites.search_label` | **Search by username** |
 | Invite modal message label | `clans.invites.message_label` | **Message (optional)** |
@@ -574,6 +584,8 @@ All copy flows through `t()` (Vue) or `__()` (Blade/PHP). New namespace: `clans.
 | Decline application | `clans.applications.decline` | **Decline** |
 | Accept success toast | `clans.applications.accepted` | **Application accepted. :name has joined the clan.** |
 | Decline success toast | `clans.applications.declined` | **Application declined.** |
+
+**Note on single-word table-row action labels** (`Revoke`, `Accept`, `Decline`): These are intentionally terse. The row itself provides the noun context (player name, invite status, application message), making "Revoke" equivalent in meaning to "Revoke invite" and "Accept" / "Decline" equivalent to "Accept application" / "Decline application". Screen readers will announce the button label along with the row context (via `aria-label` on the button: `t('clans.invites.revoke') + ' ' + playerName`, etc.) — the implementation MUST add descriptive `aria-label` attributes to these buttons to complete the accessible name. Copy shorthand is justified by row context; ARIA label is required.
 
 ### New `lang/en/players.php` keys
 
@@ -643,6 +655,7 @@ Inherited from Phase 1 in full. Phase 2 additions:
 - **Search input in invite modal:** `aria-label="t('clans.invites.search_label')"`, `role="combobox"`, results list `role="listbox"`.
 - **Empty states:** `role="status"` on empty-state containers so screen readers announce content.
 - **Privacy notice:** Not an alert. Use a `<p>` with Body styling — no `role="alert"` (non-urgent).
+- **Table-row action buttons** (`Revoke`, `Accept`, `Decline`): each button MUST carry a descriptive `aria-label` that includes the player name, e.g. `aria-label="Revoke invite for {playerName}"`. The visible label is intentionally terse; the accessible name is complete.
 
 ---
 
@@ -704,6 +717,8 @@ Implementation passes this contract when:
 10. Five new Filament resources are reachable at `/admin`; each has a working Audit tab with the Phase 1 audit-tab partial.
 11. AA contrast is maintained on both themes for all new status pill combinations (verify `--color-success` text on surface bg and `--color-warning` text on surface bg).
 12. The per-clan accent override hook is in the Clan detail template (even though `clan.accent_color` is null for all P2 clans — the scope wrapper must exist for Phase 3+ to activate it).
+13. `/clans` with active filters and zero results renders the `clans.directory.empty_results` empty state with a "Clear filters" link.
+14. `/clans` with no clans in the system and no active filters renders the `clans.directory.empty_default` empty state.
 
 ---
 
@@ -752,3 +767,6 @@ Implementation passes this contract when:
 | Privacy 404 for private profiles | `.docs/05-database-schema.md` player_privacy + Phase 2 CONTEXT.md |
 | Component library (Reka UI) | `.docs/09-frontend.md` + `01-UI-SPEC.md` |
 | Mobile nav hidden on md breakpoint | `apps/web/resources/js/layouts/PublicLayout.vue` `hidden md:flex` pattern (codebase scan) |
+| BLOCK 1 fix: empty state i18n keys | gsd-ui-checker revision 1 (2026-05-12) |
+| BLOCK 2 fix: ClanRoleBadge py-0.5 → py-1 | gsd-ui-checker revision 1 (2026-05-12) |
+| FLAG fixes: invite_button key, applications.empty copy, accent list, a11y note | gsd-ui-checker revision 1 (2026-05-12) |
