@@ -87,4 +87,10 @@ class Clan extends Model
     {
         return $this->hasMany(ClanMembership::class)->whereNull('left_at');
     }
+
+    /** @return HasMany<ClanInvite, $this> */
+    public function invites(): HasMany
+    {
+        return $this->hasMany(ClanInvite::class);
+    }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\MyClan;
 
 use App\Data\ClanData;
+use App\Data\ClanInviteData;
 use App\Data\ClanMembershipData;
 use App\Http\Controllers\Controller;
 use App\Models\Clan;
+use App\Models\ClanInvite;
 use App\Models\ClanMembership;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,8 +28,8 @@ use Inertia\Response;
  *  2. Active membership with role 'member' or 'recruit' → redirect to public clan page
  *  3. Active membership with role 'leader' or 'officer' → render management page
  *
- * The invites/applications arrays are empty here; plans 02-10 and 02-11 wire
- * those respectively. The Vue page must tolerate empty lists.
+ * The invites prop is now wired (plan 02-10) with real pending ClanInvite data.
+ * The applications array is empty here; plan 02-11 wires that.
  */
 class MyClanController extends Controller
 {
@@ -64,11 +66,18 @@ class MyClanController extends Controller
         /** @var Collection<int, ClanMembership> $activeMembers */
         $activeMembers = $clan->activeMembers;
 
+        // Pending outgoing invites — eager-load invitee for display.
+        /** @var Collection<int, ClanInvite> $pendingInvites */
+        $pendingInvites = $clan->invites()
+            ->where('status', 'pending')
+            ->with(['invitee'])
+            ->get();
+
         return Inertia::render('MyClan/Index', [
             'membership' => ClanMembershipData::fromModel($membership),
             'clan' => ClanData::fromModel($clan),
             'members' => $activeMembers->map(fn (ClanMembership $m) => ClanMembershipData::fromModel($m))->values()->all(),
-            'invites' => [],
+            'invites' => ClanInviteData::collect($pendingInvites),
             'applications' => [],
         ]);
     }

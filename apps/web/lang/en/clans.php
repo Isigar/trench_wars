@@ -117,8 +117,14 @@ return [
         'send' => 'Send invite',
         'sent' => 'Invite sent.',
         'revoke' => 'Revoke',
+        'revoked' => 'Invite revoked.',
+        'accepted' => 'You have joined the clan.',
+        'declined' => 'Invite declined.',
         'error' => [
             'already_in_clan' => 'This player is already a member of a clan.',
+            'not_pending' => 'This invite is no longer pending.',
+            'duplicate_invite' => 'This player already has a pending invite to this clan.',
+            'invitee_in_clan' => 'You are already a member of a clan.',
         ],
     ],
 
