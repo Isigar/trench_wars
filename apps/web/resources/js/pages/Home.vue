@@ -13,9 +13,8 @@ import { computed } from 'vue';
 const { t } = useT();
 const page = usePage();
 // page.props.auth is typed as AuthUser | null by inertia.d.ts (WR-03 fix).
-// Coalesce undefined → null for safety even though the declared type doesn't
-// include undefined.
-const user = computed<AuthUser | null>(() => page.props.auth ?? null);
+// Cast needed because page.props uses an index signature ([key: string]: unknown).
+const user = computed<AuthUser | null>(() => (page.props.auth as AuthUser | null) ?? null);
 </script>
 
 <template>

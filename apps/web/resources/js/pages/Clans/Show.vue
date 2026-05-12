@@ -1,6 +1,5 @@
 <!-- Source: 02-UI-SPEC.md § Page: /clans/{slug} (Public clan detail). -->
 <script setup lang="ts">
-import ClanRoleBadge from '@/components/clans/ClanRoleBadge.vue';
 import ClanTagBadge from '@/components/clans/ClanTagBadge.vue';
 import MemberRow from '@/components/clans/MemberRow.vue';
 import StatusBadge from '@/components/ui/StatusBadge.vue';

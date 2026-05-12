@@ -2,12 +2,11 @@
 <script setup lang="ts">
 import ClanTagBadge from '@/components/clans/ClanTagBadge.vue';
 import { useT } from '@/composables/useT';
-import type { App } from '@/types/api';
 import { computed } from 'vue';
 
 const { t } = useT();
 
-// Use the generated DTO type from api.d.ts
+// Use the generated DTO type from api.d.ts (ambient namespace — no import needed).
 type ClanData = App.Data.ClanData;
 
 const props = defineProps<{
@@ -26,7 +25,7 @@ const initials = computed(() =>
     props.clan.name
         .split(' ')
         .slice(0, 2)
-        .map((w) => w[0])
+        .map((w: string) => w[0])
         .join('')
         .toUpperCase(),
 );

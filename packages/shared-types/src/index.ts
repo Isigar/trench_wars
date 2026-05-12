@@ -15,6 +15,15 @@
 
 /// <reference path="./api.d.ts" />
 
+// Phase 1 DTOs
 export type UserData = App.Data.UserData;
 export type PlayerData = App.Data.PlayerData;
 export type PlayerPrivacyData = App.Data.PlayerPrivacyData;
+
+// Phase 2 DTOs — clan domain
+export type ClanData = App.Data.ClanData;
+export type ClanTagData = App.Data.ClanTagData;
+export type ClanMembershipData = App.Data.ClanMembershipData;
+export type ClanInviteData = App.Data.ClanInviteData;
+export type ClanApplicationData = App.Data.ClanApplicationData;
+export type PublicPlayerData = App.Data.PublicPlayerData;

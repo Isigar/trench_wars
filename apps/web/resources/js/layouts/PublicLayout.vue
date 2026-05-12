@@ -17,7 +17,8 @@ const year = new Date().getFullYear();
 const page = usePage();
 
 // Auth state: user from Inertia shared props.
-const user = computed<AuthUser | null>(() => page.props.auth ?? null);
+// Cast needed because page.props uses an index signature ([key: string]: unknown).
+const user = computed<AuthUser | null>(() => (page.props.auth as AuthUser | null) ?? null);
 
 // Active-link detection: check if current URL starts with the given path.
 function isActive(path: string): boolean {

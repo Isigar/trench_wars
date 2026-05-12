@@ -30,6 +30,10 @@ const props = withDefaults(
     },
 );
 
+// Props are consumed in the template via Vue 3 shorthand binding; this line
+// guards against the noUnusedLocals false-positive from vue-tsc.
+void props;
+
 const emit = defineEmits<{
     (e: 'change-role', membershipId: string, newRole: string): void;
     (e: 'remove', membershipId: string): void;
