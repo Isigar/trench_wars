@@ -265,7 +265,7 @@ Auth slot: when logged in, a `UserMenu` component (avatar + username + dropdown 
 **Members section:**
 - Privacy gate: if `show_clan_history` is `false` for a member's privacy settings, that member's row is omitted from the list. If `show_to = 'private'` the entire member count is hidden.
 - Show a privacy-muted notice when the roster is partially or fully hidden: `t('clans.privacy.roster_hidden_partial')` — "Some members have private profiles." Shown below the visible roster if any rows were hidden; shown instead of the roster if all rows are hidden.
-- Member rows: `bg-[var(--color-surface)]`, border-b `border-[var(--color-border)]`, `p-3` (12px), `flex items-center gap-3`.
+- Member rows: `bg-[var(--color-surface)]`, border-b `border-[var(--color-border)]`, `p-4` (16px), `flex items-center gap-4`.
 - Avatar: 32×32px, `rounded-full`, initials fallback.
 - Name: Body (16px, 400). Clicking opens `/players/{slug}` if player has a public-facing profile.
 - Role badge: `ClanRoleBadge` — Label size (14px, 600), `font-mono`, `px-2 py-1`, `rounded-sm`. Leader gets accent border; others get standard surface-elevated bg.
@@ -331,7 +331,7 @@ The Vue page receives only the permitted fields — it does NOT perform privacy 
 
 **Privacy notice on own profile (logged-in user viewing their own `/players/{slug}`):**
 - Show a subtle inline notice at the top of the page: `t('players.privacy.your_profile_note')` — "Some sections of your profile are hidden from other visitors. Adjust privacy in account settings."
-- Note rendered in `bg-[var(--color-surface)] border border-[var(--color-border)] p-3 rounded-md` at Body size, muted color. Uses `info` styling — no accent or danger colors.
+- Note rendered in `bg-[var(--color-surface)] border border-[var(--color-border)] p-4 rounded-md` at Body size, muted color. Uses `info` styling — no accent or danger colors.
 
 **Avatar:** 64×64px on desktop, 56×56px on mobile; `rounded-full` (circular for players; contrast with clan `rounded-lg`).
 
@@ -770,3 +770,4 @@ Implementation passes this contract when:
 | BLOCK 1 fix: empty state i18n keys | gsd-ui-checker revision 1 (2026-05-12) |
 | BLOCK 2 fix: ClanRoleBadge py-0.5 → py-1 | gsd-ui-checker revision 1 (2026-05-12) |
 | FLAG fixes: invite_button key, applications.empty copy, accent list, a11y note | gsd-ui-checker revision 1 (2026-05-12) |
+| BLOCK fix (revision 2): member rows + privacy notice p-3→p-4, gap-3→gap-4 | gsd-ui-checker revision 2 (2026-05-12) |
