@@ -1,5 +1,54 @@
 declare namespace App {
 namespace Data {
+export type ClanApplicationData = {
+id: string,
+clan_id: string,
+applicant_user_id: string,
+status: string,
+message: string | null,
+decided_at: string | null,
+decided_by: string | null,
+};
+export type ClanData = {
+id: string,
+slug: string,
+tag: string,
+name: string,
+description: Record<string, string> | null,
+country_code: string | null,
+status: string,
+discord_role_id: string | null,
+tags: App.Data.ClanTagData[],
+active_member_count: number,
+};
+export type ClanInviteData = {
+id: string,
+clan_id: string,
+invited_user_id: string,
+inviting_user_id: string,
+status: string,
+message: string | null,
+decided_at: string | null,
+expires_at: string | null,
+};
+export type ClanMembershipData = {
+id: string,
+clan_id: string,
+user_id: string,
+role: string,
+joined_at: string | null,
+left_at: string | null,
+invited_by: string | null,
+username: string | null,
+avatar_url: string | null,
+player_slug: string | null,
+};
+export type ClanTagData = {
+id: string,
+slug: string,
+label: Record<string, string> | null,
+color: string | null,
+};
 export type PlayerData = {
 id: string,
 user_id: string,
@@ -19,6 +68,20 @@ show_discord_tag: boolean,
 show_clan_history: boolean,
 show_match_history: boolean,
 show_stats: boolean,
+};
+export type PublicPlayerData = {
+id: string,
+slug: string,
+displayName: string,
+avatarUrl: string,
+isOwnProfile: boolean,
+countryCode: string | null,
+discordTag: undefined | string | null,
+bio: undefined | Record<string, string> | null,
+currentClan: undefined | App.Data.ClanMembershipData | null,
+clanHistory: undefined | Record<string, any>[] | null,
+matchHistory: undefined | any[] | null,
+stats: undefined | any[] | null,
 };
 export type UserData = {
 id: string,
