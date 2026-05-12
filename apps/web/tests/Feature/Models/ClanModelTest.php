@@ -2,13 +2,51 @@
 
 declare(strict_types=1);
 
-/*
-| Wave 0 stub — replaced by plan 02-03 (Wave 1, Models).
-| Covers REQ-tenancy-multi-clan: Clan model with LogsActivity, HasTranslations,
-| ClanMembership relations, and status transitions.
-| See .planning/phases/02-clans-tags/02-VALIDATION.md Per-Task Verification Map.
-*/
+use App\Models\Clan;
+use App\Models\ClanTag;
+use Illuminate\Database\QueryException;
+use Spatie\Activitylog\Models\Activity;
 
-it('placeholder Wave 0 stub - replace in Wave 1', function (): void {
-    expect(true)->toBeFalse();
+it('creates a clan with default status active', function (): void {
+    $clan = Clan::factory()->create();
+    expect($clan->status)->toBe('active');
+    expect($clan->slug)->not->toBeNull();
+    expect($clan->owner_user_id)->not->toBeNull();
+});
+
+it('enforces status CHECK constraint', function (): void {
+    expect(fn () => Clan::factory()->create(['status' => 'invalid']))
+        ->toThrow(QueryException::class);
+});
+
+it('rounds-trip description through HasTranslations', function (): void {
+    $clan = Clan::factory()->create(['description' => ['en' => 'Original']]);
+    $clan->setTranslation('description', 'en', 'Hi');
+    $clan->save();
+
+    $reloaded = $clan->fresh();
+    expect($reloaded->getTranslation('description', 'en'))->toBe('Hi');
+});
+
+it('attaches and detaches clan tags via BelongsToMany', function (): void {
+    $clan = Clan::factory()->create();
+    $tag = ClanTag::factory()->create();
+
+    $clan->tags()->attach($tag->id);
+    expect($clan->tags()->count())->toBe(1);
+
+    $clan->tags()->detach($tag->id);
+    expect($clan->tags()->count())->toBe(0);
+});
+
+it('logs activity on create (D-012)', function (): void {
+    $clan = Clan::factory()->create();
+
+    $activity = Activity::query()
+        ->where('subject_type', Clan::class)
+        ->where('subject_id', $clan->id)
+        ->where('event', 'created')
+        ->first();
+
+    expect($activity)->not->toBeNull();
 });
