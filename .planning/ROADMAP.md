@@ -65,7 +65,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A clan leader/officer can manage their clan from the "My Clan" page (edit profile, invite/accept members, assign roles) with audit log entries written for every change.
   4. The `discord_guild` table holds exactly one row, and each clan stores a `discord_role_id` rather than its own guild id.
   5. A player has at most one active `ClanMembership` (enforced by partial unique index), and membership history is preserved when they leave or move clans.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ### Phase 3: Games & match types
@@ -77,7 +91,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. An admin can create a GameMatchType (e.g. "Scrim 50v50") and set `GameMatchTypeRoleLimit` capacities per role through Filament Relation Managers.
   3. Seeded HLL data exists out of the box (Commander, Officer, SL, Rifleman, Assault, AR, Medic, Engineer, Support, HMG, AT, Sniper, Spotter, Tank Cmdr, Crewman + starter match types: Scrim 50v50, Skirmish 6v6, Friendly, Tournament, Clan War) and is fully editable post-seed.
   4. Adding a new game requires zero code changes — only Filament data entry.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ### Phase 4: Matches (manual)
@@ -90,7 +118,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A public visitor can view the match calendar at `/matches` and any match detail page at `/matches/{id}` with slot availability rendered.
   4. An organiser/admin can enter or override a match result (winner, scores, MVPs) in Filament and the change is audited.
   5. Tag-restricted matches reject signups from clans whose tags are not in `match_access_rules`, and creating a public match auto-creates a kept-in-sync `Event` row.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ### Phase 5: Discord bot v1
@@ -103,7 +145,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. When a match is created on the website, the host clan's announce channel receives an embed with RSVP buttons, persisted in `discord_outbound_messages` (`pending → sent | failed`) for durability.
   4. Joining or leaving a clan on the website triggers Discord role assignment/removal via Horizon-retried jobs; manual Discord-side role changes reconcile via `guildMemberUpdate` hook.
   5. All bot→web traffic uses the Sanctum `bot:*` scoped token + `X-Bot-Acts-As-User` header, and audit log entries correctly attribute the human causer behind every Discord action.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 
 ### Phase 6: Tournaments & brackets
 **Goal**: Deliver tournaments as a first-class round-1 capability — formats, bracket generation, public bracket views, standings, and admin tooling for forfeits/withdrawals.
@@ -115,7 +171,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A public visitor can open a tournament page at `/tournaments/{slug}` and switch between Overview, Bracket, Schedule, Standings, and Participants tabs; the bracket renders in custom Vue + SVG components with live polling every 30s during active rounds.
   4. When a bracket match finishes, `winner_participant_id` is recorded and the next bracket pulls participants via `advances_to_bracket_id` automatically; standings recompute with format-appropriate tiebreakers.
   5. Admin can reseed (when no matches played in a stage), forfeit, withdraw a participant, and recalculate standings via Filament actions, all audited.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ### Phase 7: CMS
@@ -128,7 +198,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The full round-1 public surface (clans, players, calendar, bracket views, articles) is reachable without authentication, with SSR enabled in production for first paint on public pages.
   4. Postgres FTS search works on articles, clans, and players via a header search bar and `/search?q=…` results page.
   5. Sitemap and meta tags are emitted; `<html lang>` reflects active locale; Discord announce on publish is wired (per-article configurable).
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ### Phase 8: RCON automation
@@ -141,7 +225,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. When a booked match runs, `rcon-worker` opens a CRCON session, streams normalised events to `web` via HMAC-signed `POST /api/internal/match/{id}/events`, and at `match_end` the system auto-populates `MatchResult` (`source = 'rcon'`) plus per-player `MatchPlayerStat` rows.
   4. CRCON failure modes (unreachable on session open, mid-match log gap, key rotated) degrade gracefully — match flagged for manual entry, error event surfaced in admin, manual override still wins.
   5. Two clans can complete the full round-1 happy path end-to-end: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded result + per-player stats — without manual data entry on the happy path.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 
 ### Phase 9: Polish
 **Goal**: Buffer milestone covering the things every shipping product needs but that don't fit cleanly into a feature-driven phase — notifications, search depth, leaderboards, mod tooling, performance, accessibility, and hardening.
@@ -153,7 +251,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Moderators have bulk actions, ban/suspend tooling, and a dispute resolution workflow for match results in Filament — all audited.
   4. A performance pass has eliminated obvious N+1s, applied a documented cache-key strategy, and image variants serve as WebP at appropriate sizes; pages on the round-1 public surface render in target time budgets.
   5. An accessibility pass has verified AA contrast on both themes, keyboard-only navigation through every public flow, and visible focus rings; rate-limit and abuse-vector hardening pass is documented.
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
+- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
+- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
+- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
+- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
+- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
+- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 ## Progress
