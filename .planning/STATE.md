@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: "Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap)."
-last_updated: "2026-05-12T18:30:41.330Z"
+last_updated: "2026-05-12T18:34:26.914Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 9
   completed_phases: 1
   total_plans: 32
-  completed_plans: 21
+  completed_plans: 22
   percent: 11
 ---
 
@@ -62,6 +62,7 @@ Progress: [██████████] 100%
 | Phase 01 P14 | 9m 9s | 2 tasks | 14 files |
 | Phase 01 P18 | 6min | 2 tasks tasks | 4 files files |
 | Phase 02-clans-tags P02 | 140 | 2 tasks | 7 files |
+| Phase 02-clans-tags P04 | 126s | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 01]: Plan 01-18: phase verification report doubles as the canonical phase-close artifact (M1..M7 traceability + ROADMAP SC-1..SC-5 mapping); manual smokes deferred to operator per autonomous-mode handoff
 - [Phase ?]: [Phase 01]: Plan 01-18: Rule 3 fix added @types/node to packages/shared-types/package.json — pre-existing config gap from plan 01-15 surfaced when running bot/rcon-worker/shared-types pipelines as part of phase close; strictly additive (no architectural change)
 - [Phase ?]: [Phase 01]: Plan 01-18: pnpm-lock.yaml committed at repo root for the first time (4193 lines) — improves reproducibility; CI workflows already use --no-frozen-lockfile so optional but recommended
+- [Phase 02]: Plan 02-04: DiscordGuildSeeder uses firstOrCreate([]) singleton trick — empty $attributes matches any existing row; D-003 operational enforcement; admin fills guild_id via Filament edit (plan 02-13)
+- [Phase 02]: Plan 02-04: ClanTagSeeder uses firstOrCreate(['slug' => $slug]) — UNIQUE slug column is the idempotency key; 3 starter tags (EU/NA/Tier-1) with translatable JSONB labels (D-013)
+- [Phase 02]: Plan 02-04: DiscordGuildSingleRowTest documents operational-only enforcement contract (RESEARCH.md Pattern 4 — DB layer accepts second row; gate is seeder+Filament no-Create page in plan 02-13)
 
 ### Pending Todos
 
@@ -154,6 +158,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-12T18:30:41.326Z
-Stopped at: Plan 01-13 complete (wave 7; deps 01-12 satisfied). Four P1 Filament resources (User/Player/Role/Permission) with list/view/edit pages — UserResource omits Create (D-002 OAuth-only mint), PlayerResource omits Create (first-login mints, plan 09) + inline player_privacy Section via ->relationship('privacy'), RoleResource pins guard_name='web' twice (Form Select disabled + CreateRole::mutateFormDataBeforeCreate — Pitfall 4 defence-in-depth), PermissionResource List+Edit only (no Create — admin grants via tinker/artisan). AdminPanelProvider->resources([]) populated with all 4 classes. lang/en/admin.php extended with user/player/role/permission keys (D-013). FilamentResourcesPresentTest adds 5 Pest tests; full suite 45/45 green; Pint + PHPStan L8 clean. 15/18 plans done (83%). Resume with /gsd-execute-phase to run remaining plans (01-14 audit tab, 01-15 spatie-laravel-data + ts types — likely already in flight in parallel — 01-18 final phase wrap).
+Last session: 2026-05-12T18:34:26.910Z
+Stopped at: Plan 02-04 complete (Wave 1). DiscordGuildSeeder + ClanTagSeeder + DatabaseSeeder wiring. 2 Wave 0 stubs replaced with 5 GREEN tests. D-003 operational enforcement asserted. PHPStan + Pint clean. 22/32 plans complete (69%).
 Resume file: None
