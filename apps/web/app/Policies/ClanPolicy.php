@@ -24,6 +24,23 @@ use App\Models\User;
 final class ClanPolicy
 {
     /**
+     * Admins bypass all policy checks (Rule 2 — admin-access grants full CRUD via Filament).
+     * Without this, ClanPolicy::update() would deny admin users who are not active clan members.
+     * Guest actors ($actor = null) receive no bypass — they fall through to individual methods.
+     *
+     * Uses getPermissionNames() instead of hasPermissionTo() to avoid a DB-level exception
+     * when the permissions table is empty (e.g. in tests that skip PermissionSeeder).
+     */
+    public function before(?User $actor, string $ability): ?bool
+    {
+        if ($actor !== null && $actor->getPermissionNames()->contains('admin-access')) {
+            return true;
+        }
+
+        return null;
+    }
+
+    /**
      * Any user (including guests) may view a clan.
      * The controller decides whether to render 404 based on status.
      */
