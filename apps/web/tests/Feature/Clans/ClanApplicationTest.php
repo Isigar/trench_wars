@@ -2,13 +2,367 @@
 
 declare(strict_types=1);
 
+use App\Models\Clan;
+use App\Models\ClanApplication;
+use App\Models\ClanMembership;
+use App\Models\User;
+use Spatie\Activitylog\Models\Activity;
+
 /*
-| Wave 0 stub — replaced by plan 02-11 (Wave 4, Applications).
+| Source: 02-11-PLAN.md Task 3 — replaces Wave 0 stub.
+|
 | Covers REQ-tenancy-multi-clan: ClanApplication state machine transitions
-| pending -> accepted | declined | cancelled.
-| See .planning/phases/02-clans-tags/02-VALIDATION.md Per-Task Verification Map.
+| pending -> accepted | declined | cancelled
+|
+| Trust boundaries tested (from threat model):
+|   T-02-07-01 Accept only by Leader/Officer of target clan
+|   T-02-07-02 Re-accept already-accepted application fails
+|   T-02-07-03 Accept fails if applicant joined another clan in the meantime (atomicity)
+|   T-02-07-04 Cross-clan listing prevention (implicit in route scoping)
 */
 
-it('placeholder Wave 0 stub - replace in Wave 4', function (): void {
-    expect(true)->toBeFalse();
+// ---------------------------------------------------------------------------
+// Shared setup
+// ---------------------------------------------------------------------------
+
+/**
+ * Create a clan with a leader, officer, and regular member.
+ * Returns [$clan, $leader, $officer, $member, $leaderMembership, $officerMembership, $memberMembership].
+ *
+ * @return array{Clan, User, User, User, ClanMembership, ClanMembership, ClanMembership}
+ */
+function setupApplicationClan(): array
+{
+    $leader = User::factory()->create();
+    $officer = User::factory()->create();
+    $member = User::factory()->create();
+
+    $clan = Clan::factory()->create(['owner_user_id' => $leader->id]);
+
+    $leaderMembership = ClanMembership::factory()->create([
+        'clan_id' => $clan->id,
+        'user_id' => $leader->id,
+        'role' => 'leader',
+    ]);
+    $officerMembership = ClanMembership::factory()->create([
+        'clan_id' => $clan->id,
+        'user_id' => $officer->id,
+        'role' => 'officer',
+    ]);
+    $memberMembership = ClanMembership::factory()->create([
+        'clan_id' => $clan->id,
+        'user_id' => $member->id,
+        'role' => 'member',
+    ]);
+
+    return [$clan, $leader, $officer, $member, $leaderMembership, $officerMembership, $memberMembership];
+}
+
+// ===========================================================================
+// POST /my-clan/applications/{application}/accept — Leader/Officer accepts
+// ===========================================================================
+
+it('Leader accepts pending application: status=accepted, ClanMembership created with role=recruit', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.accept', $app->id))
+        ->assertRedirect();
+
+    expect($app->fresh()->status)->toBe('accepted');
+    expect($app->fresh()->decided_at)->not->toBeNull();
+    expect($app->fresh()->decided_by)->toBe($leader->id);
+
+    $membership = ClanMembership::where('user_id', $applicant->id)
+        ->where('clan_id', $clan->id)
+        ->whereNull('left_at')
+        ->first();
+
+    expect($membership)->not->toBeNull();
+    expect($membership->role)->toBe('recruit');
+    expect($membership->invited_by)->toBe($leader->id);
+});
+
+it('Officer accepts pending application: same as leader', function (): void {
+    [$clan, $leader, $officer] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($officer)
+        ->post(route('my-clan.applications.accept', $app->id))
+        ->assertRedirect();
+
+    expect($app->fresh()->status)->toBe('accepted');
+
+    $membership = ClanMembership::where('user_id', $applicant->id)
+        ->where('clan_id', $clan->id)
+        ->whereNull('left_at')
+        ->first();
+
+    expect($membership)->not->toBeNull();
+    expect($membership->role)->toBe('recruit');
+    expect($membership->invited_by)->toBe($officer->id);
+});
+
+it('Member cannot accept application (403)', function (): void {
+    [$clan, $leader, $officer, $member] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($member)
+        ->post(route('my-clan.applications.accept', $app->id))
+        ->assertStatus(403);
+
+    expect($app->fresh()->status)->toBe('pending');
+    expect(ClanMembership::where('user_id', $applicant->id)->count())->toBe(0);
+});
+
+it('Accept fails when applicant joined another clan in the meantime: 422 and transaction rolled back', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    // Simulate race condition: applicant joined another clan before leader accepts.
+    $otherClan = Clan::factory()->create();
+    ClanMembership::factory()->create([
+        'clan_id' => $otherClan->id,
+        'user_id' => $applicant->id,
+        'role' => 'member',
+    ]);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.accept', $app->id))
+        ->assertSessionHasErrors(['application']);
+
+    // Transaction must have rolled back — application still pending.
+    expect($app->fresh()->status)->toBe('pending');
+
+    // No membership created in the target clan.
+    expect(ClanMembership::where('user_id', $applicant->id)->where('clan_id', $clan->id)->count())->toBe(0);
+});
+
+it('Accept fails for already-accepted application (422 not_pending)', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'accepted',
+        'decided_at' => now(),
+        'decided_by' => $leader->id,
+    ]);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.accept', $app->id))
+        ->assertSessionHasErrors(['application']);
+});
+
+// ===========================================================================
+// POST /my-clan/applications/{application}/decline — Leader/Officer declines
+// ===========================================================================
+
+it('Leader declines pending application: status=declined, decided_by=leader, no membership created', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.decline', $app->id))
+        ->assertRedirect();
+
+    expect($app->fresh()->status)->toBe('declined');
+    expect($app->fresh()->decided_at)->not->toBeNull();
+    expect($app->fresh()->decided_by)->toBe($leader->id);
+    expect(ClanMembership::where('user_id', $applicant->id)->count())->toBe(0);
+});
+
+it('Officer declines pending application', function (): void {
+    [$clan, $leader, $officer] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($officer)
+        ->post(route('my-clan.applications.decline', $app->id))
+        ->assertRedirect();
+
+    expect($app->fresh()->status)->toBe('declined');
+    expect($app->fresh()->decided_by)->toBe($officer->id);
+});
+
+it('Cross-clan Leader cannot accept or decline another clan\'s application (403)', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+
+    // Another clan with its own pending application.
+    $otherLeader = User::factory()->create();
+    $otherClan = Clan::factory()->create(['owner_user_id' => $otherLeader->id]);
+    ClanMembership::factory()->create([
+        'clan_id' => $otherClan->id,
+        'user_id' => $otherLeader->id,
+        'role' => 'leader',
+    ]);
+    $otherApplicant = User::factory()->create();
+    $otherApp = ClanApplication::factory()->create([
+        'clan_id' => $otherClan->id,
+        'applicant_user_id' => $otherApplicant->id,
+        'status' => 'pending',
+    ]);
+
+    // $leader from first clan attempts to accept/decline the other clan's application.
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.accept', $otherApp->id))
+        ->assertStatus(403);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.decline', $otherApp->id))
+        ->assertStatus(403);
+
+    expect($otherApp->fresh()->status)->toBe('pending');
+});
+
+// ===========================================================================
+// POST /applications/{application}/cancel — applicant cancels own application
+// ===========================================================================
+
+it('Applicant cancels own pending application: status=cancelled, decided_at set', function (): void {
+    [$clan] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($applicant)
+        ->post(route('applications.cancel', $app->id))
+        ->assertRedirect();
+
+    expect($app->fresh()->status)->toBe('cancelled');
+    expect($app->fresh()->decided_at)->not->toBeNull();
+});
+
+it('Non-applicant cannot cancel another user\'s application (403)', function (): void {
+    [$clan] = setupApplicationClan();
+    $applicant = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($otherUser)
+        ->post(route('applications.cancel', $app->id))
+        ->assertStatus(403);
+
+    expect($app->fresh()->status)->toBe('pending');
+});
+
+// ===========================================================================
+// Activity log — transitions are audited
+// ===========================================================================
+
+it('LogsActivity row is written when application is accepted', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.accept', $app->id));
+
+    // Filter on the 'updated' event to avoid getting the 'created' activity
+    // from the factory call (which has causer_id = null since no user was authed).
+    $activity = Activity::where('subject_type', ClanApplication::class)
+        ->where('subject_id', $app->id)
+        ->where('event', 'updated')
+        ->latest()
+        ->first();
+
+    expect($activity)->not->toBeNull();
+    expect($activity->causer_id)->toBe($leader->id);
+});
+
+it('LogsActivity row is written when application is declined', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($leader)
+        ->post(route('my-clan.applications.decline', $app->id));
+
+    $activity = Activity::where('subject_type', ClanApplication::class)
+        ->where('subject_id', $app->id)
+        ->where('event', 'updated')
+        ->latest()
+        ->first();
+
+    expect($activity)->not->toBeNull();
+    expect($activity->causer_id)->toBe($leader->id);
+});
+
+it('LogsActivity row is written when applicant cancels application', function (): void {
+    [$clan] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($applicant)
+        ->post(route('applications.cancel', $app->id));
+
+    $activity = Activity::where('subject_type', ClanApplication::class)
+        ->where('subject_id', $app->id)
+        ->where('event', 'updated')
+        ->latest()
+        ->first();
+
+    expect($activity)->not->toBeNull();
+    expect($activity->causer_id)->toBe($applicant->id);
 });
