@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\ClanDirectoryController;
 use App\Http\Controllers\Clans\ClanCreateController;
 use App\Http\Controllers\ClanShowController;
+use App\Http\Controllers\MyClan\ClanApplicationController;
 use App\Http\Controllers\MyClan\ClanInviteController;
 use App\Http\Controllers\MyClan\MyClanController;
 use App\Http\Controllers\MyClan\MyClanMemberController;
@@ -48,10 +49,18 @@ Route::middleware('auth')->group(function (): void {
         // Invite management — Leader/Officer sends and revokes invites.
         Route::post('/invites', [ClanInviteController::class, 'store'])->name('invites.store');
         Route::delete('/invites/{invite}', [ClanInviteController::class, 'destroy'])->name('invites.destroy');
+
+        // Application management — Leader/Officer accepts or declines pending applications.
+        Route::post('/applications/{application}/accept', [ClanApplicationController::class, 'accept'])->name('applications.accept');
+        Route::post('/applications/{application}/decline', [ClanApplicationController::class, 'decline'])->name('applications.decline');
     });
 
     // Invite accept/decline — NOT under /my-clan prefix because the invitee may not
     // yet have any clan membership.
     Route::post('/invites/{invite}/accept', [ClanInviteController::class, 'accept'])->name('invites.accept');
     Route::post('/invites/{invite}/decline', [ClanInviteController::class, 'decline'])->name('invites.decline');
+
+    // Application cancel — NOT under /my-clan prefix because the applicant may not
+    // yet have any clan membership.
+    Route::post('/applications/{application}/cancel', [ClanApplicationController::class, 'cancel'])->name('applications.cancel');
 });

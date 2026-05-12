@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\MyClan;
 
+use App\Data\ClanApplicationData;
 use App\Data\ClanData;
 use App\Data\ClanInviteData;
 use App\Data\ClanMembershipData;
 use App\Http\Controllers\Controller;
 use App\Models\Clan;
+use App\Models\ClanApplication;
 use App\Models\ClanInvite;
 use App\Models\ClanMembership;
 use App\Models\User;
@@ -20,6 +22,7 @@ use Inertia\Response;
 
 /**
  * Source: 02-09-PLAN.md Task 2 + RESEARCH.md Pattern 7 — My Clan access gate.
+ * Finalised in plan 02-11 with applications prop.
  *
  * GET /my-clan — single entry point for the My Clan tab page.
  *
@@ -28,8 +31,8 @@ use Inertia\Response;
  *  2. Active membership with role 'member' or 'recruit' → redirect to public clan page
  *  3. Active membership with role 'leader' or 'officer' → render management page
  *
- * The invites prop is now wired (plan 02-10) with real pending ClanInvite data.
- * The applications array is empty here; plan 02-11 wires that.
+ * Both invites (plan 02-10) and applications (plan 02-11) are fully wired.
+ * T-02-07-04 mitigation: applications are scoped via membership->clan->applications().
  */
 class MyClanController extends Controller
 {
@@ -73,12 +76,19 @@ class MyClanController extends Controller
             ->with(['invitee'])
             ->get();
 
+        // Pending incoming applications — eager-load applicant and their player (T-02-07-04 scoped via clan relation).
+        /** @var Collection<int, ClanApplication> $pendingApplications */
+        $pendingApplications = $clan->applications()
+            ->where('status', 'pending')
+            ->with(['applicant.player'])
+            ->get();
+
         return Inertia::render('MyClan/Index', [
             'membership' => ClanMembershipData::fromModel($membership),
             'clan' => ClanData::fromModel($clan),
             'members' => $activeMembers->map(fn (ClanMembership $m) => ClanMembershipData::fromModel($m))->values()->all(),
             'invites' => ClanInviteData::collect($pendingInvites),
-            'applications' => [],
+            'applications' => ClanApplicationData::collect($pendingApplications),
         ]);
     }
 }

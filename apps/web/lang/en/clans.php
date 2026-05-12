@@ -132,8 +132,14 @@ return [
         'empty' => 'No pending applications. Members can apply to join from the clan directory.',
         'accept' => 'Accept',
         'decline' => 'Decline',
+        'cancel' => 'Cancel application',
         'accepted' => 'Application accepted. :name has joined the clan.',
         'declined' => 'Application declined.',
+        'cancelled' => 'Your application has been cancelled.',
+        'error' => [
+            'not_pending' => 'This application is no longer pending.',
+            'already_in_clan' => 'The applicant is already a member of a clan.',
+        ],
     ],
 
     'actions' => [

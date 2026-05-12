@@ -93,4 +93,10 @@ class Clan extends Model
     {
         return $this->hasMany(ClanInvite::class);
     }
+
+    /** @return HasMany<ClanApplication, $this> */
+    public function applications(): HasMany
+    {
+        return $this->hasMany(ClanApplication::class);
+    }
 }
