@@ -2,13 +2,27 @@
 
 declare(strict_types=1);
 
-/*
-| Wave 0 stub — replaced by plan 02-04 (Wave 1, Seeders).
-| Covers REQ-tenancy-single-guild: discord_guild table exists and seeder creates
-| exactly one row with null fields for Discord IDs.
-| See .planning/phases/02-clans-tags/02-VALIDATION.md Per-Task Verification Map.
-*/
+use App\Models\DiscordGuild;
+use Database\Seeders\DiscordGuildSeeder;
 
-it('placeholder Wave 0 stub - replace in Wave 1', function (): void {
-    expect(true)->toBeFalse();
+it('seeds exactly one discord_guild row', function (): void {
+    $this->seed(DiscordGuildSeeder::class);
+
+    expect(DiscordGuild::count())->toBe(1);
+});
+
+it('is idempotent — re-running the seeder leaves one row', function (): void {
+    $this->seed(DiscordGuildSeeder::class);
+    $this->seed(DiscordGuildSeeder::class);
+
+    expect(DiscordGuild::count())->toBe(1);
+});
+
+it('seeded row has nullable fields null until admin fills them', function (): void {
+    $this->seed(DiscordGuildSeeder::class);
+
+    $row = DiscordGuild::first();
+    expect($row)->not->toBeNull();
+    expect($row->guild_id)->toBeNull();
+    expect($row->name)->toBeNull();
 });
