@@ -72,7 +72,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
 - [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
+- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
 - [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
 - [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
 - [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
@@ -97,7 +97,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
+- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
 - [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
 - [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
 - [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
@@ -123,7 +123,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
 - [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
+- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
 - [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
 - [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
 - [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
@@ -149,7 +149,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
 - [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
 - [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
+- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
 - [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
 - [ ] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
@@ -174,7 +174,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 14 plans
 - [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
 - [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
+- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
 - [ ] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
@@ -199,8 +199,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Postgres FTS search works on articles, clans, and players via a header search bar and `/search?q=…` results page.
   5. Sitemap and meta tags are emitted; `<html lang>` reflects active locale; Discord announce on publish is wired (per-article configurable).
 **Plans**: 14 plans
-- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
 - [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
@@ -276,7 +276,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations | 18/18 | Complete | 2026-05-04 |
-| 2. Clans & tags | 6/14 | In Progress|  |
+| 2. Clans & tags | 7/14 | In Progress|  |
 | 3. Games & match types | 0/TBD | Not started | - |
 | 4. Matches (manual) | 0/TBD | Not started | - |
 | 5. Discord bot v1 | 0/TBD | Not started | - |
