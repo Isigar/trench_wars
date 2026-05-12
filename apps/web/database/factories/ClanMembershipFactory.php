@@ -4,26 +4,30 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Clan;
+use App\Models\ClanMembership;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 
 /**
- * Wave 0 stub — plan 02-03 (Wave 1, Models) replaces this with the real definition.
- * Source analog: apps/web/database/factories/PlayerPrivacyFactory.php (FK pattern).
- *
- * String form of $model so PHP does not eager-load App\Models\ClanMembership before Wave 1 ships.
- * Wave 1 replaces $model with ClanMembership::class once the model exists.
- *
- * @extends Factory<Model>
+ * @extends Factory<ClanMembership>
  */
-final class ClanMembershipFactory extends Factory
+class ClanMembershipFactory extends Factory
 {
-    /** @phpstan-ignore-next-line */
-    protected $model = 'App\\Models\\ClanMembership';
+    protected $model = ClanMembership::class;
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
-        throw new \RuntimeException('Wave 0 stub - plan 02-03 (Models) replaces this with real definitions.');
+        return [
+            'clan_id' => Clan::factory(),
+            'user_id' => User::factory(),
+            'role' => 'member',
+            'joined_at' => now(),
+            'left_at' => null,
+            'invited_by' => null,
+        ];
     }
 }

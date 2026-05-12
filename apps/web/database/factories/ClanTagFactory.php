@@ -4,26 +4,28 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\ClanTag;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
- * Wave 0 stub — plan 02-03 (Wave 1, Models) replaces this with the real definition.
- * Source analog: apps/web/database/factories/PlayerFactory.php.
- *
- * String form of $model so PHP does not eager-load App\Models\ClanTag before Wave 1 ships.
- * Wave 1 replaces $model with ClanTag::class once the model exists.
- *
- * @extends Factory<Model>
+ * @extends Factory<ClanTag>
  */
-final class ClanTagFactory extends Factory
+class ClanTagFactory extends Factory
 {
-    /** @phpstan-ignore-next-line */
-    protected $model = 'App\\Models\\ClanTag';
+    protected $model = ClanTag::class;
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
-        throw new \RuntimeException('Wave 0 stub - plan 02-03 (Models) replaces this with real definitions.');
+        $slug = Str::slug(fake()->unique()->word());
+
+        return [
+            'slug' => $slug,
+            'label' => ['en' => Str::title($slug)],
+            'color' => fake()->hexColor(),
+        ];
     }
 }

@@ -4,26 +4,33 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Clan;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
- * Wave 0 stub — plan 02-03 (Wave 1, Models) replaces this with the real definition.
- * Source analog: apps/web/database/factories/PlayerFactory.php.
- *
- * String form of $model so PHP does not eager-load App\Models\Clan before Wave 1 ships.
- * Wave 1 replaces $model with Clan::class once the model exists.
- *
- * @extends Factory<Model>
+ * @extends Factory<Clan>
  */
-final class ClanFactory extends Factory
+class ClanFactory extends Factory
 {
-    /** @phpstan-ignore-next-line */
-    protected $model = 'App\\Models\\Clan';
+    protected $model = Clan::class;
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
-        throw new \RuntimeException('Wave 0 stub - plan 02-03 (Models) replaces this with real definitions.');
+        $name = fake()->unique()->company();
+
+        return [
+            'owner_user_id' => User::factory(),
+            'name' => $name,
+            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(4)),
+            'tag' => strtoupper(Str::random(3)),
+            'description' => ['en' => fake()->sentence()],
+            'country_code' => fake()->countryCode(),
+            'status' => 'active',
+        ];
     }
 }
