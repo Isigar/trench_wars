@@ -8,6 +8,7 @@ status: string,
 message: string | null,
 decided_at: string | null,
 decided_by: string | null,
+applicant_username: string | null,
 };
 export type ClanData = {
 id: string,

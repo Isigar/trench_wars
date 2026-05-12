@@ -88,7 +88,7 @@ class MyClanController extends Controller
             'clan' => ClanData::fromModel($clan),
             'members' => $activeMembers->map(fn (ClanMembership $m) => ClanMembershipData::fromModel($m))->values()->all(),
             'invites' => ClanInviteData::collect($pendingInvites),
-            'applications' => ClanApplicationData::collect($pendingApplications),
+            'applications' => ClanApplicationData::collectFromModels($pendingApplications),
         ]);
     }
 }

@@ -7,6 +7,13 @@
 // The PHP side returns `$request->user()?->only([...])` — i.e., the user
 // fields directly under `auth`, OR `null`. This declaration now matches.
 
+// Source: ZiggyVue plugin (tightenco/ziggy) registers `route()` globally on the Vue app.
+// Must be inside `declare global {}` because this file has top-level exports (module context).
+declare global {
+    /** Global Ziggy route helper — provided by ZiggyVue plugin at runtime. */
+    function route(name: string, params?: unknown, absolute?: boolean): string;
+}
+
 export interface AuthUser {
     id: string;
     discord_id: string;
