@@ -12,8 +12,8 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 ### Platform & Tenancy
 
 - [ ] **REQ-platform-vision**: Game-agnostic data model (Game / GameRole / GameMatchType / GameMatchTypeRoleLimit) is implemented and HLL is a seeded preset, not hard-coded. Additional games can be added without code changes. (D-007)
-- [ ] **REQ-tenancy-multi-clan**: Multi-clan league platform — one deployment hosts many clans with public clan directory, public player profiles, public match calendar, and public bracket viewer all reachable without authentication. (D-006)
-- [ ] **REQ-tenancy-single-guild**: One shared league Discord guild — `discord_guild` table holds exactly one row, each clan binds to a Discord role id (not a separate guild), no per-clan Discord servers in the model. (D-003)
+- [x] **REQ-tenancy-multi-clan**: Multi-clan league platform — one deployment hosts many clans with public clan directory, public player profiles, public match calendar, and public bracket viewer all reachable without authentication. (D-006)
+- [x] **REQ-tenancy-single-guild**: One shared league Discord guild — `discord_guild` table holds exactly one row, each clan binds to a Discord role id (not a separate guild), no per-clan Discord servers in the model. (D-003)
 
 ### Match Workflows
 
@@ -43,7 +43,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 ### Hosting & Constraints
 
 - [x] **REQ-constraint-railway-deploy**: Five-service Railway topology (web, worker, bot, rcon-worker, db, redis); secrets in Railway env groups; `.env.example` documents shape. Not optimised for self-hosting elsewhere round 1. (D-014)
-- [ ] **REQ-constraint-single-guild**: Single Discord guild for the entire league. (Reinforces REQ-tenancy-single-guild and D-003.)
+- [x] **REQ-constraint-single-guild**: Single Discord guild for the entire league. (Reinforces REQ-tenancy-single-guild and D-003.)
 
 ### Round-1 Acceptance Gates
 
@@ -109,9 +109,9 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 |-------------|-------|--------|
 | REQ-constraint-railway-deploy | Phase 1 | Complete |
 | REQ-constraint-en-launch-i18n-ready | Phase 1 | Complete |
-| REQ-tenancy-single-guild | Phase 2 | Pending |
-| REQ-constraint-single-guild | Phase 2 | Pending |
-| REQ-tenancy-multi-clan | Phase 2 | Pending |
+| REQ-tenancy-single-guild | Phase 2 | Complete |
+| REQ-constraint-single-guild | Phase 2 | Complete |
+| REQ-tenancy-multi-clan | Phase 2 | Complete |
 | REQ-goal-public-profiles | Phase 2 | Pending |
 | REQ-platform-vision | Phase 3 | Pending |
 | REQ-goal-match-workflows | Phase 4 | Pending |

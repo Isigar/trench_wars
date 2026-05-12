@@ -66,8 +66,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The `discord_guild` table holds exactly one row, and each clan stores a `discord_role_id` rather than its own guild id.
   5. A player has at most one active `ClanMembership` (enforced by partial unique index), and membership history is preserved when they leave or move clans.
 **Plans**: 14 plans
-- [ ] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [ ] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
+- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
+- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
 - [ ] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
 - [ ] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
 - [ ] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
