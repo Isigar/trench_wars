@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Plan 02-10 complete (Wave 4). ClanInviteService state machine + controller + 4 routes. 16 invite tests GREEN. MyClanController invites prop wired. PHPStan + Pint clean. 28/32 plans complete.
-last_updated: "2026-05-12T19:59:00.330Z"
+status: complete
+stopped_at: Phase 02 (Clans & tags) COMPLETE. All 14 plans executed. 214 Pest tests GREEN. PHPStan L8 OK. Pint clean. vue-tsc clean. 02-PHASE-VERIFICATION.md written. ROADMAP.md Phase 2 Complete.
+last_updated: "2026-05-12T21:30:00.000Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 9
-  completed_phases: 1
-  total_plans: 32
-  completed_plans: 31
-  percent: 11
+  completed_phases: 2
+  total_plans: 46
+  completed_plans: 32
+  percent: 22
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 01 — Foundations
+**Current focus:** Phase 03 — Games & match types
 
 ## Current Position
 
-Phase: 01 (Foundations) — COMPLETE
-Plan: 18 of 18 (all plans executed; 18/18 summaries on disk)
-Status: Phase complete — ready for verification
+Phase: 02 (Clans & tags) — COMPLETE
+Plan: 14 of 14 (all plans executed; 14/14 summaries on disk)
+Status: Phase 2 complete — ready for Phase 3
 Last activity: 2026-05-12
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (Phase 2)
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ Progress: [██████████] 100%
 | Phase 02-clans-tags P11 | 720 | 3 tasks | 11 files |
 | Phase 02-clans-tags P12 | 9 | 3 tasks | 14 files |
 | Phase 02-clans-tags P13 | 270 | 3 tasks | 14 files |
+| Phase 02-clans-tags P14 | ~25min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -148,6 +149,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 02-05: Optional|T|null union types on PublicPlayerData — required by PHP type system to store Optional in typed properties; VisibleDataFieldsResolver strips Optional from toArray()
 - [Phase ?]: Plan 02-05: PlayerPrivacyGate is stateless — no constructor injection, auto-resolved by Laravel container; own-profile bypass always grants full access regardless of tier or section flags
 - [Phase ?]: Plan 02-10: ClanInviteService stateless; accept() uses DB::transaction; Clan::invites() HasMany added (Rule 2)
+- [Phase 02]: Plan 02-14: ClanMembershipUniqueTest covers D-009 at the integration layer (service guard + DB partial-unique defence-in-depth + history-preserved + migrate:fresh durability)
+- [Phase 02]: Plan 02-14: vue-tsc errors fixed — ambient namespace imports (api.d.ts is not a module), index-signature cast on page.props.auth, unused imports
+- [Phase 02]: Plan 02-14: shared-types/src/index.ts updated with Phase 2 export type aliases (ClanData, ClanTagData, ClanMembershipData, ClanInviteData, ClanApplicationData, PublicPlayerData)
+- [Phase 02]: Plan 02-14: Phase 2 COMPLETE — 214 tests, all quality gates green, PHASE-VERIFICATION.md written, ROADMAP.md updated
 
 ### Pending Todos
 
@@ -169,6 +174,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-12T19:59:00.327Z
-Stopped at: Plan 02-10 complete (Wave 4). ClanInviteService state machine + controller + 4 routes. 16 invite tests GREEN. MyClanController invites prop wired. PHPStan + Pint clean. 28/32 plans complete.
+Last session: 2026-05-12T21:30:00.000Z
+Stopped at: Phase 02 (Clans & tags) COMPLETE. All 14 plans executed. 214 Pest tests GREEN (684 assertions). PHPStan L8 [OK] No errors. Pint 184 files clean. vue-tsc clean. shared-types typecheck clean. 02-PHASE-VERIFICATION.md written. ROADMAP.md Phase 2 Complete. Next: Phase 3 (Games & match types).
 Resume file: None
