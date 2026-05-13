@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 plan 05 COMPLETE — MatchSlotMaterialiserService snapshot-at-create + 7 GREEN tests; ready for plan 04-06 (MatchSignupService concurrency)
-last_updated: "2026-05-13T14:14:38.349Z"
+last_updated: "2026-05-13T14:28:51.396Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 47
+  completed_plans: 48
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 5 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
+Plan: 6 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -86,6 +86,7 @@ Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
 | Phase 04 P03 | 12 | 3 tasks | 20 files |
 | Phase 04 P04 | 5min | 1 task tasks | 3 files files |
 | Phase 04 P05 | 4min | 1 task tasks | 2 files files |
+| Phase 04 P06 | 9 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -204,6 +205,7 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 04]: D-04-05-A — MatchSlot snapshot semantics locked; slot.game_role_id FKs to game_roles (not RoleLimit), slot.sort_order is value snapshot. RoleLimit edits do NOT retroactively rewrite open match_slots
 - [Phase ?]: [Phase 04]: D-04-05-B — MatchSlotMaterialiserService uses direct 'use App\Models\GameMatch;' (no Pitfall 5 alias); canonical Phase 4 idiom per D-04-04-C
 - [Phase ?]: [Phase 04]: D-04-05-C — PHPStan L8 null-guard on $match->gameMatchType (BelongsTo nullable in PHPStan view); pathological-null returns 0 (semantically equivalent to empty roleLimits)
+- [Phase ?]: D-04-06: 5-guard order, parent-row lock, empty rules = open, GameMatch direct import, pcntl_fork concurrency test
 
 ### Pending Todos
 
@@ -225,6 +227,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T14:14:38.345Z
+Last session: 2026-05-13T14:28:44.714Z
 Stopped at: Phase 4 plan 05 COMPLETE — MatchSlotMaterialiserService snapshot-at-create + 7 GREEN tests; ready for plan 04-06 (MatchSignupService concurrency)
 Resume file: None
