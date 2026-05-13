@@ -194,21 +194,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The full round-1 public surface (clans, players, calendar, bracket views, articles) is reachable without authentication, with SSR enabled in production for first paint on public pages.
   4. Postgres FTS search works on articles, clans, and players via a header search bar and `/search?q=…` results page.
   5. Sitemap and meta tags are emitted; `<html lang>` reflects active locale; Discord announce on publish is wired (per-article configurable).
-**Plans**: 14 plans
-- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
-- [x] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
-- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
-- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
-- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
-- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
-- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+**Plans**: 13 plans
+- [x] 07-01-PLAN.md — Wave 0 scaffolding (4 composer + 5 npm deps + Tiptap safe-node profile + 17 RED Pest stubs + 3 i18n namespaces)
+- [ ] 07-02-PLAN.md — Migrations (categories + articles + media uuidMorphs amendment + FTS triggers on 3 tables + discord_outbound CHECK extension for article_announce)
+- [ ] 07-03-PLAN.md — Article + Category models + factories + CategorySeeder (4 starter categories — Open Question 3 LOCKED)
+- [ ] 07-04-PLAN.md — cms-editor role permissions + ArticlePolicy + CategoryPolicy + trenchwars:make-cms-editor artisan
+- [ ] 07-05-PLAN.md — Filament ArticleResource + CategoryResource + 6 page classes + PublicArticleData tiptap_converter wiring (Pitfall 10 mitigation)
+- [ ] 07-06-PLAN.md — ArticleObserver + ArticleStatusService + DiscordOutboundPayloadBuilder buildArticleAnnounce + config(discord.league_announce_channel_id)
+- [ ] 07-07-PLAN.md — ArticlesPublishScheduledCommand + ArticlePublishService + scheduler entry (Pitfall 12 dual-guard)
+- [ ] 07-08-PLAN.md — SearchService (Postgres FTS + PlayerPrivacyGate filter + Pitfall 2 plainto_tsquery) + SearchResultData DTOs
+- [ ] 07-09-PLAN.md — 5 public controllers (BlogIndex/BlogShow/EventsCalendar/EventsFeedJson/Search) + 2 FormRequests + CalendarFeedService + 5 routes + throttle:60,1
+- [ ] 07-10-PLAN.md — 4 Vue pages (Articles/Index, Articles/Show, Events/Index, Search/Results) + 4 Cms/* components + PublicLayout SearchBar + FullCalendar mount
+- [ ] 07-11-PLAN.md — Inertia v2 SSR enable + 6th ssr docker-compose service (Open Question 7 LOCKED — split service)
+- [ ] 07-12-PLAN.md — sitemap:generate + Sitemapable on 3 models + Inertia <Head> meta tags + CmsI18nKeyCoverageTest + ArticleAuditLogTest
+- [ ] 07-13-PLAN.md — [BLOCKING] phase verification + ROADMAP update + REQUIREMENTS update + final quality gates
 **UI hint**: yes
 
 ### Phase 8: RCON automation
@@ -277,6 +276,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
-| 7. CMS | 0/TBD | Not started | - |
+| 7. CMS | 0/13 | Planned | - |
 | 8. RCON automation | 0/TBD | Not started | - |
 | 9. Polish | 0/TBD | Not started | - |
