@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Phase 4 plan 02 COMPLETE — 6 migrations landed (matches, match_slots with partial UNIQUE, match_access_rules, match_results 1:1, match_mvps with category CHECK, events polymorphic); ready for plan 04-03 (Wave 2 Eloquent models)"
-last_updated: "2026-05-13T13:44:57.707Z"
+last_updated: "2026-05-13T14:01:26.721Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 44
+  completed_plans: 45
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 2 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
+Plan: 3 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -83,6 +83,7 @@ Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
 | Phase 03 P10 | 304s | 2 tasks tasks | 2 files files |
 | Phase 04 P01 | 320s | - tasks | - files |
 | Phase 04 P02 | 3min | 2 tasks | 6 files |
+| Phase 04 P03 | 12 | 3 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -192,6 +193,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 04]: 04-02 Wave 1 — events table polymorphic, no FK by design (Pattern 8); MatchObserver + events_one_per_owner composite UNIQUE are the integrity pair
 - [Phase ?]: [Phase 04]: 04-02 — match_slots_one_occupancy_per_user partial UNIQUE follows verbatim Phase 2 D-009 idiom (raw DB::statement CREATE UNIQUE INDEX ... WHERE occupant_user_id IS NOT NULL); Schema::unique() cannot express WHERE (Pitfall 1)
 - [Phase ?]: [Phase 04]: 04-02 — Phase 4 cascade matrix follows RESEARCH Pattern 1: matches cascade to slots/rules/results, results cascade to mvps; user/player/role/tag restrict; host_clan/winner_clan/occupant_user nullOnDelete
+- [Phase ?]: D-04-03-A: GameMatch class name (not Match — PHP 8.4 reserved keyword); table stays matches via protected $table override. Binding for plans 04-04..04-13. Supersedes D-04-01-B.
+- [Phase ?]: D-04-03-B: All BelongsTo<GameMatch, $this> pass match_id as explicit FK arg (Laravel cannot infer from match() method name when related class is GameMatch).
+- [Phase ?]: D-04-03-C: SoftDelete-aware FK cascade tests use forceDelete() to fire DB-level cascade.
 
 ### Pending Todos
 
@@ -213,6 +217,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T13:44:57.704Z
+Last session: 2026-05-13T14:00:51.039Z
 Stopped at: Phase 4 plan 02 COMPLETE — 6 migrations landed (matches, match_slots with partial UNIQUE, match_access_rules, match_results 1:1, match_mvps with category CHECK, events polymorphic); ready for plan 04-03 (Wave 2 Eloquent models)
 Resume file: None

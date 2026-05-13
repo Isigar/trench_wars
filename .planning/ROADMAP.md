@@ -118,7 +118,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 13 plans
 - [x] 04-01-PLAN.md — Wave 0 scaffolding (6 factory stubs + 21 Pest RED stubs + matches.php + admin.php appendix)
 - [x] 04-02-PLAN.md — Migrations (6 tables: matches, match_slots, match_access_rules, match_results, match_mvps, events polymorphic)
-- [ ] 04-03-PLAN.md — Models + 6 real factories + User activeClanMembership amendment + 6 model tests
+- [x] 04-03-PLAN.md — Models + 6 real factories + User activeClanMembership amendment + 6 model tests
 - [ ] 04-04-PLAN.md — MatchStatusService + MatchNotOpenException + state-machine test
 - [ ] 04-05-PLAN.md — MatchSlotMaterialiserService (snapshot-at-create) + tests
 - [ ] 04-06-PLAN.md — MatchSignupService (D-010 row-locked) + 3 exception classes + 3 test files incl. pcntl concurrency
