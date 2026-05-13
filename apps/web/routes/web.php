@@ -16,6 +16,9 @@ use App\Http\Controllers\MyClan\MyClanController;
 use App\Http\Controllers\MyClan\MyClanMemberController;
 use App\Http\Controllers\MyClan\MyClanProfileController;
 use App\Http\Controllers\PlayerProfileController;
+use App\Http\Controllers\TournamentIndexController;
+use App\Http\Controllers\TournamentPublicJsonController;
+use App\Http\Controllers\TournamentShowController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -30,6 +33,26 @@ Route::get('/players/{player:slug}', PlayerProfileController::class)->name('play
 // is_public + status NOT IN (draft, cancelled) enforced inside the controllers.
 Route::get('/matches', MatchCalendarController::class)->name('matches.index');
 Route::get('/matches/{match}', MatchShowController::class)->name('matches.show');
+
+// Public tournament directory + detail (Phase 6 SC-3 — REQ-success-tournament-end-to-end)
+// is_public + status filter enforced inside the controllers. {tournament:slug} binding.
+Route::get('/tournaments', TournamentIndexController::class)->name('tournaments.index');
+
+// Public tournament JSON polling endpoint (T-06-12-01 mitigation: throttle:60,1).
+// MUST be declared BEFORE the {slug} route so Laravel's first-match-wins dispatcher
+// captures `.json` requests here instead of binding `{tournament:slug}` to a slug
+// that contains a trailing `.json`. Powers the 30s polling loop in
+// Tournaments/Show.vue (Pattern 9 If-None-Match).
+Route::middleware(['throttle:60,1'])->group(function (): void {
+    Route::get('/tournaments/{tournament:slug}.json', TournamentPublicJsonController::class)
+        ->name('tournaments.show.json');
+});
+
+// Tournament detail — slug constrained to not contain a leading dot so the .json
+// endpoint above wins on order. Mirrors Phase 4 idiom for routing precedence.
+Route::get('/tournaments/{tournament:slug}', TournamentShowController::class)
+    ->name('tournaments.show')
+    ->where('tournament', '[A-Za-z0-9_-]+');
 
 // Source: 01-RESEARCH.md Pattern 1 + 01-09-PLAN.md Task 1.
 // Discord OAuth flow — guests only (an authenticated visitor revisiting /redirect
