@@ -127,7 +127,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 04-09-PLAN.md — MatchResource Filament wizard + 4 RelationManagers + EventResource + MatchResultService + 3 admin tests
 - [x] 04-10-PLAN.md — Public controllers (calendar + show + signup) + MatchSignupRequest + routes + 3 feature tests
 - [x] 04-11-PLAN.md — Public Vue pages (Matches/Index + Show) + 5 components + EventDateBadge + PublicLayout amendment
-- [ ] 04-12-PLAN.md — i18n key audit + upgraded MatchResourcePresentTest + MatchAuditLogTest (D-012)
+- [x] 04-12-PLAN.md — i18n key audit + upgraded MatchResourcePresentTest + MatchAuditLogTest (D-012)
 - [ ] 04-13-PLAN.md — [BLOCKING] phase verification + ROADMAP update + REQUIREMENTS update + final quality gates
 **UI hint**: yes
 

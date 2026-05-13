@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
-last_updated: "2026-05-13T15:44:52.463Z"
+stopped_at: Completed 04-12-PLAN.md
+last_updated: "2026-05-13T15:56:25.686Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 53
+  completed_plans: 54
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 11 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
+Plan: 12 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -92,6 +92,7 @@ Progress: [████░░░░░░] 33% (3/9 phases; 51/55 plans)
 | Phase 04 P09 | 12 | 3 tasks | 17 files |
 | Phase 04-matches-manual P10 | 9 | 2 tasks | 10 files |
 | Phase 04 P11 | 11 | 3 tasks | 12 files |
+| Phase 04 P12 | 11 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -231,6 +232,9 @@ Plan-level decisions logged during execution:
 - [Phase 04]: D-04-11-C: No dayjs runtime dep — native Intl.DateTimeFormat
 - [Phase 04]: D-04-11-D: TextInput Rule 2 — type prop accepts 'date'
 - [Phase 04]: D-04-11-E: Templates avoid > comparison literals — refactored into computed booleans (NoHardcodedStringsTest regex constraint)
+- [Phase ?]: D-04-12-A: LogsActivity does not populate properties.attributes in this project — explicit activity()->withProperties() is the only path to a populated properties JSON
+- [Phase ?]: D-04-12-B: MatchResourcePresentTest upgraded from 18 smoke (04-09) to 25 comprehensive blocks via assertCanSeeTableRecords on all 4 RelationManagers (Phase 3 Pitfall 3 idiom)
+- [Phase ?]: D-04-12-C: Same-game fixtures mandatory for RelationManager tests that depend on materialiser invariant (MatchSlot factory default is cross-game)
 
 ### Pending Todos
 
@@ -252,6 +256,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T15:44:52.460Z
-Stopped at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
+Last session: 2026-05-13T15:56:25.683Z
+Stopped at: Completed 04-12-PLAN.md
 Resume file: None
