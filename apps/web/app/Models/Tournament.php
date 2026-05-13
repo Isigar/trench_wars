@@ -144,4 +144,43 @@ class Tournament extends Model
     {
         static::observe(TournamentObserver::class);
     }
+
+    /**
+     * Re-seed eligibility gate (Open Question A4 RESOLVED — plan 06-05).
+     *
+     * Returns true ONLY when:
+     *   1. status === 'seeded' (re-seeding is meaningless outside that lifecycle slot)
+     *   2. NO MatchResult rows exist for any bracket-linked match in this tournament
+     *      (subquery: tournament_stages → tournament_brackets.match_id → match_results)
+     *
+     * Threat ref T-06-05-01: once a result is recorded, reseeding would invalidate
+     * played work; admin must `cancel` + create a new tournament instead.
+     *
+     * Performance: the subquery uses 2 nested IN clauses against existing indexes
+     * (tournament_stages.tournament_id, tournament_brackets.tournament_stage_id,
+     * tournament_brackets.match_id are all indexed). ->exists() short-circuits on the
+     * first hit. For tournaments with <= 64 participants × ~6 rounds = ~63 brackets,
+     * O(63 + |MatchResult|) — well under the slow-query threshold.
+     */
+    public function canReseed(): bool
+    {
+        if ($this->status !== 'seeded') {
+            return false;
+        }
+
+        $hasResult = MatchResult::query()
+            ->whereIn('match_id', function ($q): void {
+                $q->from('tournament_brackets')
+                    ->select('match_id')
+                    ->whereNotNull('match_id')
+                    ->whereIn('tournament_stage_id', function ($q2): void {
+                        $q2->from('tournament_stages')
+                            ->select('id')
+                            ->where('tournament_id', $this->id);
+                    });
+            })
+            ->exists();
+
+        return ! $hasResult;
+    }
 }
