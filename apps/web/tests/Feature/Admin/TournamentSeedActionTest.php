@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+| Wave 0 RED stub — replaced by plan 06-11 (Seed participants Filament action
+| with strategy picker + activity log entry).
+| Source: .planning/phases/06-tournaments-brackets/06-01-PLAN.md task 2.
+*/
+
+it('placeholder for Seed Filament action — replace via plan 06-11', function (): void {
+    expect(true)->toBe(false);
+});
