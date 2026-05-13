@@ -309,4 +309,98 @@ return [
             'role_scope' => 'Roles are scoped to the parent game.',
         ],
     ],
+
+    // -------------------------------------------------------------------------
+    // Phase 4 match + event domain resources (04-RESEARCH.md Pattern 1, 04-01-PLAN.md task 1).
+    // Consumed by MatchResource + 4 RelationManagers + EventResource in plans 04-09/04-12.
+    // Key shapes mirror the existing game/clan groups so Filament v3 resources can call
+    // __() without raising MissingTranslationException; placeholder copy until 04-12 audit.
+    // -------------------------------------------------------------------------
+
+    'match' => [
+        'label' => 'Match',
+        'plural_label' => 'Matches',
+        'section' => [
+            'profile' => 'Profile',
+            'audit' => 'Audit',
+        ],
+        'wizard' => [
+            'step_type' => 'Match type',
+            'step_type_desc' => 'Pick the game and match type — this drives slot materialisation.',
+            'step_schedule' => 'Schedule',
+            'step_schedule_desc' => 'When and where the match runs, plus host clan + visibility.',
+            'step_review' => 'Review',
+            'step_review_desc' => 'Confirm and create. Slots and the calendar event are generated automatically.',
+        ],
+        'fields' => [
+            'game_match_type' => 'Match type',
+            'organiser' => 'Organiser',
+            'host_clan' => 'Host clan',
+            'server_address' => 'Server address',
+            'scheduled_at' => 'Scheduled at',
+            'status' => 'Status',
+            'is_public' => 'Public',
+            'title' => 'Title',
+            'description' => 'Description',
+        ],
+        'actions' => [
+            'open_signups' => 'Open signups',
+            'lock_signups' => 'Lock signups',
+            'cancel' => 'Cancel match',
+        ],
+    ],
+
+    'match_slot' => [
+        'label' => 'Slot',
+        'plural_label' => 'Slots',
+        'fields' => [
+            'game_role' => 'Role',
+            'slot_index' => 'Slot #',
+            'occupant_user' => 'Occupant',
+            'confirmed_at' => 'Confirmed at',
+        ],
+    ],
+
+    'match_access_rule' => [
+        'label' => 'Access rule',
+        'plural_label' => 'Access rules',
+        'fields' => [
+            'clan_tag' => 'Clan tag',
+        ],
+    ],
+
+    'match_result' => [
+        'label' => 'Result',
+        'plural_label' => 'Results',
+        'fields' => [
+            'winner_clan' => 'Winning clan',
+            'allies_score' => 'Allies score',
+            'axis_score' => 'Axis score',
+            'notes' => 'Notes',
+            'recorded_by' => 'Recorded by',
+            'recorded_at' => 'Recorded at',
+        ],
+    ],
+
+    'match_mvp' => [
+        'label' => 'MVP',
+        'plural_label' => 'MVPs',
+        'fields' => [
+            'player' => 'Player',
+            'category' => 'Category',
+            'value' => 'Value',
+        ],
+    ],
+
+    'event' => [
+        'label' => 'Event',
+        'plural_label' => 'Events',
+        'fields' => [
+            'eventable' => 'Source',
+            'starts_at' => 'Starts at',
+            'ends_at' => 'Ends at',
+            'title' => 'Title',
+            'is_public' => 'Public',
+        ],
+    ],
 ];
