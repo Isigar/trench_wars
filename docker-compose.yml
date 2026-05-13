@@ -108,8 +108,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    # Healthcheck note: docker/web/Dockerfile is php-fpm Alpine-derived and does NOT
+    # include the procps package, so `pgrep` is unavailable. PID 1 is the
+    # `php artisan horizon` master process — inspect its /proc/1/cmdline instead.
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f 'artisan horizon' || exit 1"]
+      test: ["CMD-SHELL", "tr '\\0' ' ' < /proc/1/cmdline | grep -q 'artisan horizon' || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
