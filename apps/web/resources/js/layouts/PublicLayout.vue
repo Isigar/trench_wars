@@ -72,6 +72,22 @@ function isActive(path: string): boolean {
                         {{ t('common.nav.matches') }}
                     </Link>
 
+                    <!-- Tournaments nav link — active when URL is /tournaments* (plan 06-12). -->
+                    <Link
+                        href="/tournaments"
+                        :class="[
+                            'px-3 py-1 text-sm font-semibold rounded-md',
+                            'transition-colors duration-[var(--motion-duration-fast)] ease-[var(--ease-default)]',
+                            'focus-visible:outline-2 focus-visible:outline-[var(--color-focus-ring)]',
+                            isActive('/tournaments')
+                                ? 'text-[var(--color-text)] border-l-[3px] border-[var(--color-accent)] pl-2'
+                                : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',
+                        ]"
+                        :aria-current="isActive('/tournaments') ? 'page' : undefined"
+                    >
+                        {{ t('common.nav.tournaments') }}
+                    </Link>
+
                     <!-- Players nav link — /players index does NOT exist in P2.
                          TODO Phase 9: wire to /players index page when it lands. -->
                     <a

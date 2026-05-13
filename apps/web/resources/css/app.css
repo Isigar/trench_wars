@@ -49,6 +49,12 @@
     --color-success: #6B8E3D;
     --color-warning: #C8932A;
     --color-focus-ring: #C7A23A;
+
+    /* Bracket SVG palette — plan 06-12 BracketCanvas.vue (Pattern 8 + Pitfall 9). */
+    --color-bracket-winner-line: #6B8E3D;
+    --color-bracket-loser-line: #C03A2B;
+    --color-bracket-node-completed: #3A4A2A;
+    --color-bracket-node-pending: #2C2E20;
 }
 
 [data-theme="light"] {
@@ -64,6 +70,12 @@
     --color-success: #4F6E25;
     --color-warning: #9C7220;
     --color-focus-ring: #6B5210;
+
+    /* Bracket SVG palette — plan 06-12 BracketCanvas.vue (Pattern 8 + Pitfall 9). */
+    --color-bracket-winner-line: #4F6E25;
+    --color-bracket-loser-line: #A6271A;
+    --color-bracket-node-completed: #D5E5C2;
+    --color-bracket-node-pending: #ECE8D6;
 }
 
 /* Body baseline — UI-SPEC § Typography body 16px / weight 400 / lh 1.5 */

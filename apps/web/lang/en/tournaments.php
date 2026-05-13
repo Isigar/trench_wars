@@ -165,4 +165,54 @@ return [
         'grand-final' => ['label' => 'Grand final'],
         'swiss-round' => ['label' => 'Swiss round'],
     ],
+
+    // Public navigation + directory copy (plan 06-12 — public Index.vue / Show.vue)
+    'nav' => [
+        'label' => 'Tournaments',
+    ],
+
+    'directory' => [
+        'title' => 'Tournaments',
+        'subtitle' => 'Browse open and ongoing tournaments.',
+        'empty_default' => 'No tournaments available right now.',
+        'card_format_prefix' => 'Format',
+        'card_status_prefix' => 'Status',
+        'card_starts_label' => 'Starts',
+        'card_ends_label' => 'Ends',
+        'card_view_button' => 'View tournament',
+    ],
+
+    'show' => [
+        'title_fallback' => 'Tournament',
+        'starts_label' => 'Starts',
+        'ends_label' => 'Ends',
+        'organiser_label' => 'Organised by',
+        'participants_label' => 'Participants',
+        'format_label' => 'Format',
+        'status_label' => 'Status',
+        'bracket_empty' => 'Brackets have not been generated yet.',
+        'schedule_empty' => 'No matches scheduled yet.',
+        'schedule_view_match' => 'View match',
+        'bracket_winner_pending' => 'TBD',
+        'bracket_loser_pending' => 'TBD',
+    ],
+
+    // Standings table column headers (plan 06-12 — StandingsTable.vue)
+    'standings' => [
+        'rank' => 'Rank',
+        'clan' => 'Clan',
+        'wins' => 'W',
+        'losses' => 'L',
+        'draws' => 'D',
+        'points' => 'Points',
+        'tiebreak_buchholz' => 'Buchholz',
+        'tiebreak_point_diff' => 'Point diff',
+        'tiebreak_default' => 'Tiebreak',
+    ],
+
+    // Participants list (plan 06-12 — ParticipantsList.vue)
+    'participants' => [
+        'seed_label' => 'Seed',
+        'no_seed' => 'Unseeded',
+    ],
 ];
