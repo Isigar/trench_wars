@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 06-09-PLAN.md
-last_updated: "2026-05-13T22:44:48.186Z"
+last_updated: "2026-05-13T22:58:53.027Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 80
+  completed_plans: 81
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 12 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 13 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -119,6 +119,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P10 | 16m | 2 tasks | 21 files |
 | Phase 06 P11 | 20m | 2 tasks | 16 files |
 | Phase 06 P12 | 40min | - tasks | - files |
+| Phase 06 P13 | ~7min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -359,6 +360,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: 06-12: Routes for /tournaments/{slug}.json declared BEFORE /tournaments/{slug} so Laravel first-match-wins dispatcher captures .json suffix correctly
 - [Phase ?]: 06-12: config/i18n.php shared_namespaces extended with matches + tournaments (matches was pre-existing gap)
 - [Phase ?]: 06-12: SC-1 capstone test walks downstream brackets via iterative materialiseFor() loop (materialiseFirstRound only handles round 1)
+- [Phase ?]: Phase 6 plan 13 — Open Question 5 LOCKED inline: 3 distinct outbound kinds (tournament_announce, tournament_announce_update, bracket_result_announce) for per-kind dispatch + admin filterability
+- [Phase ?]: Phase 6 plan 13 — Bot embed builders ship in apps/bot/src/lib/embeds.ts (extending Phase 5 single-file convention)
+- [Phase ?]: Phase 6 plan 13 — i18n coverage gate uses leaf-anchored regex so string-concat dynamic keys are excluded from source-grep
 
 ### Pending Todos
 
@@ -380,6 +384,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T22:44:48.182Z
+Last session: 2026-05-13T22:58:47.906Z
 Stopped at: Completed 06-09-PLAN.md
 Resume file: None
