@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 plan 07 COMPLETE — 8 spatie/laravel-data DTOs + api.d.ts regenerated + shared-types Phase 4 aliases + 3 DTO unit tests GREEN (23 tests / 43 assertions); ready for plan 04-08 (MatchObserver + EventData polymorphic sync)
-last_updated: "2026-05-13T14:44:26.955Z"
+stopped_at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
+last_updated: "2026-05-13T14:51:30Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 49
+  completed_plans: 51
   percent: 33
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 7 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
+Plan: 8 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
 Status: Ready to execute
 Last activity: 2026-05-13
 
-Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
+Progress: [████░░░░░░] 33% (3/9 phases; 51/55 plans)
 
 ## Performance Metrics
 
@@ -88,6 +88,7 @@ Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
 | Phase 04 P05 | 4min | 1 task tasks | 2 files files |
 | Phase 04 P06 | 9 | 3 tasks | 7 files |
 | Phase 04 P07 | 18m | 3 tasks | 14 files |
+| Phase 04 P08 | 11min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -213,6 +214,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-04-07-D: camelCase for Public* DTOs (PublicMatchOccupantData), snake_case for internal (MatchData, EventData).
 - [Phase ?]: D-04-07-E: PublicMatchOccupantData::fromMatchSlot uses direct queries (not eager-load) — self-contained factory.
 - [Phase ?]: D-04-07-F: Translatable JSONB getTranslations() ?: null is canonical Phase 3 Pitfall 4 pattern reused verbatim.
+- [Phase 04]: D-04-08-A: No `Match as MatchModel` alias in MatchObserver — use GameMatch directly (D-04-03-A LOCKED + D-04-07-C continuation).
+- [Phase 04]: D-04-08-B: Model-level `booted()` registration ONLY — no AppServiceProvider fallback added; observer fires reliably under test.
+- [Phase 04]: D-04-08-C: Segregate observer-driven Event from manual Event::factory() by setting is_public=false on the underlying GameMatch — canonical ripple-fix pattern for tests that touch the events table.
 
 ### Pending Todos
 
@@ -234,6 +238,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T14:44:26.952Z
-Stopped at: Phase 4 plan 07 COMPLETE — 8 spatie/laravel-data DTOs + api.d.ts regenerated + shared-types Phase 4 aliases + 3 DTO unit tests GREEN (23 tests / 43 assertions); ready for plan 04-08 (MatchObserver + EventData polymorphic sync)
+Last session: 2026-05-13T14:51:30Z
+Stopped at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
 Resume file: None
