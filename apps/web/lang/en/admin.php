@@ -440,4 +440,85 @@ return [
             'failed' => 'Failed',
         ],
     ],
+
+    // -------------------------------------------------------------------------
+    // Phase 6 tournament + bracket admin resources (06-01-PLAN.md task 1 Wave 0).
+    // Consumed by TournamentResource + nested RelationManagers in plan 06-11.
+    // Resource ships with 9 admin actions (open_registration / seed / reseed /
+    // start / forfeit / withdraw / recalculate_standings / cancel / generate_next_swiss_round)
+    // and a read-only audit feed. Key shapes mirror the existing match/event/clan
+    // groups so Filament v3 resources can call __() without raising
+    // MissingTranslationException; placeholder copy until 06-13 audit.
+    // -------------------------------------------------------------------------
+
+    'tournament' => [
+        'label' => 'Tournament',
+        'plural_label' => 'Tournaments',
+        'navigation_group' => 'Tournaments',
+        'fields' => [
+            'slug' => 'Slug',
+            'game_id' => 'Game',
+            'format' => 'Format',
+            'status' => 'Status',
+            'starts_at' => 'Starts at',
+            'ends_at' => 'Ends at',
+            'max_participants' => 'Max participants',
+            'organiser_user_id' => 'Organiser',
+            'default_game_match_type_id' => 'Default match type',
+            'is_public' => 'Public',
+        ],
+        'actions' => [
+            'open_registration' => ['label' => 'Open registration'],
+            'seed' => ['label' => 'Seed participants'],
+            'reseed' => [
+                'label' => 'Re-seed',
+                'modal_description' => 'Only available while no matches have been played.',
+                'success' => 'Participants re-seeded.',
+            ],
+            'start' => ['label' => 'Start tournament'],
+            'forfeit' => ['label' => 'Forfeit participant'],
+            'withdraw' => ['label' => 'Withdraw participant'],
+            'recalculate_standings' => ['label' => 'Recalculate standings'],
+            'cancel' => ['label' => 'Cancel tournament'],
+            'generate_next_swiss_round' => ['label' => 'Generate next Swiss round'],
+        ],
+    ],
+
+    'tournament_participant' => [
+        'label' => 'Participant',
+        'plural_label' => 'Participants',
+        'fields' => [
+            'clan_id' => 'Clan',
+            'seed' => 'Seed',
+            'status' => 'Status',
+            'placement' => 'Placement',
+        ],
+    ],
+
+    'tournament_bracket' => [
+        'label' => 'Bracket',
+        'plural_label' => 'Brackets',
+        'fields' => [
+            'round_number' => 'Round',
+            'position' => 'Position',
+            'participant_a_id' => 'Participant A',
+            'participant_b_id' => 'Participant B',
+            'winner_participant_id' => 'Winner',
+            'match_id' => 'Match',
+        ],
+    ],
+
+    'tournament_standing' => [
+        'label' => 'Standing',
+        'plural_label' => 'Standings',
+        'fields' => [
+            'participant_id' => 'Participant',
+            'wins' => 'Wins',
+            'losses' => 'Losses',
+            'draws' => 'Draws',
+            'points' => 'Points',
+            'tiebreak_score' => 'Tiebreak',
+            'rank' => 'Rank',
+        ],
+    ],
 ];
