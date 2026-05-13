@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
-last_updated: "2026-05-13T18:42:34.626Z"
+stopped_at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
+last_updated: "2026-05-13T18:51:54.720Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
-  completed_plans: 65
+  completed_plans: 66
   percent: 44
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 10 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Plan: 11 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -104,6 +104,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 05 P08 | 366 | 3 tasks | 9 files |
 | Phase 05 P09 | 353 | 3 tasks | 12 files |
 | Phase 05 P10 | 472 | 3 tasks | 10 files |
+| Phase 05 P11 | 321 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -287,6 +288,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-05-10-D: translateError substring-matches err.message; structured JSON parse deferred to plan 05-12
 - [Phase ?]: D-05-10-E: interactionCreate button branch peeks customId 'm:o:' prefix to skip pre-defer (Pitfall 1 corollary)
 - [Phase ?]: D-05-10-F: matchCard defensive guard on m.game_match_type_id (typeof + non-empty) to handle partial mocks
+- [Phase ?]: D-05-11-D: render.ts re-fetches PublicMatchData on every match_announce dispatch (vs reading row.payload snapshot)
+- [Phase ?]: D-05-11-F: payload key naming asymmetry: outbound uses discord_user_id/discord_role_id; inbound /discord-events/role-change body uses user_discord_id/role_discord_id
+- [Phase ?]: D-05-11-G: handleGuildMemberUpdate exported as a public helper from registerGuildMemberUpdateHandler for direct unit testing without mock Client
 
 ### Pending Todos
 
@@ -308,6 +312,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T18:42:05.568Z
-Stopped at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
+Last session: 2026-05-13T18:51:54.717Z
+Stopped at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
 Resume file: None
