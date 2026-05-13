@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
-last_updated: "2026-05-13T21:24:15.070Z"
+stopped_at: Completed 06-09-PLAN.md
+last_updated: "2026-05-13T21:40:29.122Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 76
+  completed_plans: 77
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 8 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 9 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -115,6 +115,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P06 | ~12m | 2 tasks | 10 files |
 | Phase 06 P07 | ~9m | 3 tasks | 9 files |
 | Phase 06 P08 | ~15m | 2 tasks | 10 files |
+| Phase 06 P09 | ~7m | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -337,6 +338,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-08-A: Two-hook MatchResultObserver pattern (created + updated, NOT saved) — saved cannot distinguish create from touch on the pinned Laravel version since wasRecentlyCreated stays true forever on the same instance
 - [Phase ?]: D-06-08-D: Phase 5 discord_outbound_messages.message_type CHECK extended via migration 2026_05_15_100500 to allow bracket_result_announce (Postgres drop+recreate idiom)
 - [Phase ?]: D-06-08-G: StandingsCalculatorService ships as no-op stub (replaced by plan 06-09); resolved via app() lookup at BracketAdvancementService::advance() call site to break circular DI cycle (T-06-08-07)
+- [Phase ?]: D-06-09-A: TournamentStage::brackets() default ordering requires ->reorder() before ->orderByDesc('round_number') to escape the relationship's default ASC sort
+- [Phase ?]: D-06-09-B: Wipe-and-recompute strategy for standings (small table) inside DB::transaction; rolls back atomically on failure
+- [Phase ?]: D-06-09-F: Round-robin default points scheme is FIFA 3/1/0; admin override via tournament.settings.roundrobin_points_per_{win,draw,loss}
+- [Phase ?]: D-06-09-H: Swiss tiebreaker is plain Buchholz only; median Buchholz variant deferred to Phase 9
 
 ### Pending Todos
 
@@ -358,6 +363,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T21:23:45.214Z
-Stopped at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
+Last session: 2026-05-13T21:40:29.118Z
+Stopped at: Completed 06-09-PLAN.md
 Resume file: None
