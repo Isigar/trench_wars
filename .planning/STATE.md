@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
+status: executing
 stopped_at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
-last_updated: "2026-05-13T17:05:00.000Z"
+last_updated: "2026-05-13T17:14:12.836Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
   completed_plans: 57
-  percent: 45
+  percent: 44
 ---
 
 # Project State
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 1 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
-Status: Wave 0 complete; ready for plan 05-02 (migrations + DiscordOutboundMessage model)
+Plan: 2 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Status: Ready to execute
 Last activity: 2026-05-13
 
 Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through Phase 5 plan 01)
@@ -95,6 +95,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 04 P12 | 11 | 3 tasks | 3 files |
 | Phase 04 P13 | 339s | 1 tasks | 5 files |
 | Phase 05 P01 | ~15min | 2 tasks (+ 1 Rule 1 follow-up) | 39 files |
+| Phase 05-discord-bot-v1 P02 | 405 | - tasks | - files |
 
 ## Accumulated Context
 
@@ -245,6 +246,9 @@ Plan-level decisions logged during execution:
 - [Phase 05]: D-05-01-D — apps/bot/pnpm-lock.yaml does NOT exist (workspace lockfile is at repo root per D-015 pnpm-workspaces). Plan's files_modified entry was wrong; root pnpm-lock.yaml is the canonical commit target
 - [Phase 05]: D-05-01-E — Worker docker healthcheck uses tr+grep on /proc/1/cmdline (busybox-portable) instead of pgrep (unavailable in php-fpm Alpine image); functional outcome identical
 - [Phase 05]: D-05-01-F — SANCTUM_STATEFUL_DOMAINS explicitly empty in .env.example as defence-in-depth on top of framework default; Pitfall 4 verified clean (no bot/web-nginx hostnames in sanctum.stateful)
+- [Phase ?]: D-05-02-A: clans.discord_announce_channel_id already shipped by Phase 2 — the second migration prescribed by 05-02 was omitted (would have duplicated existing column).
+- [Phase ?]: D-05-02-B: spatie/laravel-activitylog LogOptions uses dontLogEmptyChanges() — plan's dontSubmitEmptyLogs() does not exist in installed version.
+- [Phase ?]: D-05-02-C: spatie/laravel-activitylog v4+ stores attribute diffs in attribute_changes (collection) column, NOT in properties. Tests must read attribute_changes.
 
 ### Pending Todos
 
@@ -266,6 +270,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T17:05:00.000Z
+Last session: 2026-05-13T17:14:12.833Z
 Stopped at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
-Resume file: None
+Resume file: .planning/phases/05-discord-bot-v1/05-03-PLAN.md

@@ -34,7 +34,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### Discord UX
 
-- [ ] **REQ-goal-discord-ux**: Slash commands `/clan`, `/match`, `/profile`, `/me` exist; RSVP buttons and slot-picker modals work; result announcements post to the host clan's announce channel.
+- [x] **REQ-goal-discord-ux**: Slash commands `/clan`, `/match`, `/profile`, `/me` exist; RSVP buttons and slot-picker modals work; result announcements post to the host clan's announce channel.
 
 ### Internationalisation
 
@@ -115,7 +115,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-goal-public-profiles | Phase 2 | Complete |
 | REQ-platform-vision | Phase 3 | Complete |
 | REQ-goal-match-workflows | Phase 4 | Complete |
-| REQ-goal-discord-ux | Phase 5 | Pending |
+| REQ-goal-discord-ux | Phase 5 | Complete |
 | REQ-success-tournament-end-to-end | Phase 6 | Pending |
 | REQ-goal-cms | Phase 7 | Pending |
 | REQ-success-public-browse | Phase 7 | Pending |

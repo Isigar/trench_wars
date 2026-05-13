@@ -142,8 +142,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Joining or leaving a clan on the website triggers Discord role assignment/removal via Horizon-retried jobs; manual Discord-side role changes reconcile via `guildMemberUpdate` hook.
   5. All bot→web traffic uses the Sanctum `bot:*` scoped token + `X-Bot-Acts-As-User` header, and audit log entries correctly attribute the human causer behind every Discord action.
 **Plans**: 13 plans
-- [ ] 05-01-PLAN.md — Wave 0 scaffolding (Sanctum + Horizon install + worker compose service + bot deps + 20 RED stubs + bot.php i18n)
-- [ ] 05-02-PLAN.md — Migrations (discord_outbound_messages + clans.discord_announce_channel_id) + DiscordOutboundMessage model
+- [x] 05-01-PLAN.md — Wave 0 scaffolding (Sanctum + Horizon install + worker compose service + bot deps + 20 RED stubs + bot.php i18n)
+- [x] 05-02-PLAN.md — Migrations (discord_outbound_messages + clans.discord_announce_channel_id) + DiscordOutboundMessage model
 - [ ] 05-03-PLAN.md — ResolveBotActsAsUser middleware + Sanctum abilities matrix + 2 GREEN auth tests
 - [ ] 05-04-PLAN.md — 6 BotApi controllers + 4 FormRequests + routes/api.php + 6 GREEN HTTP integration tests
 - [ ] 05-05-PLAN.md — MatchObserver outbound writer + DiscordOutboundPayloadBuilder
