@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
-last_updated: "2026-05-13T17:42:08.239Z"
+stopped_at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
+last_updated: "2026-05-13T17:52:08.999Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
-  completed_plans: 59
+  completed_plans: 60
   percent: 44
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 4 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Plan: 5 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -98,6 +98,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 05-discord-bot-v1 P02 | 405 | - tasks | - files |
 | Phase 05 P03 | 428 | 2 tasks | 6 files |
 | Phase 05 P04 | 828 | 3 tasks | 17 files |
+| Phase 05 P05 | 383 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -258,6 +259,11 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-05-04-A: MatchSignupService is final — replaced container-bind stub with non-Mockery D-004 reuse proof (occupant_user_id + confirmed_at + activity_log post-conditions)
 - [Phase ?]: D-05-04-B/C: Pitfall 7 pass-through contract documented in BotApiMatchSignupAbilitiesTest case 2 + BotApiUserMeTest case 3 — missing X-Bot-Acts-As-User leaves auth as bot service user (controller-side 422 tightening deferred)
 - [Phase ?]: D-05-04-D: Concurrent outbound claim test uses sequential calls (not pcntl_fork) — second call sees status=dispatching via dispatchable scope filter; pcntl_fork already exercised at the service layer in Phase 4 plan 04-06
+- [Phase ?]: D-05-05-A: cancelled match -> EDIT (match_announce_update with prior_sent_message_id) not DELETE; preserves audit trail
+- [Phase ?]: D-05-05-B: MatchObserver keeps Phase 4 saved() hook + adds independent created()/updated() hooks; regressionless (MatchEventSyncTest 8/8 GREEN)
+- [Phase ?]: D-05-05-C: causer_user_id via auth()->id() - null in CLI/seeder (T-05-05-03 accept); both flows tested explicitly
+- [Phase ?]: D-05-05-D: phpstan.neon paths exclude tests/ - test-file payload['key'] phpstan issues are outside the CI gate; existing DiscordOutboundMessageModelTest.php follows same pattern
+- [Phase ?]: D-05-05-E: DiscordOutboundPayloadBuilder eager-loads gameMatchType+hostClan+slots.role - no-op when already loaded; prevents N+1 inside observer save() transaction
 
 ### Pending Todos
 
@@ -279,6 +285,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T17:42:01.168Z
-Stopped at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
+Last session: 2026-05-13T17:51:54.383Z
+Stopped at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
 Resume file: None
