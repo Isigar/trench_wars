@@ -6,6 +6,7 @@ namespace App\Support;
 
 use App\Models\GameMatch;
 use App\Models\MatchSlot;
+use App\Models\TournamentBracket;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -80,6 +81,49 @@ final class DiscordOutboundPayloadBuilder
         $base['prior_sent_message_id'] = $priorSentMessageId;
 
         return $base;
+    }
+
+    /**
+     * Phase 6 plan 06-08 addition — canonical bracket-result-announce payload
+     * built by BracketAdvancementService when a tournament match resolves and
+     * a winner propagates forward through the bracket tree.
+     *
+     * Shape mirrors buildMatchAnnounce conventions (snake_case keys, eager-loaded
+     * relations to avoid N+1 inside the advance() transaction). The bot worker
+     * (plan 05-11) is responsible for picking the announce channel at dispatch
+     * time — the channel may be the tournament-wide channel set on the
+     * organising clan or a per-tournament setting (resolved by the renderer).
+     *
+     * @return array<string, mixed>
+     */
+    public static function buildBracketResult(TournamentBracket $bracket): array
+    {
+        $bracket->loadMissing([
+            'stage.tournament',
+            'participantA.clan',
+            'participantB.clan',
+            'winnerParticipant.clan',
+        ]);
+
+        $stage = $bracket->stage;
+        $tournament = $stage?->tournament;
+
+        return [
+            'kind' => 'bracket_result_announce',
+            'tournament_id' => $tournament?->id,
+            'tournament_slug' => $tournament?->slug,
+            'tournament_title' => $tournament?->getTranslation('title', 'en'),
+            'stage_id' => $stage?->id,
+            'stage_type' => $stage?->type,
+            'bracket_id' => $bracket->id,
+            'round_number' => $bracket->round_number,
+            'position' => $bracket->position,
+            'winner_participant_id' => $bracket->winner_participant_id,
+            'winner_clan_id' => $bracket->winnerParticipant?->clan_id,
+            'winner_clan_name' => $bracket->winnerParticipant?->clan?->name,
+            'participant_a_clan_name' => $bracket->participantA?->clan?->name,
+            'participant_b_clan_name' => $bracket->participantB?->clan?->name,
+        ];
     }
 
     /**
