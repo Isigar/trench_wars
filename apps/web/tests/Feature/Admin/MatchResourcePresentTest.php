@@ -14,24 +14,40 @@ use App\Filament\Resources\MatchResource\RelationManagers\AccessRulesRelationMan
 use App\Filament\Resources\MatchResource\RelationManagers\MvpsRelationManager;
 use App\Filament\Resources\MatchResource\RelationManagers\ResultRelationManager;
 use App\Filament\Resources\MatchResource\RelationManagers\SlotsRelationManager;
+use App\Models\ClanTag;
+use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GameMatchType;
+use App\Models\GameRole;
+use App\Models\MatchAccessRule;
+use App\Models\MatchMvp;
+use App\Models\MatchResult;
+use App\Models\MatchSlot;
+use App\Models\Player;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
 use Filament\Facades\Filament;
 use Livewire\Livewire;
 
 /*
-| Source: 04-09-PLAN.md Task 3 — replaces Wave 0 RED stub. SMOKE version; plan 04-12
-| completes the comprehensive admin-presence suite (i18n + audit + 8+ scenarios).
+| Source: 04-09-PLAN.md Task 3 (SMOKE — initial scaffold) +
+|         04-12-PLAN.md Task 2 (COMPREHENSIVE upgrade — this revision).
 |
 | Asserts:
 |   1. MatchResource registered at /admin/matches (admin user gets 200).
 |   2. EventResource registered at /admin/events (admin user gets 200).
 |   3. EventResource is READ-ONLY — getPages() omits 'create' and 'edit' (T-04-09-06).
+|      Explicit /admin/events/create URL test verifies the route is not in the table.
 |   4. Each of the 4 MatchResource RelationManagers mounts cleanly on /admin/matches/{id}/edit
 |      (Pitfall 3 $relationship typo guard — Filament's mount() resolves the relationship
-|      eagerly and throws on typo; assertOk() catches this).
-|   5. Phase 1 admin-access gate inherited (non-admin → 403).
+|      eagerly and throws on typo; assertOk() catches this). For Slots/AccessRules/Mvps the
+|      tests ALSO call assertCanSeeTableRecords to verify the rendered rows materialise
+|      (Phase 3 plan 03-08 Pitfall 3 idiom — x-intersect lazy-loaded tables don't render
+|      in HTTP responses, only via Livewire::test direct mount).
+|   5. ResultRelationManager renders form on both states (no result yet / result present).
+|   6. MvpsRelationManager renders empty state when no result exists; renders MVP rows
+|      when a result with MVPs is attached (HasManyThrough D-04-09-A coverage).
+|   7. Phase 1 admin-access gate inherited (non-admin → 403).
 |
 | Analog: tests/Feature/Admin/GameResourcesPresentTest.php (Phase 3 plan 03-08).
 */
@@ -50,7 +66,7 @@ beforeEach(function (): void {
 });
 
 // -----------------------------------------------------------------------------
-// SC-1 / SC-4 reachability
+// SC-1 / SC-4 reachability — HTTP smoke
 // -----------------------------------------------------------------------------
 
 it('registers MatchResource at /admin/matches for admin user', function (): void {
@@ -87,6 +103,12 @@ it('EventResource Create route is NOT registered (read-only)', function (): void
     expect($routes)->not->toContain('admin/events/create');
 });
 
+it('attempting to reach /admin/events/create returns 404 (EventResource read-only)', function (): void {
+    // EventResource::getPages() omits 'create' — no route exists for /admin/events/create.
+    // Laravel returns 404 (not 403) because the URL doesn't match any registered route.
+    $this->get('/admin/events/create')->assertStatus(404);
+});
+
 // -----------------------------------------------------------------------------
 // MatchResource Pages reachable in panel context
 // -----------------------------------------------------------------------------
@@ -103,6 +125,7 @@ it('CreateMatch page mounts (Livewire panel context — HasWizard render check)'
 
 // -----------------------------------------------------------------------------
 // 4 RelationManagers Pitfall 3 typo guard — direct mount with ownerRecord
+// PLUS data-binding sanity (assertCanSeeTableRecords) — plan 04-12 upgrade.
 // -----------------------------------------------------------------------------
 
 it('SlotsRelationManager mounts on a MatchResource edit page', function (): void {
@@ -117,6 +140,29 @@ it('SlotsRelationManager mounts on a MatchResource edit page', function (): void
     ])->assertOk();
 });
 
+it('SlotsRelationManager renders rows for a match with slots (assertCanSeeTableRecords)', function (): void {
+    // Same-game fixtures — MatchSlot factory defaults to a cross-game pair which would
+    // not actually be valid (application-level invariant from plan 04-05 materialiser).
+    $game = Game::factory()->create();
+    $matchType = GameMatchType::factory()->for($game)->create();
+    $match = GameMatch::factory()->for($matchType)->create();
+    $role = GameRole::factory()->for($game)->create();
+
+    $slots = collect(range(0, 2))->map(fn (int $i) => MatchSlot::factory()->create([
+        'match_id' => $match->id,
+        'game_role_id' => $role->id,
+        'slot_index' => $i,
+        'sort_order' => $i,
+    ]));
+
+    Livewire::test(SlotsRelationManager::class, [
+        'ownerRecord' => $match,
+        'pageClass' => EditMatch::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords($slots);
+});
+
 it('AccessRulesRelationManager mounts on a MatchResource edit page', function (): void {
     $match = GameMatch::factory()->create();
 
@@ -126,6 +172,28 @@ it('AccessRulesRelationManager mounts on a MatchResource edit page', function ()
     ])->assertOk();
 });
 
+it('AccessRulesRelationManager renders rows when match has access rules (assertCanSeeTableRecords)', function (): void {
+    $match = GameMatch::factory()->create();
+
+    $rules = collect([
+        MatchAccessRule::factory()->create([
+            'match_id' => $match->id,
+            'clan_tag_id' => ClanTag::factory()->create()->id,
+        ]),
+        MatchAccessRule::factory()->create([
+            'match_id' => $match->id,
+            'clan_tag_id' => ClanTag::factory()->create()->id,
+        ]),
+    ]);
+
+    Livewire::test(AccessRulesRelationManager::class, [
+        'ownerRecord' => $match,
+        'pageClass' => EditMatch::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords($rules);
+});
+
 it('ResultRelationManager mounts on a MatchResource edit page', function (): void {
     $match = GameMatch::factory()->create();
 
@@ -133,6 +201,33 @@ it('ResultRelationManager mounts on a MatchResource edit page', function (): voi
         'ownerRecord' => $match,
         'pageClass' => EditMatch::class,
     ])->assertOk();
+});
+
+it('ResultRelationManager renders empty state when match has no result yet', function (): void {
+    // HasOne with zero rows — RelationManager mounts cleanly. The CreateAction is the
+    // admin's path to filing the result; covered structurally by the assertOk() mount.
+    $match = GameMatch::factory()->create();
+
+    expect($match->result)->toBeNull();
+
+    Livewire::test(ResultRelationManager::class, [
+        'ownerRecord' => $match,
+        'pageClass' => EditMatch::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords(collect());
+});
+
+it('ResultRelationManager renders row when match has a result', function (): void {
+    $match = GameMatch::factory()->create();
+    $result = MatchResult::factory()->create(['match_id' => $match->id]);
+
+    Livewire::test(ResultRelationManager::class, [
+        'ownerRecord' => $match,
+        'pageClass' => EditMatch::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords(collect([$result]));
 });
 
 it('MvpsRelationManager mounts on a MatchResource edit page (HasManyThrough scope)', function (): void {
@@ -145,6 +240,50 @@ it('MvpsRelationManager mounts on a MatchResource edit page (HasManyThrough scop
         'ownerRecord' => $match,
         'pageClass' => EditMatch::class,
     ])->assertOk();
+});
+
+it('MvpsRelationManager renders empty state when match has no result', function (): void {
+    // No MatchResult => HasManyThrough returns zero rows; the mount must still succeed.
+    $match = GameMatch::factory()->create();
+
+    expect($match->result)->toBeNull();
+
+    Livewire::test(MvpsRelationManager::class, [
+        'ownerRecord' => $match,
+        'pageClass' => EditMatch::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords(collect());
+});
+
+it('MvpsRelationManager renders MVP rows when match has result with MVPs (HasManyThrough D-04-09-A)', function (): void {
+    $match = GameMatch::factory()->create();
+    $result = MatchResult::factory()->create(['match_id' => $match->id]);
+
+    $mvps = collect([
+        MatchMvp::factory()->create([
+            'match_result_id' => $result->id,
+            'player_id' => Player::factory()->create()->id,
+            'category' => 'kills',
+            'value' => 42,
+        ]),
+        MatchMvp::factory()->create([
+            'match_result_id' => $result->id,
+            'player_id' => Player::factory()->create()->id,
+            'category' => 'objective',
+            'value' => 7,
+        ]),
+    ]);
+
+    // Refresh to load the HasManyThrough relation freshly.
+    $match->refresh();
+
+    Livewire::test(MvpsRelationManager::class, [
+        'ownerRecord' => $match,
+        'pageClass' => EditMatch::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords($mvps);
 });
 
 // -----------------------------------------------------------------------------
