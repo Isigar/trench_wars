@@ -11,7 +11,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### Platform & Tenancy
 
-- [ ] **REQ-platform-vision**: Game-agnostic data model (Game / GameRole / GameMatchType / GameMatchTypeRoleLimit) is implemented and HLL is a seeded preset, not hard-coded. Additional games can be added without code changes. (D-007)
+- [x] **REQ-platform-vision**: Game-agnostic data model (Game / GameRole / GameMatchType / GameMatchTypeRoleLimit) is implemented and HLL is a seeded preset, not hard-coded. Additional games can be added without code changes. (D-007)
 - [x] **REQ-tenancy-multi-clan**: Multi-clan league platform — one deployment hosts many clans with public clan directory, public player profiles, public match calendar, and public bracket viewer all reachable without authentication. (D-006)
 - [x] **REQ-tenancy-single-guild**: One shared league Discord guild — `discord_guild` table holds exactly one row, each clan binds to a Discord role id (not a separate guild), no per-clan Discord servers in the model. (D-003)
 
@@ -113,7 +113,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-constraint-single-guild | Phase 2 | Complete |
 | REQ-tenancy-multi-clan | Phase 2 | Complete |
 | REQ-goal-public-profiles | Phase 2 | Complete |
-| REQ-platform-vision | Phase 3 | Pending |
+| REQ-platform-vision | Phase 3 | Complete |
 | REQ-goal-match-workflows | Phase 4 | Pending |
 | REQ-goal-discord-ux | Phase 5 | Pending |
 | REQ-success-tournament-end-to-end | Phase 6 | Pending |

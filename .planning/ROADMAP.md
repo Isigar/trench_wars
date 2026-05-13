@@ -91,22 +91,19 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. An admin can create a GameMatchType (e.g. "Scrim 50v50") and set `GameMatchTypeRoleLimit` capacities per role through Filament Relation Managers.
   3. Seeded HLL data exists out of the box (Commander, Officer, SL, Rifleman, Assault, AR, Medic, Engineer, Support, HMG, AT, Sniper, Spotter, Tank Cmdr, Crewman + starter match types: Scrim 50v50, Skirmish 6v6, Friendly, Tournament, Clan War) and is fully editable post-seed.
   4. Adding a new game requires zero code changes — only Filament data entry.
-**Plans**: 14 plans
-- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
-- [x] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
-- [x] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
-- [x] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
-- [x] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
-- [x] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
-- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+**Plans**: 10 plans
+- [x] 03-01-PLAN.md — Wave 0 scaffolding (4 factory stubs + 7 test stubs + admin.php i18n key extension)
+- [x] 03-02-PLAN.md — Migrations (4 tables: games, game_roles, game_match_types, game_match_type_role_limits; UNIQUE + CHECK + cascade FKs)
+- [ ] 03-03-PLAN.md — Models (4 new) + factories + 4 model tests (UNIQUE + CHECK + cross-game saving guard + audit)
+- [ ] 03-04-PLAN.md — Spatie laravel-data DTOs (4) + TS regen + shared-types sync + GameDataTest
+- [ ] 03-05-PLAN.md — GameSeeder (HLL preset: 1 Game + 15 Roles + 5 MatchTypes + capacity matrix) + idempotency tests
+- [ ] 03-06-PLAN.md — GameResource (Filament) + Roles + MatchTypes RelationManagers
+- [ ] 03-07-PLAN.md — GameMatchTypeResource (Filament) + RoleLimits RelationManager (Pattern 3 scoped Select) + MatchTypesRelationManager URL-override amendment
+- [ ] 03-08-PLAN.md — GameResourcesPresentTest (admin reachability + RelationManager render checks + Pitfall 3 typo guard)
+- [ ] 03-09-PLAN.md — i18n key coverage audit + GameAuditLogTest (D-012)
+- [ ] 03-10-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
+
 
 ### Phase 4: Matches (manual)
 **Goal**: Make scheduling and recording matches the primary platform workflow — without RCON automation yet — covering creation, slot signups, capacity enforcement, tag-restricted access, and manual results.
@@ -277,7 +274,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Foundations | 18/18 | Complete | 2026-05-04 |
 | 2. Clans & tags | 14/14 | Complete | 2026-05-12 |
-| 3. Games & match types | 0/TBD | Not started | - |
+| 3. Games & match types | 2/10 | In Progress|  |
 | 4. Matches (manual) | 0/TBD | Not started | - |
 | 5. Discord bot v1 | 0/TBD | Not started | - |
 | 6. Tournaments & brackets | 0/TBD | Not started | - |
