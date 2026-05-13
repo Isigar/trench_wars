@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 06-09-PLAN.md
-last_updated: "2026-05-13T21:40:29.122Z"
+last_updated: "2026-05-13T22:00:11.969Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 77
+  completed_plans: 78
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 9 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 10 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -116,6 +116,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P07 | ~9m | 3 tasks | 9 files |
 | Phase 06 P08 | ~15m | 2 tasks | 10 files |
 | Phase 06 P09 | ~7m | 2 tasks | 7 files |
+| Phase 06 P10 | 16m | 2 tasks | 21 files |
 
 ## Accumulated Context
 
@@ -342,6 +343,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-09-B: Wipe-and-recompute strategy for standings (small table) inside DB::transaction; rolls back atomically on failure
 - [Phase ?]: D-06-09-F: Round-robin default points scheme is FIFA 3/1/0; admin override via tournament.settings.roundrobin_points_per_{win,draw,loss}
 - [Phase ?]: D-06-09-H: Swiss tiebreaker is plain Buchholz only; median Buchholz variant deferred to Phase 9
+- [Phase ?]: D-06-10-A: PublicTournamentData composes BracketNodeData + BracketEdgeData inline; Vue SVG renderer (plan 06-12) receives one DTO + renders entire bracket tree without further API calls; ETag short-circuits unchanged JSON polling responses.
+- [Phase ?]: D-06-10-B: Etag = sha1(tournament.updated_at | sorted bracket id:updated_at). Deterministic across identical-state calls; standings excluded from v1 etag input (Phase 9 polish).
+- [Phase ?]: D-06-10-C: BracketNodeData 4-state ladder bye check FIRST. Single-elim generators auto-set winner_participant_id = participantA for byes without materialising a match_id; naive completed-first ordering mis-classifies byes.
+- [Phase ?]: D-06-10-E: TournamentObserver outbound channel_id = '' (empty string), not null. discord_outbound_messages.channel_id is text NOT NULL; bot worker resolves the channel at dispatch time. Matches BracketAdvancementService convention (plan 06-08).
+- [Phase ?]: D-06-10-F: tournament_announce + tournament_announce_update added to doutmsg_message_type_chk via migration 2026_05_15_100600. Same drop+add pattern as plan 06-08's migration for bracket_result_announce.
+- [Phase ?]: D-06-10-H: TournamentModelTest event MorphOne test updated in-place. Pre-existing test was written for plan 06-03 stub state; observer auto-creation now creates the Event row, so manual Event::create collides on UNIQUE. Updated to assert auto-created row resolves through MorphOne + private no-event invariant.
 
 ### Pending Todos
 
@@ -363,6 +370,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T21:40:29.118Z
+Last session: 2026-05-13T22:00:11.965Z
 Stopped at: Completed 06-09-PLAN.md
 Resume file: None

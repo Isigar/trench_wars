@@ -177,7 +177,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 06-07-PLAN.md — Double-elim + Round-robin + Swiss generators + Open Questions A6 + Pitfall 5 LOCKED + 3 GREEN tests
 - [x] 06-08-PLAN.md — BracketAdvancementService + MatchResultObserver + StandingsCalculatorService stub + 2 GREEN tests
 - [x] 06-09-PLAN.md — StandingsCalculatorService (4 strategies) + replaces plan 06-08 stub + GREEN test
-- [ ] 06-10-PLAN.md — 8 DTOs + ParticipantSummary + TS regen + TournamentObserver real impl + 5 GREEN tests
+- [x] 06-10-PLAN.md — 8 DTOs + ParticipantSummary + TS regen + TournamentObserver real impl + 5 GREEN tests
 - [ ] 06-11-PLAN.md — TournamentResource Filament (Tabs + 8 HeaderActions + 4 RelationManagers; A5/A8 LOCKED) + 6 GREEN admin tests
 - [ ] 06-12-PLAN.md — Public controllers + Vue 5-tab Show + BracketCanvas SVG + useTournamentPolling + SC-1 capstone GREEN test
 - [ ] 06-13-PLAN.md — i18n + audit log + bot embed extensions + Pitfall 10 mitigation + 2+1 GREEN tests
