@@ -122,6 +122,7 @@ final class DoubleEliminationStandingsCalculator implements StandingsCalculatorS
         /** @var TournamentBracket|null $finalDecider */
         $finalDecider = $gfStage->brackets()
             ->whereNotNull('winner_participant_id')
+            ->reorder()
             ->orderByDesc('round_number')
             ->first();
 

@@ -143,6 +143,7 @@ final class SingleEliminationStandingsCalculator implements StandingsCalculatorS
                 $q->where('participant_a_id', $participant->id)
                     ->orWhere('participant_b_id', $participant->id);
             })
+            ->reorder()
             ->orderByDesc('round_number')
             ->first();
 
