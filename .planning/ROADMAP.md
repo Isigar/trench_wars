@@ -153,7 +153,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-09-PLAN.md — Slash commands (clan/match/profile/me) + registerCommands + interactionCreate dispatcher + 3 GREEN command tests
 - [x] 05-10-PLAN.md — Embeds + buttons + rsvpButton + signupModal components + match.ts embed upgrade + 3 GREEN tests
 - [x] 05-11-PLAN.md — Outbound polling worker + render service + guildMemberUpdate reconciler + 2 GREEN tests
-- [ ] 05-12-PLAN.md — i18n key coverage audit + audit-log integration tests + SC-5 capstone causer attribution test
+- [x] 05-12-PLAN.md — i18n key coverage audit + audit-log integration tests + SC-5 capstone causer attribution test
 - [ ] 05-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + final quality gates
 **UI hint**: no (bot-only phase; web changes are admin Filament + observer/migration plumbing)
 

@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
-last_updated: "2026-05-13T18:51:54.720Z"
+last_updated: "2026-05-13T19:00:36.031Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
-  completed_plans: 66
+  completed_plans: 67
   percent: 44
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 11 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Plan: 12 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -105,6 +105,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 05 P09 | 353 | 3 tasks | 12 files |
 | Phase 05 P10 | 472 | 3 tasks | 10 files |
 | Phase 05 P11 | 321 | 3 tasks | 7 files |
+| Phase 05 P12 | 322 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -291,6 +292,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-05-11-D: render.ts re-fetches PublicMatchData on every match_announce dispatch (vs reading row.payload snapshot)
 - [Phase ?]: D-05-11-F: payload key naming asymmetry: outbound uses discord_user_id/discord_role_id; inbound /discord-events/role-change body uses user_discord_id/role_discord_id
 - [Phase ?]: D-05-11-G: handleGuildMemberUpdate exported as a public helper from registerGuildMemberUpdateHandler for direct unit testing without mock Client
+- [Phase ?]: [Phase 05]: D-05-12-A — BotI18nKeyCoverageTest follows functional Pest convention (no namespace); diverges from plan <interfaces> namespace example for consistency with 100+ existing test files
+- [Phase ?]: [Phase 05]: D-05-12-B — BotI18nKeyCoverageTest surfaced 1 i18n gap (admin.discord_outbound_message.fields.causer); closed inline (Rule 2 — D-013 enforcement)
+- [Phase ?]: [Phase 05]: D-05-12-C — DiscordOutboundAuditLogTest hits real /api/bot/outbound-messages endpoints (not direct $row->update) — catches future controllers that swap to raw DB::update (T-05-12-04)
+- [Phase ?]: [Phase 05]: D-05-12-E — SC-5 capstone ships 3 it() blocks: happy path with ->not->toBe($bot->id) defence; 422 negative; missing acts-as header documents Pitfall 7 tolerance via contrast
 
 ### Pending Todos
 
@@ -312,6 +317,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T18:51:54.717Z
+Last session: 2026-05-13T18:59:57.976Z
 Stopped at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
 Resume file: None
