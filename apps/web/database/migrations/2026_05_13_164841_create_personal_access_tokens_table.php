@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
+            // Plan 05-03 fix (Rule 1 - Bug): the Sanctum publish:install scaffold
+            // shipped by plan 05-01 used $table->morphs('tokenable') which creates
+            // tokenable_id as unsignedBigInteger. Trenchwars' users.id is uuid
+            // (HasUuidPrimaryKey trait, Phase 1). UUIDs cannot insert into a bigint
+            // column ("invalid input syntax for type bigint"). Swap to uuidMorphs
+            // so the polymorphic tokenable_id column is uuid-typed.
             $table->id();
-            $table->morphs('tokenable');
+            $table->uuidMorphs('tokenable');
             $table->text('name');
             $table->string('token', 64)->unique();
             $table->text('abilities')->nullable();

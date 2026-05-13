@@ -77,11 +77,19 @@ final class ResolveBotActsAsUser
             return $this->actsAsUnknown();
         }
 
-        // T-05-03-06: `onceUsingId` rebinds the auth guard for the request lifetime
-        // WITHOUT writing a session row. The Sanctum bearer token already
-        // authenticated the request — this swap only changes WHO `auth()->user()`
-        // returns for the downstream controller + LogsActivity causer resolution.
-        Auth::onceUsingId($user->id);
+        // T-05-03-06: rebind auth for the request lifetime WITHOUT writing a
+        // session row. On a Sanctum bearer-authenticated /api/bot/* request the
+        // active guard is Sanctum's RequestGuard (stateless), so we use setUser()
+        // on the active guard rather than SessionGuard::onceUsingId (which only
+        // exists on the session-backed 'web' guard and would no-op here anyway —
+        // the controller resolves auth()->user() through the default guard).
+        //
+        // We also call setUser() on the 'web' guard so any LogsActivity hook that
+        // resolves the causer via the auth manager's default-guard chain still
+        // sees the rebound human (defence-in-depth — Activity::getCauser() falls
+        // back to Auth::user() which iterates registered guards in order).
+        Auth::setUser($user);
+        Auth::guard('web')->setUser($user);
 
         return $next($request);
     }
