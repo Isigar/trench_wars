@@ -17,7 +17,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### Match Workflows
 
-- [ ] **REQ-goal-match-workflows**: A match can be created, slot-templated, signed up to, and scheduled without leaving the platform's structured surfaces. Replaces ad-hoc Discord scheduling. (D-010)
+- [x] **REQ-goal-match-workflows**: A match can be created, slot-templated, signed up to, and scheduled without leaving the platform's structured surfaces. Replaces ad-hoc Discord scheduling. (D-010)
 
 ### RCON & Match History
 

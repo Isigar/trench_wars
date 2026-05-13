@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
-last_updated: "2026-05-13T14:51:30Z"
+last_updated: "2026-05-13T15:10:28.004Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 8 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
+Plan: 9 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -89,6 +89,7 @@ Progress: [████░░░░░░] 33% (3/9 phases; 51/55 plans)
 | Phase 04 P06 | 9 | 3 tasks | 7 files |
 | Phase 04 P07 | 18m | 3 tasks | 14 files |
 | Phase 04 P08 | 11min | 2 tasks | 6 files |
+| Phase 04 P09 | 12 | 3 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -217,6 +218,10 @@ Plan-level decisions logged during execution:
 - [Phase 04]: D-04-08-A: No `Match as MatchModel` alias in MatchObserver — use GameMatch directly (D-04-03-A LOCKED + D-04-07-C continuation).
 - [Phase 04]: D-04-08-B: Model-level `booted()` registration ONLY — no AppServiceProvider fallback added; observer fires reliably under test.
 - [Phase 04]: D-04-08-C: Segregate observer-driven Event from manual Event::factory() by setting is_public=false on the underlying GameMatch — canonical ripple-fix pattern for tests that touch the events table.
+- [Phase ?]: D-04-09-A: MvpsRelationManager uses HasManyThrough on GameMatch::mvps() — chosen over getEloquentQuery override and standalone resource because Filament v3 natively supports HasManyThrough in RelationManagers (Context7 docs confirmed)
+- [Phase ?]: D-04-09-B: EditMatch HeaderActions for status transitions (Lock signups, Cancel match, Open signups) — visible predicates hide actions outside the state machine; each calls MatchStatusService::transition
+- [Phase ?]: D-04-09-C: MatchResultService::upsert terminal-state SKIP — wraps the MatchStatusService::transition call in 'if status !== played' to support re-edits to the result without re-firing the transition (Pattern 4 terminal rule)
+- [Phase ?]: D-04-09-D: Container-bind stub for final services — replaces Mockery/anonymous-class-extension for testing final services; reusable for plan 04-10+ tests
 
 ### Pending Todos
 
@@ -238,6 +243,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T14:51:30Z
+Last session: 2026-05-13T15:10:16.521Z
 Stopped at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
 Resume file: None
