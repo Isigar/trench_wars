@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\ClanMembershipObserver;
 use Database\Factories\ClanMembershipFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -72,5 +73,19 @@ class ClanMembership extends Model
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'invited_by');
+    }
+
+    /**
+     * Register ClanMembershipObserver for Discord role-sync dispatch (plan 05-06).
+     *
+     * D-04-08-B precedent (Phase 4 GameMatch::booted()): model-level
+     * static::observe is idempotent — Eloquent dedupes by class name, so
+     * repeat registrations from AppServiceProvider or repeated booted()
+     * invocations are harmless. Registering here (not in AppServiceProvider)
+     * is the canonical hook that fires reliably under test.
+     */
+    protected static function booted(): void
+    {
+        static::observe(ClanMembershipObserver::class);
     }
 }
