@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\ClanTag;
+use App\Models\GameMatch;
+use App\Models\MatchAccessRule;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RuntimeException;
 
 /**
- * Wave 0 RED stub — real implementation lands in plan 04-03.
+ * Source: .planning/phases/04-matches-manual/04-03-PLAN.md <interfaces> MatchAccessRuleFactory block.
  *
- * Source: .planning/phases/04-matches-manual/04-01-PLAN.md task 1.
- * Analog: apps/web/database/factories/GameFactory.php Wave 0 form (commit 1d4d736).
- * See MatchFactory header for the @phpstan-ignore rationale.
+ * Replaces the Wave 0 stub (commit 6e5024c). Default scope: a fresh GameMatch + a fresh
+ * ClanTag per row.
  *
- * @phpstan-ignore-next-line missingType.generics
+ * @extends Factory<MatchAccessRule>
  */
 class MatchAccessRuleFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\MatchAccessRule';
+    protected $model = MatchAccessRule::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        throw new RuntimeException('MatchAccessRuleFactory definition not yet implemented (Wave 0 stub — replaced by plan 04-03).');
+        return [
+            'match_id' => GameMatch::factory(),
+            'clan_tag_id' => ClanTag::factory(),
+        ];
     }
 }

@@ -4,28 +4,37 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Clan;
+use App\Models\GameMatch;
+use App\Models\MatchResult;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RuntimeException;
 
 /**
- * Wave 0 RED stub — real implementation lands in plan 04-03.
+ * Source: .planning/phases/04-matches-manual/04-03-PLAN.md <interfaces> MatchResultFactory block.
  *
- * Source: .planning/phases/04-matches-manual/04-01-PLAN.md task 1.
- * Analog: apps/web/database/factories/GameFactory.php Wave 0 form (commit 1d4d736).
- * See MatchFactory header for the @phpstan-ignore rationale.
+ * Replaces the Wave 0 stub (commit 6e5024c). Default scope: a fresh GameMatch + a fresh
+ * winner Clan + a fresh recorder User per row. Scores default to a realistic 4-1 finish.
  *
- * @phpstan-ignore-next-line missingType.generics
+ * @extends Factory<MatchResult>
  */
 class MatchResultFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\MatchResult';
+    protected $model = MatchResult::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        throw new RuntimeException('MatchResultFactory definition not yet implemented (Wave 0 stub — replaced by plan 04-03).');
+        return [
+            'match_id' => GameMatch::factory(),
+            'winner_clan_id' => Clan::factory(),
+            'allies_score' => 4,
+            'axis_score' => 1,
+            'notes' => null,
+            'recorded_by_user_id' => User::factory(),
+            'recorded_at' => now(),
+        ];
     }
 }

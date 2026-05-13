@@ -4,28 +4,33 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\MatchMvp;
+use App\Models\MatchResult;
+use App\Models\Player;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RuntimeException;
 
 /**
- * Wave 0 RED stub — real implementation lands in plan 04-03.
+ * Source: .planning/phases/04-matches-manual/04-03-PLAN.md <interfaces> MatchMvpFactory block.
  *
- * Source: .planning/phases/04-matches-manual/04-01-PLAN.md task 1.
- * Analog: apps/web/database/factories/GameFactory.php Wave 0 form (commit 1d4d736).
- * See MatchFactory header for the @phpstan-ignore rationale.
+ * Replaces the Wave 0 stub (commit 6e5024c). Default scope: a fresh MatchResult + a fresh
+ * Player per row; default category 'kills' with a random value in [1, 100].
  *
- * @phpstan-ignore-next-line missingType.generics
+ * @extends Factory<MatchMvp>
  */
 class MatchMvpFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\MatchMvp';
+    protected $model = MatchMvp::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        throw new RuntimeException('MatchMvpFactory definition not yet implemented (Wave 0 stub — replaced by plan 04-03).');
+        return [
+            'match_result_id' => MatchResult::factory(),
+            'player_id' => Player::factory(),
+            'category' => 'kills',
+            'value' => fake()->numberBetween(1, 100),
+        ];
     }
 }

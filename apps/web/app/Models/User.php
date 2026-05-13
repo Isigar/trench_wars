@@ -10,6 +10,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -119,5 +120,32 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function player(): HasOne
     {
         return $this->hasOne(Player::class);
+    }
+
+    /*
+    | -----------------------------------------------------------------------
+    | Clan-membership accessors (added in plan 04-03 task 2 — Rule 2 amendment).
+    | -----------------------------------------------------------------------
+    | Phase 2 ships `Clan::activeMembers()` (HasMany) and `Clan::memberships()`
+    | (HasMany), but the symmetric reverse accessors on User were missing.
+    | RESEARCH Pattern 5 (`MatchSignupService::tagAccessAllowed()`) reads
+    | `$user->activeClanMembership?->clan->tags()` and Phase 5 (Discord bot)
+    | + Filament admin both need `$user->memberships()` for history views.
+    |
+    | D-009 invariant: at most one active ClanMembership per user (enforced by
+    | the `clan_memberships_one_active` partial UNIQUE index). The HasOne
+    | returns either the single active row or null.
+    */
+
+    /** @return HasOne<ClanMembership, $this> */
+    public function activeClanMembership(): HasOne
+    {
+        return $this->hasOne(ClanMembership::class)->whereNull('left_at');
+    }
+
+    /** @return HasMany<ClanMembership, $this> */
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(ClanMembership::class);
     }
 }
