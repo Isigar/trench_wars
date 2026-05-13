@@ -4,30 +4,50 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Clan;
+use App\Models\Tournament;
+use App\Models\TournamentParticipant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/*
-| Wave 0 stub — replaced by plan 06-03 (Wave 2, Models).
-| Source: .planning/phases/06-tournaments-brackets/06-01-PLAN.md task 1.
-| Analog (canonical Wave 0 idiom): apps/web/database/factories/GameFactory.php
-| from Phase 3 commit 1d4d736.
-|
-| Deviation note (Rule 3): generics omitted until plan 06-03 creates the model;
-| PHPStan L8 cannot validate `@extends Factory<App\Models\TournamentParticipant>`
-| against a non-existent class, and CLAUDE.md §3 forbids baseline regeneration.
-|
-| @phpstan-ignore-next-line missingType.generics
-*/
-final class TournamentParticipantFactory extends Factory
+/**
+ * Source: .planning/phases/06-tournaments-brackets/06-03-PLAN.md <interfaces> TournamentParticipantFactory.
+ *
+ * Replaces the Wave 0 stub. Default scope spawns a fresh Tournament + Clan per
+ * row. For tests that need a single tree, use ->for($tournament)->for($clan)
+ * chains.
+ *
+ * Helper state methods:
+ *   - active()        — flip status from 'registered' to 'active'
+ *   - withSeed(int)   — set a specific seed value
+ *
+ * @extends Factory<TournamentParticipant>
+ */
+class TournamentParticipantFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\TournamentParticipant';
+    protected $model = TournamentParticipant::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        return [];
+        return [
+            'tournament_id' => Tournament::factory(),
+            'clan_id' => Clan::factory(),
+            'seed' => null,
+            'status' => 'registered',
+            'placement' => null,
+            'registered_at' => now(),
+        ];
+    }
+
+    public function active(): static
+    {
+        return $this->state(fn (): array => ['status' => 'active']);
+    }
+
+    public function withSeed(int $seed): static
+    {
+        return $this->state(fn (): array => ['seed' => $seed]);
     }
 }

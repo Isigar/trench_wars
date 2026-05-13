@@ -4,28 +4,34 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Tournament;
+use App\Models\TournamentStage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/*
-| Wave 0 stub — replaced by plan 06-03 (Wave 2, Models).
-| Source: .planning/phases/06-tournaments-brackets/06-01-PLAN.md task 1.
-|
-| Deviation note (Rule 3): generics omitted until plan 06-03 creates the model;
-| PHPStan L8 cannot validate `@extends Factory<App\Models\TournamentStage>`
-| against a non-existent class, and CLAUDE.md §3 forbids baseline regeneration.
-|
-| @phpstan-ignore-next-line missingType.generics
-*/
-final class TournamentStageFactory extends Factory
+/**
+ * Source: .planning/phases/06-tournaments-brackets/06-03-PLAN.md <interfaces> TournamentStageFactory.
+ *
+ * Replaces the Wave 0 stub. Default scope spawns a fresh Tournament + sets
+ * type='elim' / ordinal=1 (the canonical first stage for a single-elim tournament).
+ * For multi-stage trees, increment ordinal per call.
+ *
+ * @extends Factory<TournamentStage>
+ */
+class TournamentStageFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\TournamentStage';
+    protected $model = TournamentStage::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        return [];
+        return [
+            'tournament_id' => Tournament::factory(),
+            'type' => 'elim',
+            'ordinal' => 1,
+            'name' => null,
+            'settings' => null,
+        ];
     }
 }

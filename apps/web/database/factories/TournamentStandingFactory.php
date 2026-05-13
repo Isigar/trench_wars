@@ -4,28 +4,45 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Tournament;
+use App\Models\TournamentParticipant;
+use App\Models\TournamentStage;
+use App\Models\TournamentStanding;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/*
-| Wave 0 stub — replaced by plan 06-03 (Wave 2, Models).
-| Source: .planning/phases/06-tournaments-brackets/06-01-PLAN.md task 1.
-|
-| Deviation note (Rule 3): generics omitted until plan 06-03 creates the model;
-| PHPStan L8 cannot validate `@extends Factory<App\Models\TournamentStanding>`
-| against a non-existent class, and CLAUDE.md §3 forbids baseline regeneration.
-|
-| @phpstan-ignore-next-line missingType.generics
-*/
-final class TournamentStandingFactory extends Factory
+/**
+ * Source: .planning/phases/06-tournaments-brackets/06-03-PLAN.md <interfaces> TournamentStandingFactory.
+ *
+ * Replaces the Wave 0 stub. Default scope spawns fresh Tournament + Stage +
+ * Participant — three independent factory trees by default, so callers MUST
+ * use ->for($tournament)->for($stage, 'stage')->for($participant, 'participant')
+ * (or override the *_id columns) when a single tree is required.
+ *
+ * Wins/losses/draws default to 0; points + tiebreak_score default to 0.00
+ * (decimal:2 cast); rank defaults to NULL (computed by
+ * StandingsCalculatorService — plan 06-09).
+ *
+ * @extends Factory<TournamentStanding>
+ */
+class TournamentStandingFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\TournamentStanding';
+    protected $model = TournamentStanding::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        return [];
+        return [
+            'tournament_id' => Tournament::factory(),
+            'tournament_stage_id' => TournamentStage::factory(),
+            'participant_id' => TournamentParticipant::factory(),
+            'wins' => 0,
+            'losses' => 0,
+            'draws' => 0,
+            'points' => 0,
+            'tiebreak_score' => 0,
+            'rank' => null,
+        ];
     }
 }
