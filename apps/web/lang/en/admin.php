@@ -53,11 +53,22 @@ return [
             'ClanMembership' => 'Membership',
             'ClanInvite' => 'Invite',
             'ClanApplication' => 'Application',
+            // Phase 3 additions (03-01-PLAN.md task 2; 03-CONTEXT.md § Phase Boundary).
+            'Game' => 'Game',
+            'GameRole' => 'Game role',
+            'GameMatchType' => 'Match type',
+            'GameMatchTypeRoleLimit' => 'Role capacity',
         ],
     ],
     'tab' => [
         'profile' => 'Profile',
         'audit' => 'Audit log',
+    ],
+    'nav' => [
+        // Filament navigationGroup() handle for the Phase 3 Game / GameMatchType resources
+        // (03-01-PLAN.md task 2 + 03-RESEARCH.md Pitfall 8). Harmless if unused; required
+        // so __()'d nav labels in plans 03-06/03-07 do not raise MissingTranslationException.
+        'platform' => 'Platform',
     ],
     'user' => [
         'label' => 'User',
@@ -205,6 +216,97 @@ return [
             'guild_id' => 'Discord guild ID',
             'name' => 'Guild name',
             'icon_url' => 'Icon URL',
+        ],
+    ],
+
+    // -------------------------------------------------------------------------
+    // Phase 3 game domain resources (03-CONTEXT.md § Phase Boundary, 03-01-PLAN.md task 2)
+    // Placeholder English copy — finalised by plan 03-09 i18n audit.
+    // Key shapes mirror the existing clan_* groups so Filament v3 resources in
+    // plans 03-06/03-07 can call __() without raising MissingTranslationException.
+    // -------------------------------------------------------------------------
+
+    'game' => [
+        'label' => 'Game',
+        'plural_label' => 'Games',
+        'section' => [
+            'profile' => 'Profile',
+            'roles' => 'Roles',
+            'match_types' => 'Match types',
+        ],
+        'fields' => [
+            'key' => 'Key',
+            'name' => 'Name',
+            'name_locale' => 'Locale',
+            'name_text' => 'Display name',
+            'is_active' => 'Active',
+        ],
+        'help' => [
+            'key_format' => 'Lowercase letters, digits, and underscores only.',
+        ],
+        'tab' => [
+            'profile' => 'Profile',
+            'roles' => 'Roles',
+            'match_types' => 'Match types',
+            'audit' => 'Audit',
+        ],
+    ],
+
+    'game_role' => [
+        'label' => 'Game role',
+        'plural_label' => 'Roles',
+        'fields' => [
+            'key' => 'Key',
+            'display_name' => 'Display name',
+            'display_name_locale' => 'Locale',
+            'display_name_text' => 'Translation',
+            'sort_order' => 'Sort order',
+            'is_active' => 'Active',
+        ],
+        'help' => [
+            'key_format' => 'Lowercase letters, digits, and underscores only.',
+        ],
+    ],
+
+    'game_match_type' => [
+        'label' => 'Match type',
+        'plural_label' => 'Match types',
+        'section' => [
+            'profile' => 'Profile',
+            'role_limits' => 'Role capacity',
+        ],
+        'fields' => [
+            'key' => 'Key',
+            'name' => 'Name',
+            'name_locale' => 'Locale',
+            'name_text' => 'Translation',
+            'description' => 'Description',
+            'description_locale' => 'Locale',
+            'description_text' => 'Translation',
+            'is_active' => 'Active',
+            'game' => 'Game',
+        ],
+        'help' => [
+            'key_format' => 'Lowercase letters, digits, and underscores only.',
+        ],
+        'tab' => [
+            'profile' => 'Profile',
+            'role_limits' => 'Role capacity',
+            'audit' => 'Audit',
+        ],
+    ],
+
+    'game_match_type_role_limit' => [
+        'label' => 'Role capacity',
+        'plural_label' => 'Role capacities',
+        'fields' => [
+            'role' => 'Role',
+            'capacity' => 'Capacity',
+            'sort_order' => 'Sort order',
+        ],
+        'help' => [
+            'capacity_min_zero' => 'Capacity must be zero or greater.',
+            'role_scope' => 'Roles are scoped to the parent game.',
         ],
     ],
 ];
