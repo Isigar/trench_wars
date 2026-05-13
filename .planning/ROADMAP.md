@@ -98,7 +98,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 03-04-PLAN.md — Spatie laravel-data DTOs (4) + TS regen + shared-types sync + GameDataTest
 - [x] 03-05-PLAN.md — GameSeeder (HLL preset: 1 Game + 15 Roles + 5 MatchTypes + capacity matrix) + idempotency tests
 - [x] 03-06-PLAN.md — GameResource (Filament) + Roles + MatchTypes RelationManagers
-- [ ] 03-07-PLAN.md — GameMatchTypeResource (Filament) + RoleLimits RelationManager (Pattern 3 scoped Select) + MatchTypesRelationManager URL-override amendment
+- [x] 03-07-PLAN.md — GameMatchTypeResource (Filament) + RoleLimits RelationManager (Pattern 3 scoped Select) + MatchTypesRelationManager URL-override amendment
 - [ ] 03-08-PLAN.md — GameResourcesPresentTest (admin reachability + RelationManager render checks + Pitfall 3 typo guard)
 - [ ] 03-09-PLAN.md — i18n key coverage audit + GameAuditLogTest (D-012)
 - [ ] 03-10-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates

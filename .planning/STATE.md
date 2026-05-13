@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-05-13T12:15:28.476Z"
+last_updated: "2026-05-13T12:23:05.014Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 42
-  completed_plans: 38
+  completed_plans: 39
   percent: 22
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 6 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Plan: 7 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -77,6 +77,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 03-games-match-types P04 | 300 | 2 tasks | 8 files |
 | Phase 03 P05 | 4 minutes | 2 tasks | 3 files |
 | Phase 03-games-match-types P06 | 202s | 2 tasks tasks | 7 files files |
+| Phase 03 P07 | 305 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -172,6 +173,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Phase 3 Plan 03-06: GameResource ships Tabs(Profile+Audit) + 2 RelationManagers (Roles, MatchTypes). No DeleteAction on table (admin uses is_active toggle, Open Question Q4); key field disabledOn('edit') to protect seeder idempotency (T-03-06-03).
 - [Phase ?]: Plan 03-06 Rule 1: Filament v3 RelationManager::getTitle() is STATIC — instance signature triggers fatal error at panel registration. Corrected during phpstan loop on task 2.
 - [Phase ?]: Plan 03-06: Pattern 2 click-through (MatchTypesRelationManager EditAction -> GameMatchTypeResource::edit URL) DEFERRED to plan 03-07 task 3 Rule-2 amendment; ships default modal-based EditAction in this plan since GameMatchTypeResource lives in wave 5.
+- [Phase ?]: GameMatchTypeResource ships List/Create/Edit only — NO View page (ClanTagResource precedent; keeps the second-tier resource tight)
+- [Phase ?]: RoleLimitsRelationManager Select option labels read raw JSONB via getAttributes() + json_decode to bypass HasTranslations string accessor for PHPStan L8 compatibility (functionally identical)
+- [Phase ?]: Pattern 3 cross-game UI Select scoping + model saving() listener (plan 03-03) together satisfy Pitfall 10 defense-in-depth; both gates required
 
 ### Pending Todos
 
@@ -193,6 +197,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T12:15:10.520Z
+Last session: 2026-05-13T12:22:40.902Z
 Stopped at: Completed 03-05-PLAN.md
 Resume file: None
