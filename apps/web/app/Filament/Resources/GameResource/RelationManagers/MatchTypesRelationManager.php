@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\GameResource\RelationManagers;
 
+use App\Filament\Resources\GameMatchTypeResource;
+use App\Models\GameMatchType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -13,14 +15,15 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Source: .planning/phases/03-games-match-types/03-06-PLAN.md task 2.
+ * Amended: .planning/phases/03-games-match-types/03-07-PLAN.md task 3 (Rule 2).
  *
- * Inline GameMatchType CRUD on the Game edit page (RESEARCH.md Pattern 1).
+ * Inline GameMatchType CRUD on the Game edit page (RESEARCH.md Pattern 1) +
+ * Pattern 2 click-through to GameMatchTypeResource for RoleLimits management.
  *
- * Pattern 2 second-tier (RoleLimits) lives in plan 03-07's GameMatchTypeResource —
- * Filament v3 does NOT support nested RelationManagers, so RoleLimits are NOT
- * editable here. Plan 03-07 task 3 amends this file (Rule 2 amendment) to
- * override EditAction::make()->url(...) and navigate to GameMatchTypeResource's
- * edit page. Until then, EditAction is the default modal-based edit.
+ * Filament v3 does NOT support nested RelationManagers (RolesRelationManager
+ * inside MatchTypesRelationManager inside GameResource), so RoleLimits are
+ * managed via the standalone GameMatchTypeResource (plan 03-07). EditAction
+ * navigates there via `->url(fn ($record) => GameMatchTypeResource::getUrl('edit'))`.
  *
  * Pitfall 3 mitigation: $relationship MUST match Game::matchTypes() HasMany.
  */
@@ -88,12 +91,15 @@ class MatchTypesRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                // Plan 03-07 task 3 (Rule 2 amendment) replaces this with:
-                //   Tables\Actions\EditAction::make()
-                //       ->url(fn (GameMatchType $record) => GameMatchTypeResource::getUrl('edit', ['record' => $record]))
-                // This plan ships the default modal-based EditAction since
-                // GameMatchTypeResource does not exist yet (plan 03-07 wave 5).
-                Tables\Actions\EditAction::make(),
+                // Pattern 2 click-through (RESEARCH.md): override EditAction's default
+                // modal to navigate to the standalone GameMatchTypeResource edit page,
+                // where the RoleLimits RelationManager (plan 03-07) lives.
+                //
+                // Plan 03-07 task 3 Rule-2 amendment — supersedes plan 03-06's
+                // default modal-based EditAction (deferred behind GameMatchTypeResource
+                // landing in wave 5).
+                Tables\Actions\EditAction::make()
+                    ->url(fn (GameMatchType $record): string => GameMatchTypeResource::getUrl('edit', ['record' => $record])),
                 Tables\Actions\DeleteAction::make(),
             ]);
     }
