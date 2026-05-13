@@ -116,7 +116,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-platform-vision | Phase 3 | Complete |
 | REQ-goal-match-workflows | Phase 4 | Complete |
 | REQ-goal-discord-ux | Phase 5 | Complete |
-| REQ-success-tournament-end-to-end | Phase 6 | In Progress |
+| REQ-success-tournament-end-to-end | Phase 6 | Complete |
 | REQ-goal-cms | Phase 7 | Pending |
 | REQ-success-public-browse | Phase 7 | Pending |
 | REQ-goal-rcon-history | Phase 8 | Pending |
@@ -136,3 +136,4 @@ Coverage: 15/15 mappable requirements mapped — complete.
 *Requirements defined: 2026-05-03*
 *Last updated: 2026-05-13 — Phase 4 close: REQ-goal-match-workflows flipped to Complete*
 *Last updated: 2026-05-13 — Phase 5 close: REQ-goal-discord-ux confirmed Complete (was flipped during plan 05-12; 05-PHASE-VERIFICATION.md re-affirms via SC-1..SC-5 traceability)*
+*Last updated: 2026-05-14 — Phase 6 close: REQ-success-tournament-end-to-end flipped to Complete (06-PHASE-VERIFICATION.md maps SC-1..SC-5 + 12 Pitfalls + 5 Open Questions LOCKED inline)*

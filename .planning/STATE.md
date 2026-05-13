@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 06-09-PLAN.md
-last_updated: "2026-05-13T22:58:53.027Z"
-last_activity: 2026-05-13
+stopped_at: "Phase 6 COMPLETE — 06-14 plan executed, 06-PHASE-VERIFICATION.md written, ROADMAP 14/14 Complete; Open Questions A4/A5/A6/A8/Q5 LOCKED inline; 53 D-06-* canonical bindings recorded for Phase 7+"
+last_updated: "2026-05-14T22:59:49.000Z"
+last_activity: 2026-05-14
 progress:
   total_phases: 9
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 82
-  completed_plans: 81
-  percent: 56
+  completed_plans: 82
+  percent: 67
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 06 — Tournaments & brackets (executing; Wave 0 scaffolding complete)
+**Current focus:** Phase 07 — CMS (next; Phase 6 closed PENDING_MANUAL_SMOKE for 4-item operator walkthrough A-D per 06-PHASE-VERIFICATION.md)
 
 ## Current Position
 
-Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 13 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
-Status: Ready to execute
-Last activity: 2026-05-13
+Phase: 06 (Tournaments & brackets) — COMPLETE (PENDING_MANUAL_SMOKE — 4-item operator walkthrough A-D per 06-PHASE-VERIFICATION.md)
+Plan: 14 of 14 complete (06-14 phase verification — 866/2719 Pest + 139 bot Vitest GREEN; all 7 gates GREEN; D-06-* bindings recorded)
+Status: Ready to plan Phase 7 (CMS)
+Last activity: 2026-05-14
 
-Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete through Phase 6 plan 3)
+Progress: [███████░░░] 67% (6/9 phases; 82/82 plans complete through Phase 6)
 
 ## Performance Metrics
 
@@ -120,6 +120,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P11 | 20m | 2 tasks | 16 files |
 | Phase 06 P12 | 40min | - tasks | - files |
 | Phase 06 P13 | ~7min | 2 tasks | 6 files |
+| Phase 06 P14 | ~13min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -363,6 +364,11 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Phase 6 plan 13 — Open Question 5 LOCKED inline: 3 distinct outbound kinds (tournament_announce, tournament_announce_update, bracket_result_announce) for per-kind dispatch + admin filterability
 - [Phase ?]: Phase 6 plan 13 — Bot embed builders ship in apps/bot/src/lib/embeds.ts (extending Phase 5 single-file convention)
 - [Phase ?]: Phase 6 plan 13 — i18n coverage gate uses leaf-anchored regex so string-concat dynamic keys are excluded from source-grep
+- [Phase 06]: D-06-13-A — Bot kinds: 3 distinct enums (tournament_announce, tournament_announce_update, bracket_result_announce); Open Question 5 LOCKED inline
+- [Phase 06]: D-06-13-B — Bot embed builders ship in apps/bot/src/lib/embeds.ts extending Phase 5 single-file convention; tournamentEmbeds.test.ts adds 22 bot Vitest tests
+- [Phase 06]: D-06-13-C — i18n coverage gate uses leaf-anchored regex (90+ key tournaments.php namespace) to exclude string-concat dynamic keys from source-grep
+- [Phase 06]: Plan 06-14 — Phase 6 COMPLETE; 866 web Pest tests / 2719 assertions (+248 web / +902 assertions from Phase 5 close) + 139 bot Vitest tests (+22 from Phase 5 close); all 7 quality gates GREEN (Pest, Vitest, Pint, PHPStan L8, bot tsc strict, shared-types tsc, vue-tsc); 06-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-success-tournament-end-to-end + 12 Pitfalls + 5 Open Questions + 53 D-06-* canonical bindings; ROADMAP Phase 6 14/14 Complete (2026-05-14); REQUIREMENTS REQ-success-tournament-end-to-end -> Complete; STATE completed_phases 5 -> 6 + percent 56 -> 67; status PENDING_MANUAL_SMOKE pending operator 4-item walkthrough A-D
+- [Phase 06]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 6 (services, observers, DTOs, Filament resource, tests); zero alias-on-import; canonical binding for Phase 7+ CMS plans — Tournament events that polymorphically link back to GameMatch via tournament_brackets.match_id MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A
 
 ### Pending Todos
 
@@ -384,6 +390,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T22:58:47.906Z
-Stopped at: Completed 06-09-PLAN.md
+Last session: 2026-05-14T22:59:49.000Z
+Stopped at: Phase 6 COMPLETE (PENDING_MANUAL_SMOKE) — 06-14-PLAN.md executed; 06-PHASE-VERIFICATION.md authored; ROADMAP/REQUIREMENTS/STATE updated
 Resume file: None

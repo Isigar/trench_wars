@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Games & match types** — Admin can model any game's roles and match types fully in Filament; HLL is seeded.
 - [x] **Phase 4: Matches (manual)** — Matches can be created, signed up to, played, and results entered manually.
 - [x] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync). _Completed 2026-05-13_
-- [ ] **Phase 6: Tournaments & brackets** — Run an end-to-end tournament with a bracket UI and standings.
+- [x] **Phase 6: Tournaments & brackets** — Run an end-to-end tournament with a bracket UI and standings. _Completed 2026-05-14_
 - [ ] **Phase 7: CMS** — League can publish editorial content and curate the public calendar.
 - [ ] **Phase 8: RCON automation** — Match results and player stats flow in automatically from CRCON when matches are played on registered servers.
 - [ ] **Phase 9: Polish** — Notifications, search, leaderboards, mod tooling, performance, accessibility, and hardening.
@@ -181,7 +181,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 06-11-PLAN.md — TournamentResource Filament (Tabs + 8 HeaderActions + 4 RelationManagers; A5/A8 LOCKED) + 6 GREEN admin tests
 - [x] 06-12-PLAN.md — Public controllers + Vue 5-tab Show + BracketCanvas SVG + useTournamentPolling + SC-1 capstone GREEN test
 - [x] 06-13-PLAN.md — i18n + audit log + bot embed extensions + Pitfall 10 mitigation + 2+1 GREEN tests
-- [ ] 06-14-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + full quality gates
+- [x] 06-14-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + full quality gates
 **UI hint**: yes
 
 ### Phase 7: CMS
@@ -276,7 +276,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 3. Games & match types | 10/10 | Complete | 2026-05-13 |
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
-| 6. Tournaments & brackets | 12/14 | In Progress|  |
+| 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
 | 7. CMS | 0/TBD | Not started | - |
 | 8. RCON automation | 0/TBD | Not started | - |
 | 9. Polish | 0/TBD | Not started | - |
