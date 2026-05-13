@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-05-13T12:23:05.014Z"
+stopped_at: "Completed 03-08 plan: GameResourcesPresentTest GREEN (14/35)"
+last_updated: "2026-05-13T12:33:17.608Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 42
-  completed_plans: 39
+  completed_plans: 40
   percent: 22
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 7 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Plan: 8 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -78,6 +78,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 03 P05 | 4 minutes | 2 tasks | 3 files |
 | Phase 03-games-match-types P06 | 202s | 2 tasks tasks | 7 files files |
 | Phase 03 P07 | 305 | 3 tasks | 6 files |
+| Phase 03 P08 | 418 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -176,6 +177,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: GameMatchTypeResource ships List/Create/Edit only — NO View page (ClanTagResource precedent; keeps the second-tier resource tight)
 - [Phase ?]: RoleLimitsRelationManager Select option labels read raw JSONB via getAttributes() + json_decode to bypass HasTranslations string accessor for PHPStan L8 compatibility (functionally identical)
 - [Phase ?]: Pattern 3 cross-game UI Select scoping + model saving() listener (plan 03-03) together satisfy Pitfall 10 defense-in-depth; both gates required
+- [Phase ?]: 03-08: Pitfall 3 detection switched from HTTP assertSee to Livewire::test + assertCanSeeTableRecords (Filament v3 RM tables are x-intersect lazy-loaded; HTTP-fallback does not detect RM typo on Phase 3)
+- [Phase ?]: 03-08: Filament v3.3 setCurrentPanel() accepts Panel object not string — Filament::setCurrentPanel(Filament::getPanel('admin')) is the v3.3 idiom; v4 docs show string form
 
 ### Pending Todos
 
@@ -197,6 +200,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T12:22:40.902Z
-Stopped at: Completed 03-05-PLAN.md
+Last session: 2026-05-13T12:33:03.314Z
+Stopped at: Completed 03-08 plan: GameResourcesPresentTest GREEN (14/35)
 Resume file: None
