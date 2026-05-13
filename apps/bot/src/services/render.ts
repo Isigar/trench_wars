@@ -53,7 +53,13 @@ import type {
 } from 'discord.js';
 
 import { env } from '../env.js';
-import { matchCard } from '../lib/embeds.js';
+import {
+    buildBracketResultEmbed,
+    buildTournamentAnnounceEmbed,
+    matchCard,
+    type BracketResultPayload,
+    type TournamentAnnouncePayload,
+} from '../lib/embeds.js';
 import type {
     OutboundRow,
     PublicMatchData,
@@ -85,6 +91,15 @@ export async function render(
     }
     if (row.message_type === 'role_sync') {
         return renderRoleSync(client, row);
+    }
+    if (
+        row.message_type === 'tournament_announce' ||
+        row.message_type === 'tournament_announce_update'
+    ) {
+        return renderTournamentAnnounce(client, row);
+    }
+    if (row.message_type === 'bracket_result_announce') {
+        return renderBracketResultAnnounce(client, row);
     }
     throw new Error(
         `[bot/render] Unknown message_type: ${row.message_type}`,
@@ -155,6 +170,100 @@ async function renderMatchAnnounce(
     }
 
     const sent = await sendable.send(messagePayload);
+    return { discordMessageId: sent.id };
+}
+
+/**
+ * Phase 6 plan 06-13 — render tournament_announce + tournament_announce_update.
+ *
+ * Source: .planning/phases/06-tournaments-brackets/06-13-PLAN.md task 2 +
+ *         06-RESEARCH.md § Open Question 5 (3 distinct kinds — LOCKED inline).
+ *
+ * Channel resolution: row.channel_id is server-side resolved at outbound write
+ * time by TournamentObserver (plan 06-10). For Phase 6 v1 the column may be
+ * empty (the observer writes '' as a placeholder per plan 06-10 — the bot
+ * worker resolves the channel via env.DISCORD_ANNOUNCE_CHANNEL_ID OR the
+ * organising clan's announce channel). For tests we exercise the embed
+ * builder directly; the channel resolution lives in env.* and is integration-
+ * tested end-to-end in plan 06-14.
+ *
+ * Update path: tournament_announce_update has the SAME payload shape as
+ * tournament_announce but the bot worker treats it as "post a fresh message"
+ * since Phase 6 v1 does NOT edit prior tournament messages — the lifecycle
+ * status flip emits a NEW announce row rather than editing the previous one
+ * (this differs from match_announce_update which DOES edit, by design — the
+ * tournament-side conversation is more verbose and individual status flips
+ * deserve their own messages).
+ */
+async function renderTournamentAnnounce(
+    client: Client,
+    row: OutboundRow,
+): Promise<RenderResult> {
+    const payload = row.payload as TournamentAnnouncePayload;
+
+    const channel = await client.channels.fetch(row.channel_id);
+    if (
+        channel === null ||
+        !channel.isTextBased() ||
+        !('send' in channel)
+    ) {
+        throw new Error(
+            `[bot/render] Channel ${row.channel_id} not found or not text-based`,
+        );
+    }
+    const sendable = channel as TextBasedChannel & {
+        send: (opts: unknown) => Promise<Message>;
+    };
+
+    const embed = buildTournamentAnnounceEmbed(payload);
+
+    // T-05-10-07 / T-05-11-05: allowed_mentions:{parse:[]} suppresses
+    // @everyone / @here / role / user mention parsing regardless of what the
+    // embed title or description contains.
+    const sent = await sendable.send({
+        embeds: [embed],
+        allowed_mentions: { parse: [] as never[] },
+    });
+    return { discordMessageId: sent.id };
+}
+
+/**
+ * Phase 6 plan 06-13 — render bracket_result_announce.
+ *
+ * Source: .planning/phases/06-tournaments-brackets/06-13-PLAN.md task 2 +
+ *         06-08-PLAN.md (BracketAdvancementService outbound enqueue).
+ *
+ * Fires once per resolved bracket — when a tournament match records a winner
+ * and BracketAdvancementService propagates that winner into the bracket tree,
+ * an outbound row lands with this kind. Channel resolution is server-side per
+ * T-06-13-04 (organising clan's announce channel OR system announce channel).
+ */
+async function renderBracketResultAnnounce(
+    client: Client,
+    row: OutboundRow,
+): Promise<RenderResult> {
+    const payload = row.payload as BracketResultPayload;
+
+    const channel = await client.channels.fetch(row.channel_id);
+    if (
+        channel === null ||
+        !channel.isTextBased() ||
+        !('send' in channel)
+    ) {
+        throw new Error(
+            `[bot/render] Channel ${row.channel_id} not found or not text-based`,
+        );
+    }
+    const sendable = channel as TextBasedChannel & {
+        send: (opts: unknown) => Promise<Message>;
+    };
+
+    const embed = buildBracketResultEmbed(payload);
+
+    const sent = await sendable.send({
+        embeds: [embed],
+        allowed_mentions: { parse: [] as never[] },
+    });
     return { discordMessageId: sent.id };
 }
 

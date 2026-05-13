@@ -53,7 +53,13 @@ export type {
 export interface OutboundRow {
     id: string;
     channel_id: string;
-    message_type: 'match_announce' | 'role_sync' | 'generic';
+    message_type:
+        | 'match_announce'
+        | 'role_sync'
+        | 'tournament_announce'
+        | 'tournament_announce_update'
+        | 'bracket_result_announce'
+        | 'generic';
     status: 'pending' | 'dispatching' | 'sent' | 'failed';
     payload: unknown;
     attempts: number;
