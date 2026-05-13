@@ -14,7 +14,9 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             DiscordGuildSeeder::class,
             ClanTagSeeder::class,
-            // Phase 3+ adds GameSeeder etc.
+            // Phase 3 — game catalogue (D-007: HLL preset). MUST run AFTER ClanTagSeeder
+            // because Phase 3 migrations land later than Phase 2 (Pitfall 9 — ordering).
+            GameSeeder::class,
         ]);
     }
 }
