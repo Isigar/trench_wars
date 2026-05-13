@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -128,6 +129,25 @@ class Tournament extends Model
     public function standings(): HasMany
     {
         return $this->hasMany(TournamentStanding::class);
+    }
+
+    /**
+     * Convenience HasManyThrough to enumerate every bracket of every stage of the
+     * tournament. Used by Filament's BracketsRelationManager (plan 06-11) and the
+     * PublicTournamentData composer (plan 06-10).
+     *
+     * @return HasManyThrough<TournamentBracket, TournamentStage, $this>
+     */
+    public function brackets(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            TournamentBracket::class,
+            TournamentStage::class,
+            'tournament_id',          // FK on tournament_stages
+            'tournament_stage_id',    // FK on tournament_brackets
+            'id',                     // local key on tournaments
+            'id',                     // local key on tournament_stages
+        );
     }
 
     /** @return MorphOne<Event, $this> */

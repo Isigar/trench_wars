@@ -455,9 +455,15 @@ return [
         'label' => 'Tournament',
         'plural_label' => 'Tournaments',
         'navigation_group' => 'Tournaments',
+        'section' => [
+            'profile' => 'Profile',
+            'audit' => 'Audit',
+        ],
         'fields' => [
             'slug' => 'Slug',
             'game_id' => 'Game',
+            'title' => 'Title',
+            'description' => 'Description',
             'format' => 'Format',
             'status' => 'Status',
             'starts_at' => 'Starts at',
@@ -466,6 +472,8 @@ return [
             'organiser_user_id' => 'Organiser',
             'default_game_match_type_id' => 'Default match type',
             'is_public' => 'Public',
+            'settings' => 'Settings',
+            'participants_count' => 'Participants',
         ],
         'actions' => [
             'open_registration' => ['label' => 'Open registration'],
@@ -481,6 +489,12 @@ return [
             'recalculate_standings' => ['label' => 'Recalculate standings'],
             'cancel' => ['label' => 'Cancel tournament'],
             'generate_next_swiss_round' => ['label' => 'Generate next Swiss round'],
+            'materialise_next_round' => [
+                'label' => 'Materialise next round',
+                'modal_heading' => 'Materialise pending bracket matches?',
+                'modal_description' => 'Spawn GameMatch + slot grid for every bracket that has both participants set and no match yet.',
+                'success' => 'Pending brackets materialised.',
+            ],
         ],
     ],
 
@@ -495,10 +509,22 @@ return [
         ],
     ],
 
+    'tournament_stage' => [
+        'label' => 'Stage',
+        'plural_label' => 'Stages',
+        'fields' => [
+            'type' => 'Type',
+            'ordinal' => 'Order',
+            'name' => 'Name',
+            'brackets_count' => 'Brackets',
+        ],
+    ],
+
     'tournament_bracket' => [
         'label' => 'Bracket',
         'plural_label' => 'Brackets',
         'fields' => [
+            'stage' => 'Stage',
             'round_number' => 'Round',
             'position' => 'Position',
             'participant_a_id' => 'Participant A',
