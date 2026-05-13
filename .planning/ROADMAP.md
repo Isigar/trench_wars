@@ -141,21 +141,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. When a match is created on the website, the host clan's announce channel receives an embed with RSVP buttons, persisted in `discord_outbound_messages` (`pending → sent | failed`) for durability.
   4. Joining or leaving a clan on the website triggers Discord role assignment/removal via Horizon-retried jobs; manual Discord-side role changes reconcile via `guildMemberUpdate` hook.
   5. All bot→web traffic uses the Sanctum `bot:*` scoped token + `X-Bot-Acts-As-User` header, and audit log entries correctly attribute the human causer behind every Discord action.
-**Plans**: 14 plans
-- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
-- [x] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
-- [x] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
-- [x] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
-- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
-- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
-- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+**Plans**: 13 plans
+- [ ] 05-01-PLAN.md — Wave 0 scaffolding (Sanctum + Horizon install + worker compose service + bot deps + 20 RED stubs + bot.php i18n)
+- [ ] 05-02-PLAN.md — Migrations (discord_outbound_messages + clans.discord_announce_channel_id) + DiscordOutboundMessage model
+- [ ] 05-03-PLAN.md — ResolveBotActsAsUser middleware + Sanctum abilities matrix + 2 GREEN auth tests
+- [ ] 05-04-PLAN.md — 6 BotApi controllers + 4 FormRequests + routes/api.php + 6 GREEN HTTP integration tests
+- [ ] 05-05-PLAN.md — MatchObserver outbound writer + DiscordOutboundPayloadBuilder
+- [ ] 05-06-PLAN.md — SyncDiscordRolesJob (Horizon retry) + ClanMembershipObserver + 2 GREEN job/dispatch tests
+- [ ] 05-07-PLAN.md — DiscordOutboundMessageResource (Filament read-only) + retry action + Artisan trenchwars:bot:issue-token/revoke-token + BotServiceUserSeeder + ClanResource amendment
+- [ ] 05-08-PLAN.md — Bot core (env + client + api + customIds + colors + apiContracts) + GREEN customIds test
+- [ ] 05-09-PLAN.md — Slash commands (clan/match/profile/me) + registerCommands + interactionCreate dispatcher + 3 GREEN command tests
+- [ ] 05-10-PLAN.md — Embeds + buttons + rsvpButton + signupModal components + match.ts embed upgrade + 3 GREEN tests
+- [ ] 05-11-PLAN.md — Outbound polling worker + render service + guildMemberUpdate reconciler + 2 GREEN tests
+- [ ] 05-12-PLAN.md — i18n key coverage audit + audit-log integration tests + SC-5 capstone causer attribution test
+- [ ] 05-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + final quality gates
+**UI hint**: no (bot-only phase; web changes are admin Filament + observer/migration plumbing)
 
 ### Phase 6: Tournaments & brackets
 **Goal**: Deliver tournaments as a first-class round-1 capability — formats, bracket generation, public bracket views, standings, and admin tooling for forfeits/withdrawals.
