@@ -424,6 +424,10 @@ return [
             'last_error' => 'Last error',
             'sent_message_id' => 'Sent message ID',
             'created_at' => 'Created',
+            // Added by plan 05-12 task 1 — BotI18nKeyCoverageTest surfaced this
+            // gap (DiscordOutboundMessageResource references the key for the
+            // `causer.username` table column).
+            'causer' => 'Caused by',
         ],
         'actions' => [
             'retry' => 'Retry',
