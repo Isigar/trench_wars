@@ -170,7 +170,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 14 plans
 - [x] 06-01-PLAN.md — Wave 0 scaffolding (5 factory stubs + 32 RED Pest stubs + tournaments.php i18n skeleton + admin.php extension)
 - [x] 06-02-PLAN.md — Migrations (5 tables: tournaments, participants, stages, brackets, standings; CHECK constraints + partial UNIQUE match_id + self-FK no-cycle)
-- [ ] 06-03-PLAN.md — 5 models + 5 real factories + TournamentObserver stub + 5 GREEN model tests
+- [x] 06-03-PLAN.md — 5 models + 5 real factories + TournamentObserver stub + 5 GREEN model tests
 - [ ] 06-04-PLAN.md — TournamentStatusService + 2 exception classes (state machine + BracketsAlreadyGeneratedException forward-declared) + GREEN test
 - [ ] 06-05-PLAN.md — TournamentSeedingService (by_rank/random/manual) + Tournament::canReseed() + A4 LOCKED + GREEN test
 - [ ] 06-06-PLAN.md — BracketGeneratorService + SingleEliminationGenerator (Pattern 3 inner_outer + byes) + BracketMatchMaterialiserService + 2 GREEN tests

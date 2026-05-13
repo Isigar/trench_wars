@@ -48,7 +48,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 ### Round-1 Acceptance Gates
 
 - [ ] **REQ-success-end-to-end-scrim**: End-to-end flow works without manual data entry on the happy path: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded MatchResult + MatchPlayerStat.
-- [ ] **REQ-success-tournament-end-to-end**: An 8-clan single-elim tournament can be created, seeded, brackets generated, matches materialised, played, results captured, advancements computed — without admin patching.
+- [x] **REQ-success-tournament-end-to-end**: An 8-clan single-elim tournament can be created, seeded, brackets generated, matches materialised, played, results captured, advancements computed — without admin patching.
 - [ ] **REQ-success-public-browse**: All public surfaces (clans, players, calendar, bracket views, articles) are accessible without auth; SSR enabled in production for first paint on public pages.
 
 ## v2 Requirements

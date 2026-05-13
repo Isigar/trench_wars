@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
-last_updated: "2026-05-13T20:11:10.727Z"
+last_updated: "2026-05-13T20:22:17.762Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 70
+  completed_plans: 71
   percent: 56
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 2 of 14 complete (06-01 Wave 0 scaffolding — 5 factory stubs + 32 Pest RED stubs + apps/web/lang/en/tournaments.php + admin.php extension)
+Plan: 3 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
-Progress: [██████░░░░] 57% (5/9 phases; 70/82 plans complete through Phase 6 plan 1)
+Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete through Phase 6 plan 3)
 
 ## Performance Metrics
 
@@ -109,6 +109,7 @@ Progress: [██████░░░░] 57% (5/9 phases; 70/82 plans complete
 | Phase 05-discord-bot-v1 P13 | 408s | 2 tasks | 5 files |
 | Phase 06 P01 | 292s | 2 tasks | 38 files |
 | Phase 06 P02 | 4m 06s | 2 tasks | 5 files |
+| Phase 06 P03 | 30m | 2 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -307,6 +308,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-02-A: Self-FKs on tournament_brackets deferred to a separate Schema::table() block to avoid Laravel ADD PRIMARY KEY ordering quirk
 - [Phase ?]: D-06-02-B: tournament_standings UNIQUE composite is (stage_id, participant_id) not (tournament_id, participant_id) — round-robin stages carry distinct standings per participant
 - [Phase ?]: D-06-02-C: no-self-advance CHECK covers both advance pointers in a single CHECK; NULL != id allowed (NULL not FALSE in Postgres) so un-materialised brackets coexist
+- [Phase ?]: D-06-03-A: TournamentBracket::match() uses explicit FK arg 'match_id' (D-04-03-B) — auto-inferred 'game_match_id' doesn't exist on tournament_brackets; same rule for advancesTo/loserAdvancesTo self-FK args
+- [Phase ?]: D-06-03-B: Phase 6 models use Spatie\Activitylog\Models\Concerns\LogsActivity (canonical v5 path), not the older Traits path referenced in the plan's <interfaces> sample
+- [Phase ?]: D-06-03-C: getActivitylogOptions() across all 5 Phase 6 models includes dontLogIfAttributesChangedOnly(['updated_at']) so timestamp-only touches don't pollute activity_log
 
 ### Pending Todos
 
@@ -328,6 +332,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T20:10:55.728Z
+Last session: 2026-05-13T20:22:03.218Z
 Stopped at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
 Resume file: None
