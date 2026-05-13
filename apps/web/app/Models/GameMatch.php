@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\MatchObserver;
 use Database\Factories\GameMatchFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -140,5 +141,17 @@ class GameMatch extends Model
     public function event(): MorphOne
     {
         return $this->morphOne(Event::class, 'eventable');
+    }
+
+    /**
+     * Register MatchObserver for polymorphic Event sync (plan 04-08, Pattern 8).
+     *
+     * Static::observe is idempotent — Eloquent dedupes by class name, so repeat
+     * registrations from AppServiceProvider or repeated booted() invocations are
+     * harmless.
+     */
+    protected static function booted(): void
+    {
+        static::observe(MatchObserver::class);
     }
 }
