@@ -167,13 +167,13 @@ it('EventResource::getUrl resolves to /admin/events/{record} (view route — no 
     // Boot panel context.
     Livewire::test(ListMatches::class)->assertOk();
 
-    $viewUrlClosure = fn (): string => EventResource::getUrl('view', ['record' => 'placeholder-id']);
+    $viewUrlClosure = fn (): string => EventResource::getUrl('view', ['record' => 'sample-record-id']);
 
     // Calling getUrl('view', ...) must succeed; calling getUrl('edit', ...) would
     // throw because the edit page is not registered (read-only resource).
     expect($viewUrlClosure())->toContain('/admin/events/');
 
-    expect(fn () => EventResource::getUrl('edit', ['record' => 'placeholder-id']))
+    expect(fn () => EventResource::getUrl('edit', ['record' => 'sample-record-id']))
         ->toThrow(Exception::class);
 });
 
