@@ -100,7 +100,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 03-06-PLAN.md — GameResource (Filament) + Roles + MatchTypes RelationManagers
 - [x] 03-07-PLAN.md — GameMatchTypeResource (Filament) + RoleLimits RelationManager (Pattern 3 scoped Select) + MatchTypesRelationManager URL-override amendment
 - [x] 03-08-PLAN.md — GameResourcesPresentTest (admin reachability + RelationManager render checks + Pitfall 3 typo guard)
-- [ ] 03-09-PLAN.md — i18n key coverage audit + GameAuditLogTest (D-012)
+- [x] 03-09-PLAN.md — i18n key coverage audit + GameAuditLogTest (D-012)
 - [ ] 03-10-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
