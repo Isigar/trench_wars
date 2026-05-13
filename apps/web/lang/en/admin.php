@@ -547,4 +547,43 @@ return [
             'rank' => 'Rank',
         ],
     ],
+
+    // ─── Phase 7 (CMS) ──────────────────────────────────────────────────
+    // Filament resource labels for ArticleResource + CategoryResource
+    // (plan 07-05). Public-facing copy lives in lang/en/cms.php; this
+    // namespace holds admin-chrome strings only (Phase 4 extension idiom).
+
+    'article' => [
+        'label' => 'Article',
+        'plural_label' => 'Articles',
+        'nav' => 'Articles',
+        'fields' => [
+            'title' => 'Title',
+            'slug' => 'Slug',
+            'excerpt' => 'Excerpt',
+            'body' => 'Body',
+            'hero_media_id' => 'Hero image',
+            'category_id' => 'Category',
+            'status' => 'Status',
+            'scheduled_at' => 'Scheduled at',
+            'published_at' => 'Published at',
+            'author_user_id' => 'Author',
+            'allow_discord_announce' => 'Announce on Discord',
+        ],
+        'publication' => [
+            'section' => 'Publication',
+            'help' => 'Draft → Scheduled → Published. The Laravel Scheduler flips Scheduled rows automatically when scheduled_at passes.',
+        ],
+    ],
+
+    'category' => [
+        'label' => 'Category',
+        'plural_label' => 'Categories',
+        'nav' => 'Categories',
+        'fields' => [
+            'name' => 'Name',
+            'slug' => 'Slug',
+            'description' => 'Description',
+        ],
+    ],
 ];
