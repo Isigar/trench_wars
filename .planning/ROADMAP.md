@@ -179,7 +179,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 06-09-PLAN.md — StandingsCalculatorService (4 strategies) + replaces plan 06-08 stub + GREEN test
 - [x] 06-10-PLAN.md — 8 DTOs + ParticipantSummary + TS regen + TournamentObserver real impl + 5 GREEN tests
 - [x] 06-11-PLAN.md — TournamentResource Filament (Tabs + 8 HeaderActions + 4 RelationManagers; A5/A8 LOCKED) + 6 GREEN admin tests
-- [ ] 06-12-PLAN.md — Public controllers + Vue 5-tab Show + BracketCanvas SVG + useTournamentPolling + SC-1 capstone GREEN test
+- [x] 06-12-PLAN.md — Public controllers + Vue 5-tab Show + BracketCanvas SVG + useTournamentPolling + SC-1 capstone GREEN test
 - [ ] 06-13-PLAN.md — i18n + audit log + bot embed extensions + Pitfall 10 mitigation + 2+1 GREEN tests
 - [ ] 06-14-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + full quality gates
 **UI hint**: yes
@@ -276,7 +276,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 3. Games & match types | 10/10 | Complete | 2026-05-13 |
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
-| 6. Tournaments & brackets | 0/TBD | Not started | - |
+| 6. Tournaments & brackets | 12/14 | In Progress|  |
 | 7. CMS | 0/TBD | Not started | - |
 | 8. RCON automation | 0/TBD | Not started | - |
 | 9. Polish | 0/TBD | Not started | - |

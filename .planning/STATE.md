@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 06-09-PLAN.md
-last_updated: "2026-05-13T22:24:51.249Z"
+last_updated: "2026-05-13T22:44:48.186Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 79
+  completed_plans: 80
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 11 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 12 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -118,6 +118,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P09 | ~7m | 2 tasks | 7 files |
 | Phase 06 P10 | 16m | 2 tasks | 21 files |
 | Phase 06 P11 | 20m | 2 tasks | 16 files |
+| Phase 06 P12 | 40min | - tasks | - files |
 
 ## Accumulated Context
 
@@ -354,6 +355,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-11-B: A5 LOCKED inline — forfeit + withdraw row actions have identical forward semantics; only status string + audit reason differ
 - [Phase ?]: D-06-11-E: Added Tournament::brackets() HasManyThrough relation for BracketsRelationManager + future PublicTournamentData consumers
 - [Phase ?]: D-06-11-C: Open Question A6 LOCKED inline — Swiss next-round generation is admin-click via generate_next_swiss_round HeaderAction (auto-trigger queue deferred to Phase 9)
+- [Phase ?]: 06-12: Vue ambient typing via App.Data.* namespace instead of @trenchwars/shared-types — matches Phase 2/4 in-app idiom
+- [Phase ?]: 06-12: Routes for /tournaments/{slug}.json declared BEFORE /tournaments/{slug} so Laravel first-match-wins dispatcher captures .json suffix correctly
+- [Phase ?]: 06-12: config/i18n.php shared_namespaces extended with matches + tournaments (matches was pre-existing gap)
+- [Phase ?]: 06-12: SC-1 capstone test walks downstream brackets via iterative materialiseFor() loop (materialiseFirstRound only handles round 1)
 
 ### Pending Todos
 
@@ -375,6 +380,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T22:24:32.409Z
+Last session: 2026-05-13T22:44:48.182Z
 Stopped at: Completed 06-09-PLAN.md
 Resume file: None
