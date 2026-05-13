@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundations** — Deployable Laravel app with Discord login, admin panel, audit infrastructure, i18n plumbing, and Railway deploy.
 - [x] **Phase 2: Clans & tags** — Clans exist as first-class entities; players have public profiles with privacy controls.
-- [ ] **Phase 3: Games & match types** — Admin can model any game's roles and match types fully in Filament; HLL is seeded.
+- [x] **Phase 3: Games & match types** — Admin can model any game's roles and match types fully in Filament; HLL is seeded.
 - [ ] **Phase 4: Matches (manual)** — Matches can be created, signed up to, played, and results entered manually.
 - [ ] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync).
 - [ ] **Phase 6: Tournaments & brackets** — Run an end-to-end tournament with a bracket UI and standings.
@@ -101,7 +101,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 03-07-PLAN.md — GameMatchTypeResource (Filament) + RoleLimits RelationManager (Pattern 3 scoped Select) + MatchTypesRelationManager URL-override amendment
 - [x] 03-08-PLAN.md — GameResourcesPresentTest (admin reachability + RelationManager render checks + Pitfall 3 typo guard)
 - [x] 03-09-PLAN.md — i18n key coverage audit + GameAuditLogTest (D-012)
-- [ ] 03-10-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+- [x] 03-10-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
 **UI hint**: yes
 
 
@@ -274,7 +274,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Foundations | 18/18 | Complete | 2026-05-04 |
 | 2. Clans & tags | 14/14 | Complete | 2026-05-12 |
-| 3. Games & match types | 6/10 | In Progress|  |
+| 3. Games & match types | 10/10 | Complete | 2026-05-13 |
 | 4. Matches (manual) | 0/TBD | Not started | - |
 | 5. Discord bot v1 | 0/TBD | Not started | - |
 | 6. Tournaments & brackets | 0/TBD | Not started | - |
