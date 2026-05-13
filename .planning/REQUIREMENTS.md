@@ -114,7 +114,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-tenancy-multi-clan | Phase 2 | Complete |
 | REQ-goal-public-profiles | Phase 2 | Complete |
 | REQ-platform-vision | Phase 3 | Complete |
-| REQ-goal-match-workflows | Phase 4 | Pending |
+| REQ-goal-match-workflows | Phase 4 | In Progress |
 | REQ-goal-discord-ux | Phase 5 | Pending |
 | REQ-success-tournament-end-to-end | Phase 6 | Pending |
 | REQ-goal-cms | Phase 7 | Pending |

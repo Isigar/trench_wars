@@ -115,21 +115,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A public visitor can view the match calendar at `/matches` and any match detail page at `/matches/{id}` with slot availability rendered.
   4. An organiser/admin can enter or override a match result (winner, scores, MVPs) in Filament and the change is audited.
   5. Tag-restricted matches reject signups from clans whose tags are not in `match_access_rules`, and creating a public match auto-creates a kept-in-sync `Event` row.
-**Plans**: 14 plans
-- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
-- [x] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
-- [x] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
-- [x] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
-- [x] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
-- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
-- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+**Plans**: 13 plans
+- [x] 04-01-PLAN.md — Wave 0 scaffolding (6 factory stubs + 21 Pest RED stubs + matches.php + admin.php appendix)
+- [ ] 04-02-PLAN.md — Migrations (6 tables: matches, match_slots, match_access_rules, match_results, match_mvps, events polymorphic)
+- [ ] 04-03-PLAN.md — Models + 6 real factories + User activeClanMembership amendment + 6 model tests
+- [ ] 04-04-PLAN.md — MatchStatusService + MatchNotOpenException + state-machine test
+- [ ] 04-05-PLAN.md — MatchSlotMaterialiserService (snapshot-at-create) + tests
+- [ ] 04-06-PLAN.md — MatchSignupService (D-010 row-locked) + 3 exception classes + 3 test files incl. pcntl concurrency
+- [ ] 04-07-PLAN.md — 8 DTOs + TS regen + shared-types sync + 3 unit tests
+- [ ] 04-08-PLAN.md — MatchObserver (polymorphic Event sync) + Match::booted() amendment + observer test
+- [ ] 04-09-PLAN.md — MatchResource Filament wizard + 4 RelationManagers + EventResource + MatchResultService + 3 admin tests
+- [ ] 04-10-PLAN.md — Public controllers (calendar + show + signup) + MatchSignupRequest + routes + 3 feature tests
+- [ ] 04-11-PLAN.md — Public Vue pages (Matches/Index + Show) + 5 components + EventDateBadge + PublicLayout amendment
+- [ ] 04-12-PLAN.md — i18n key audit + upgraded MatchResourcePresentTest + MatchAuditLogTest (D-012)
+- [ ] 04-13-PLAN.md — [BLOCKING] phase verification + ROADMAP update + REQUIREMENTS update + final quality gates
 **UI hint**: yes
 
 ### Phase 5: Discord bot v1

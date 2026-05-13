@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 COMPLETE — 03-10 plan executed, 03-PHASE-VERIFICATION.md written, ROADMAP marked 10/10 Complete 2026-05-13; ready for Phase 4 (Matches manual)
-last_updated: "2026-05-13T12:44:41.494Z"
+last_updated: "2026-05-13T13:37:32.088Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
-  total_plans: 42
-  completed_plans: 42
+  total_plans: 55
+  completed_plans: 43
   percent: 33
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 03 — Games & match types
+**Current focus:** Phase 04 — Matches (manual)
 
 ## Current Position
 
-Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 10 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Phase: 04 (Matches — manual) — IN PROGRESS
+Plan: 1 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
 Status: Ready to execute
 Last activity: 2026-05-13
 
-Progress: [██░░░░░░░░] 20% (Phase 3)
+Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
 
 ## Performance Metrics
 
@@ -81,6 +81,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 03 P08 | 418 | 1 tasks | 1 files |
 | Phase 03 P09 | 1200 | 2 tasks | 1 files |
 | Phase 03 P10 | 304s | 2 tasks tasks | 2 files files |
+| Phase 04 P01 | 320s | - tasks | - files |
 
 ## Accumulated Context
 
@@ -184,6 +185,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Phase 3 closed cleanly: 278 tests / 822 assertions, all 5 quality gates green (Pest, Pint, PHPStan L8, vue-tsc, shared-types); 64 Phase 3 tests / 138 assertions cover REQ-platform-vision + SC-1..SC-4; status PENDING_MANUAL_SMOKE pending operator 6-item walkthrough A-F
 - [Phase ?]: REQUIREMENTS.md REQ-platform-vision was already Complete (lines 14 + 116) from prior session; only ROADMAP.md required 3 surgical edits in plan 03-10
 - [Phase ?]: shared-types typecheck runs host-side via corepack pnpm (canonical CI command per plan 01-16); web container does not have full pnpm workspace mounted
+- [Phase ?]: [Phase 04]: 04-01 Wave 0 — reused Phase 3 commit 1d4d736 idiom (string FQN $model + @phpstan-ignore-next-line on missingType.generics + property.defaultValue) for the 6 factory stubs; CLAUDE.md §3 forbids regenerating phpstan-baseline.neon so per-line ignores are the only path. Plan 04-03 MUST remove the ignores when real model classes land.
+- [Phase ?]: [Phase 04]: 04-01 — Match model FQN is the singular App\Models\Match (Pitfall 5 / Assumption A4 — legal PHP 8 class identifier despite the lowercase match keyword); factory file is MatchFactory.php.
+- [Phase ?]: [Phase 04]: 04-01 — pcntl extension verified PRESENT in trenchwars-web container; plan 04-06 SC-2 concurrency test can use pcntl_fork() (Pitfall 4 primary path); the dual-DB-connection fallback is unnecessary on this image.
 
 ### Pending Todos
 
@@ -205,6 +209,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T12:44:41.491Z
+Last session: 2026-05-13T13:37:31.713Z
 Stopped at: Phase 3 COMPLETE — 03-10 plan executed, 03-PHASE-VERIFICATION.md written, ROADMAP marked 10/10 Complete 2026-05-13; ready for Phase 4 (Matches manual)
 Resume file: None
