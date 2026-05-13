@@ -124,6 +124,8 @@ class ClanResource extends Resource
 
                                     Forms\Components\TextInput::make('discord_announce_channel_id')
                                         ->label(__('admin.clan.fields.discord_announce_channel_id'))
+                                        ->helperText(__('admin.clan.fields.discord_announce_channel_id_help'))
+                                        ->maxLength(20)
                                         ->disabled(fn (Forms\Get $get): bool => ! $get('discord_advanced_fields_enabled'))
                                         ->dehydrated(fn (Forms\Get $get): bool => $get('discord_advanced_fields_enabled') === true),
                                 ]),

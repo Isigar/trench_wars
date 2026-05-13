@@ -153,6 +153,7 @@ return [
             'tags' => 'Tags',
             'discord_role_id' => 'Discord role ID',
             'discord_announce_channel_id' => 'Discord announce channel ID',
+            'discord_announce_channel_id_help' => 'Discord channel snowflake — copy from Channel Settings → Edit Channel → Advanced → Channel ID. Bot needs send + embed perms.',
         ],
         'help' => [
             'description_jsonb' => 'Translatable JSON content (locale → text). Phase 7 adds a structured locale editor.',
