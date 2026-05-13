@@ -122,7 +122,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 04-04-PLAN.md — MatchStatusService + MatchNotOpenException + state-machine test
 - [x] 04-05-PLAN.md — MatchSlotMaterialiserService (snapshot-at-create) + tests
 - [x] 04-06-PLAN.md — MatchSignupService (D-010 row-locked) + 3 exception classes + 3 test files incl. pcntl concurrency
-- [ ] 04-07-PLAN.md — 8 DTOs + TS regen + shared-types sync + 3 unit tests
+- [x] 04-07-PLAN.md — 8 DTOs + TS regen + shared-types sync + 3 unit tests
 - [ ] 04-08-PLAN.md — MatchObserver (polymorphic Event sync) + Match::booted() amendment + observer test
 - [ ] 04-09-PLAN.md — MatchResource Filament wizard + 4 RelationManagers + EventResource + MatchResultService + 3 admin tests
 - [ ] 04-10-PLAN.md — Public controllers (calendar + show + signup) + MatchSignupRequest + routes + 3 feature tests

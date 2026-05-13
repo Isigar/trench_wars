@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 plan 05 COMPLETE — MatchSlotMaterialiserService snapshot-at-create + 7 GREEN tests; ready for plan 04-06 (MatchSignupService concurrency)
-last_updated: "2026-05-13T14:28:51.396Z"
+stopped_at: Phase 4 plan 07 COMPLETE — 8 spatie/laravel-data DTOs + api.d.ts regenerated + shared-types Phase 4 aliases + 3 DTO unit tests GREEN (23 tests / 43 assertions); ready for plan 04-08 (MatchObserver + EventData polymorphic sync)
+last_updated: "2026-05-13T14:44:26.955Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 48
+  completed_plans: 49
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 6 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
+Plan: 7 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -87,6 +87,7 @@ Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
 | Phase 04 P04 | 5min | 1 task tasks | 3 files files |
 | Phase 04 P05 | 4min | 1 task tasks | 2 files files |
 | Phase 04 P06 | 9 | 3 tasks | 7 files |
+| Phase 04 P07 | 18m | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -206,6 +207,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 04]: D-04-05-B — MatchSlotMaterialiserService uses direct 'use App\Models\GameMatch;' (no Pitfall 5 alias); canonical Phase 4 idiom per D-04-04-C
 - [Phase ?]: [Phase 04]: D-04-05-C — PHPStan L8 null-guard on $match->gameMatchType (BelongsTo nullable in PHPStan view); pathological-null returns 0 (semantically equivalent to empty roleLimits)
 - [Phase ?]: D-04-06: 5-guard order, parent-row lock, empty rules = open, GameMatch direct import, pcntl_fork concurrency test
+- [Phase ?]: D-04-07-A: PublicMatchOccupantData::empty() renamed to forEmptySlot() — Spatie Data::empty() collision.
+- [Phase ?]: D-04-07-B: Carbon @var PHPDoc narrowing for Eloquent datetime casts in DTO factories.
+- [Phase ?]: D-04-07-C: Direct use App\Models\GameMatch (no Pitfall 5 alias) — D-04-03-A + D-04-06-D canonical idiom.
+- [Phase ?]: D-04-07-D: camelCase for Public* DTOs (PublicMatchOccupantData), snake_case for internal (MatchData, EventData).
+- [Phase ?]: D-04-07-E: PublicMatchOccupantData::fromMatchSlot uses direct queries (not eager-load) — self-contained factory.
+- [Phase ?]: D-04-07-F: Translatable JSONB getTranslations() ?: null is canonical Phase 3 Pitfall 4 pattern reused verbatim.
 
 ### Pending Todos
 
@@ -227,6 +234,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T14:28:44.714Z
-Stopped at: Phase 4 plan 05 COMPLETE — MatchSlotMaterialiserService snapshot-at-create + 7 GREEN tests; ready for plan 04-06 (MatchSignupService concurrency)
+Last session: 2026-05-13T14:44:26.952Z
+Stopped at: Phase 4 plan 07 COMPLETE — 8 spatie/laravel-data DTOs + api.d.ts regenerated + shared-types Phase 4 aliases + 3 DTO unit tests GREEN (23 tests / 43 assertions); ready for plan 04-08 (MatchObserver + EventData polymorphic sync)
 Resume file: None
