@@ -25,6 +25,7 @@ return [
     */
     'nav' => [
         'clans' => 'Clans',
+        'matches' => 'Matches',
         'players' => 'Players',
         'my_clan' => 'My Clan',
         'my_profile' => 'My Profile',

@@ -1,6 +1,7 @@
 <!-- Source: 01-UI-SPEC.md § Layout primitives + § Page chrome diagram.
      Plan 08 routes the skip-link label and footer copy through `t()` per D-013.
      Phase 2 (plan 02-08): nav slot populated with Clans + Players links + UserMenu auth action.
+     Phase 4 (plan 04-11): /matches link inserted alphabetically between Clans and Players.
      Nav items hidden on mobile (hidden md:flex) per UI-SPEC § Responsive Breakpoints. -->
 <script setup lang="ts">
 import LoginButton from '@/components/LoginButton.vue';
@@ -53,6 +54,22 @@ function isActive(path: string): boolean {
                         :aria-current="isActive('/clans') ? 'page' : undefined"
                     >
                         {{ t('common.nav.clans') }}
+                    </Link>
+
+                    <!-- Matches nav link — active when URL is /matches* (plan 04-11). -->
+                    <Link
+                        href="/matches"
+                        :class="[
+                            'px-3 py-1 text-sm font-semibold rounded-md',
+                            'transition-colors duration-[var(--motion-duration-fast)] ease-[var(--ease-default)]',
+                            'focus-visible:outline-2 focus-visible:outline-[var(--color-focus-ring)]',
+                            isActive('/matches')
+                                ? 'text-[var(--color-text)] border-l-[3px] border-[var(--color-accent)] pl-2'
+                                : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',
+                        ]"
+                        :aria-current="isActive('/matches') ? 'page' : undefined"
+                    >
+                        {{ t('common.nav.matches') }}
                     </Link>
 
                     <!-- Players nav link — /players index does NOT exist in P2.
