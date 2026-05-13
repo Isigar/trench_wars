@@ -367,6 +367,9 @@ return [
         'fields' => [
             'clan_tag' => 'Clan tag',
         ],
+        // Pattern 5 UX: when no rules are present the match is open to all clans.
+        // Surfaced by AccessRulesRelationManager via ->emptyStateHeading() (plan 04-09).
+        'empty_heading' => 'No access restrictions — this match is open to all clans.',
     ],
 
     'match_result' => [
