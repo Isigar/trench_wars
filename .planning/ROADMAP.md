@@ -145,7 +145,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-01-PLAN.md — Wave 0 scaffolding (Sanctum + Horizon install + worker compose service + bot deps + 20 RED stubs + bot.php i18n)
 - [x] 05-02-PLAN.md — Migrations (discord_outbound_messages + clans.discord_announce_channel_id) + DiscordOutboundMessage model
 - [x] 05-03-PLAN.md — ResolveBotActsAsUser middleware + Sanctum abilities matrix + 2 GREEN auth tests
-- [ ] 05-04-PLAN.md — 6 BotApi controllers + 4 FormRequests + routes/api.php + 6 GREEN HTTP integration tests
+- [x] 05-04-PLAN.md — 6 BotApi controllers + 4 FormRequests + routes/api.php + 6 GREEN HTTP integration tests
 - [ ] 05-05-PLAN.md — MatchObserver outbound writer + DiscordOutboundPayloadBuilder
 - [ ] 05-06-PLAN.md — SyncDiscordRolesJob (Horizon retry) + ClanMembershipObserver + 2 GREEN job/dispatch tests
 - [ ] 05-07-PLAN.md — DiscordOutboundMessageResource (Filament read-only) + retry action + Artisan trenchwars:bot:issue-token/revoke-token + BotServiceUserSeeder + ClanResource amendment
