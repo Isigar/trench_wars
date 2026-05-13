@@ -1,5 +1,23 @@
 declare namespace App {
 namespace Data {
+export type BracketEdgeData = {
+from_bracket_id: string,
+to_bracket_id: string,
+to_slot: string,
+type: string,
+};
+export type BracketNodeData = {
+id: string,
+round_number: number,
+position: number,
+stage_type: string,
+participant_a: App.Data.ParticipantSummary | null,
+participant_b: App.Data.ParticipantSummary | null,
+winner_participant_id: string | null,
+match_id: string | null,
+status: string,
+scheduled_at: string | null,
+};
 export type ClanApplicationData = {
 id: string,
 clan_id: string,
@@ -135,6 +153,11 @@ occupant_user_id: string | null,
 confirmed_at: string | null,
 sort_order: number,
 };
+export type ParticipantSummary = {
+id: string,
+clan_name: string,
+seed: number,
+};
 export type PlayerData = {
 id: string,
 user_id: string,
@@ -188,6 +211,85 @@ currentClan: undefined | App.Data.ClanMembershipData | null,
 clanHistory: undefined | Record<string, any>[] | null,
 matchHistory: undefined | any[] | null,
 stats: undefined | any[] | null,
+};
+export type PublicTournamentData = {
+id: string,
+slug: string,
+title: Record<string, string> | null,
+description: Record<string, string> | null,
+format: string,
+status: string,
+starts_at: string | null,
+ends_at: string | null,
+max_participants: number | null,
+participant_count: number,
+nodes: App.Data.BracketNodeData[],
+edges: App.Data.BracketEdgeData[],
+standings: App.Data.TournamentStandingData[] | null,
+participants: App.Data.TournamentParticipantData[] | null,
+etag: string,
+last_modified_at: string,
+};
+export type TournamentBracketData = {
+id: string,
+tournament_stage_id: string,
+round_number: number,
+position: number,
+participant_a_id: string | null,
+participant_b_id: string | null,
+winner_participant_id: string | null,
+match_id: string | null,
+advances_to_bracket_id: string | null,
+loser_advances_to_bracket_id: string | null,
+};
+export type TournamentData = {
+id: string,
+game_id: string,
+slug: string,
+title: Record<string, string> | null,
+description: Record<string, string> | null,
+format: string,
+status: string,
+starts_at: string | null,
+ends_at: string | null,
+max_participants: number | null,
+settings: Record<string, any> | null,
+organiser_user_id: string,
+default_game_match_type_id: string | null,
+is_public: boolean,
+participants: App.Data.TournamentParticipantData[] | null,
+stages: App.Data.TournamentStageData[] | null,
+};
+export type TournamentParticipantData = {
+id: string,
+tournament_id: string,
+clan_id: string,
+seed: number | null,
+status: string,
+placement: number | null,
+clan_name: string | null,
+clan_slug: string | null,
+};
+export type TournamentStageData = {
+id: string,
+tournament_id: string,
+type: string,
+ordinal: number,
+name: string | null,
+settings: Record<string, any> | null,
+brackets: App.Data.TournamentBracketData[] | null,
+};
+export type TournamentStandingData = {
+id: string,
+tournament_id: string,
+tournament_stage_id: string,
+participant_id: string,
+wins: number,
+losses: number,
+draws: number,
+points: number,
+tiebreak_score: number,
+rank: number | null,
 };
 export type UserData = {
 id: string,

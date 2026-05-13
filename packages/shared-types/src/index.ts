@@ -43,3 +43,14 @@ export type MatchMvpData = App.Data.MatchMvpData;
 export type EventData = App.Data.EventData;
 export type PublicMatchData = App.Data.PublicMatchData;
 export type PublicMatchOccupantData = App.Data.PublicMatchOccupantData;
+
+// Phase 6 DTOs — tournaments + brackets (admin shapes + SVG-render projections)
+export type TournamentData = App.Data.TournamentData;
+export type PublicTournamentData = App.Data.PublicTournamentData;
+export type TournamentParticipantData = App.Data.TournamentParticipantData;
+export type TournamentStageData = App.Data.TournamentStageData;
+export type TournamentBracketData = App.Data.TournamentBracketData;
+export type TournamentStandingData = App.Data.TournamentStandingData;
+export type BracketNodeData = App.Data.BracketNodeData;
+export type BracketEdgeData = App.Data.BracketEdgeData;
+export type ParticipantSummary = App.Data.ParticipantSummary;

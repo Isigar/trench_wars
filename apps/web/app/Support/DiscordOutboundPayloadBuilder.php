@@ -6,6 +6,7 @@ namespace App\Support;
 
 use App\Models\GameMatch;
 use App\Models\MatchSlot;
+use App\Models\Tournament;
 use App\Models\TournamentBracket;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -123,6 +124,41 @@ final class DiscordOutboundPayloadBuilder
             'winner_clan_name' => $bracket->winnerParticipant?->clan?->name,
             'participant_a_clan_name' => $bracket->participantA?->clan?->name,
             'participant_b_clan_name' => $bracket->participantB?->clan?->name,
+        ];
+    }
+
+    /**
+     * Phase 6 plan 06-10 addition — canonical tournament-announce payload
+     * built by TournamentObserver when a public Tournament is created or when
+     * its status transitions. The bot worker (plan 05-11) resolves the
+     * dispatch channel at delivery time (organising clan's announce channel
+     * or a tournament-wide override).
+     *
+     * Shape mirrors buildMatchAnnounce conventions (snake_case keys, ISO-8601
+     * date emission, full translatable JSONB title array for locale-aware
+     * rendering).
+     *
+     * @return array<string, mixed>
+     */
+    public static function buildTournamentAnnounce(Tournament $tournament): array
+    {
+        /** @var Carbon|null $startsAt */
+        $startsAt = $tournament->starts_at;
+        /** @var Carbon|null $endsAt */
+        $endsAt = $tournament->ends_at;
+
+        return [
+            'kind' => 'tournament_announce',
+            'tournament_id' => $tournament->id,
+            'tournament_slug' => $tournament->slug,
+            'title' => $tournament->getTranslations('title'),
+            'format' => $tournament->format,
+            'status' => $tournament->status,
+            'starts_at' => $startsAt?->toIso8601String(),
+            'ends_at' => $endsAt?->toIso8601String(),
+            'organiser_user_id' => $tournament->organiser_user_id,
+            'max_participants' => $tournament->max_participants,
+            'is_public' => $tournament->is_public,
         ];
     }
 

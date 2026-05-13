@@ -129,22 +129,17 @@ it('orders stages by ordinal', function (): void {
     expect($stages?->pluck('id')->all())->toBe([$stage1->id, $stage2->id, $stage3->id]);
 });
 
-it('exposes event MorphOne relation (returns null without observer body in 06-03)', function (): void {
-    // Plan 06-10 fills the TournamentObserver bodies; plan 06-03 ships an empty
-    // observer stub, so creating a Tournament does NOT yet auto-create an Event row.
-    // We assert the relation resolves correctly when a row IS present.
-    $tournament = Tournament::factory()->create();
-
-    // Manually insert an Event row to confirm the MorphOne wiring resolves.
-    Event::create([
-        'eventable_type' => Tournament::class,
-        'eventable_id' => $tournament->id,
-        'starts_at' => now()->addWeek(),
-        'title' => ['en' => 'Test'],
-        'is_public' => true,
-    ]);
+it('exposes event MorphOne relation (auto-populated by TournamentObserver since 06-10)', function (): void {
+    // Plan 06-10 fills the TournamentObserver::saved() body so creating a
+    // public Tournament auto-creates a polymorphic Event row. We assert the
+    // MorphOne relation resolves the auto-created row.
+    $tournament = Tournament::factory()->create(['is_public' => true]);
 
     expect($tournament->fresh()?->event?->eventable_type)->toBe(Tournament::class);
+
+    // Private tournaments do NOT create an Event row (observer guard).
+    $private = Tournament::factory()->create(['is_public' => false]);
+    expect($private->fresh()?->event)->toBeNull();
 });
 
 it('logs activity on create (D-012)', function (): void {
