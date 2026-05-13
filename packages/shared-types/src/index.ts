@@ -33,3 +33,13 @@ export type GameData = App.Data.GameData;
 export type GameRoleData = App.Data.GameRoleData;
 export type GameMatchTypeData = App.Data.GameMatchTypeData;
 export type GameMatchTypeRoleLimitData = App.Data.GameMatchTypeRoleLimitData;
+
+// Phase 4 DTOs — matches domain (admin shapes + privacy-shaped public projections)
+export type MatchData = App.Data.MatchData;
+export type MatchSlotData = App.Data.MatchSlotData;
+export type MatchAccessRuleData = App.Data.MatchAccessRuleData;
+export type MatchResultData = App.Data.MatchResultData;
+export type MatchMvpData = App.Data.MatchMvpData;
+export type EventData = App.Data.EventData;
+export type PublicMatchData = App.Data.PublicMatchData;
+export type PublicMatchOccupantData = App.Data.PublicMatchOccupantData;

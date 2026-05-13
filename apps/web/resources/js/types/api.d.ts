@@ -50,6 +50,15 @@ slug: string,
 label: Record<string, string> | null,
 color: string | null,
 };
+export type EventData = {
+id: string,
+eventable_type: string,
+eventable_id: string,
+starts_at: string,
+ends_at: string | null,
+title: Record<string, string> | null,
+is_public: boolean,
+};
 export type GameData = {
 id: string,
 key: string,
@@ -82,6 +91,50 @@ display_name: Record<string, string> | null,
 sort_order: number,
 is_active: boolean,
 };
+export type MatchAccessRuleData = {
+id: string,
+match_id: string,
+clan_tag_id: string,
+clan_tag: App.Data.ClanTagData | null,
+};
+export type MatchData = {
+id: string,
+game_match_type_id: string,
+title: Record<string, string> | null,
+description: Record<string, string> | null,
+scheduled_at: string,
+status: string,
+is_public: boolean,
+organiser_user_id: string,
+host_clan_id: string | null,
+server_address: string | null,
+};
+export type MatchMvpData = {
+id: string,
+match_result_id: string,
+player_id: string,
+category: string,
+value: number | null,
+};
+export type MatchResultData = {
+id: string,
+match_id: string,
+winner_clan_id: string | null,
+allies_score: number | null,
+axis_score: number | null,
+notes: string | null,
+recorded_by_user_id: string,
+recorded_at: string,
+};
+export type MatchSlotData = {
+id: string,
+match_id: string,
+game_role_id: string,
+slot_index: number,
+occupant_user_id: string | null,
+confirmed_at: string | null,
+sort_order: number,
+};
 export type PlayerData = {
 id: string,
 user_id: string,
@@ -101,6 +154,26 @@ show_discord_tag: boolean,
 show_clan_history: boolean,
 show_match_history: boolean,
 show_stats: boolean,
+};
+export type PublicMatchData = {
+id: string,
+game_match_type_id: string,
+title: Record<string, string> | null,
+description: Record<string, string> | null,
+scheduled_at: string,
+status: string,
+is_public: boolean,
+host_clan_id: string | null,
+};
+export type PublicMatchOccupantData = {
+slotId: string,
+gameRoleId: string,
+slotIndex: number,
+displayName: string | null,
+playerSlug: string | null,
+clanTag: string | null,
+clanSlug: string | null,
+isViewer: boolean,
 };
 export type PublicPlayerData = {
 id: string,
