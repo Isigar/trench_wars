@@ -12,7 +12,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@trenchwars/shared-types": "workspace:*"
+    "@trenchwars/shared-types": "workspace:*",
+    "discord.js": "^14.26",
+    "ioredis": "^5.10",
+    "undici": "^7"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

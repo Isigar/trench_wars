@@ -406,4 +406,33 @@ return [
             'is_public' => 'Public',
         ],
     ],
+
+    // -------------------------------------------------------------------------
+    // Phase 5 Discord bot v1 (05-01-PLAN.md task 2 Wave 0 RED stub).
+    // Consumed by DiscordOutboundMessageResource (Filament) in plan 05-07.
+    // Resource is read-only + a Retry table action; no Create/Edit.
+    // -------------------------------------------------------------------------
+    'discord_outbound_message' => [
+        'label' => 'Outbound message',
+        'plural_label' => 'Outbound messages',
+        'fields' => [
+            'message_type' => 'Type',
+            'status' => 'Status',
+            'channel_id' => 'Channel',
+            'attempts' => 'Attempts',
+            'last_error' => 'Last error',
+            'sent_message_id' => 'Sent message ID',
+            'created_at' => 'Created',
+        ],
+        'actions' => [
+            'retry' => 'Retry',
+            'retry_success' => 'Message marked pending for redelivery.',
+        ],
+        'status' => [
+            'pending' => 'Pending',
+            'dispatching' => 'Dispatching',
+            'sent' => 'Sent',
+            'failed' => 'Failed',
+        ],
+    ],
 ];
