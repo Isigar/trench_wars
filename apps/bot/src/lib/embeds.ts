@@ -106,11 +106,16 @@ export function matchCard(m: PublicMatchData): {
             inline: true,
         });
     }
-    fields.push({
-        name: 'Match type',
-        value: m.game_match_type_id.slice(0, FIELD_VALUE_MAX),
-        inline: false,
-    });
+    if (
+        typeof m.game_match_type_id === 'string' &&
+        m.game_match_type_id !== ''
+    ) {
+        fields.push({
+            name: 'Match type',
+            value: m.game_match_type_id.slice(0, FIELD_VALUE_MAX),
+            inline: false,
+        });
+    }
 
     const embed = new EmbedBuilder()
         .setColor(statusColor(m.status))
