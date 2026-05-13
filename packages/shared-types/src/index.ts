@@ -27,3 +27,9 @@ export type ClanMembershipData = App.Data.ClanMembershipData;
 export type ClanInviteData = App.Data.ClanInviteData;
 export type ClanApplicationData = App.Data.ClanApplicationData;
 export type PublicPlayerData = App.Data.PublicPlayerData;
+
+// Phase 3 DTOs — game catalogue (Game, GameRole, GameMatchType, RoleLimit)
+export type GameData = App.Data.GameData;
+export type GameRoleData = App.Data.GameRoleData;
+export type GameMatchTypeData = App.Data.GameMatchTypeData;
+export type GameMatchTypeRoleLimitData = App.Data.GameMatchTypeRoleLimitData;

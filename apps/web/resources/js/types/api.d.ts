@@ -50,6 +50,38 @@ slug: string,
 label: Record<string, string> | null,
 color: string | null,
 };
+export type GameData = {
+id: string,
+key: string,
+name: Record<string, string> | null,
+is_active: boolean,
+roles: App.Data.GameRoleData[],
+match_types: App.Data.GameMatchTypeData[],
+};
+export type GameMatchTypeData = {
+id: string,
+game_id: string,
+key: string,
+name: Record<string, string> | null,
+description: Record<string, string> | null,
+is_active: boolean,
+role_limits: App.Data.GameMatchTypeRoleLimitData[],
+};
+export type GameMatchTypeRoleLimitData = {
+id: string,
+game_match_type_id: string,
+game_role_id: string,
+capacity: number,
+sort_order: number,
+};
+export type GameRoleData = {
+id: string,
+game_id: string,
+key: string,
+display_name: Record<string, string> | null,
+sort_order: number,
+is_active: boolean,
+};
 export type PlayerData = {
 id: string,
 user_id: string,
