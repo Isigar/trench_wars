@@ -211,14 +211,13 @@ it('throws BracketWinnerNotParticipantException when winner_clan_id is foreign',
     $bracket = $stage->brackets()->where('round_number', 1)->where('position', 1)->firstOrFail();
 
     $foreignClan = Clan::factory()->create();
-    /** @var MatchResult $result */
-    $result = MatchResult::factory()->create([
+
+    // Creating the MatchResult triggers the observer's created() hook which
+    // dispatches advance() → the exception fires on the create() call itself.
+    expect(fn () => MatchResult::factory()->create([
         'match_id' => $bracket->match_id,
         'winner_clan_id' => $foreignClan->id,
-    ]);
-
-    expect(fn () => app(BracketAdvancementService::class)->advance($result))
-        ->toThrow(BracketWinnerNotParticipantException::class);
+    ]))->toThrow(BracketWinnerNotParticipantException::class);
 });
 
 // ---------------------------------------------------------------------------

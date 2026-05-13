@@ -157,7 +157,10 @@ it('canReseed() returns false when a MatchResult exists for any bracket-linked m
     $stage = TournamentStage::factory()->for($tournament)->create();
     $match = GameMatch::factory()->create();
     TournamentBracket::factory()->for($stage, 'stage')->create(['match_id' => $match->id]);
-    MatchResult::factory()->create(['match_id' => $match->id]);
+    // winner_clan_id=null (draw) prevents Phase 6 plan 06-08 MatchResultObserver
+    // from firing advance() on this synthetic bracket (no participants registered).
+    // The canReseed() gate only checks MatchResult existence, not winner.
+    MatchResult::factory()->create(['match_id' => $match->id, 'winner_clan_id' => null]);
 
     expect($tournament->fresh()->canReseed())->toBeFalse();
 });
@@ -198,7 +201,9 @@ it('rejects reseed when a MatchResult exists for a bracket-linked match (A4 LOCK
     $stage = TournamentStage::factory()->for($tournament)->create();
     $match = GameMatch::factory()->create();
     TournamentBracket::factory()->for($stage, 'stage')->create(['match_id' => $match->id]);
-    MatchResult::factory()->create(['match_id' => $match->id]);
+    // winner_clan_id=null (draw) prevents Phase 6 plan 06-08 MatchResultObserver
+    // from firing advance() on this synthetic bracket (no participants registered).
+    MatchResult::factory()->create(['match_id' => $match->id, 'winner_clan_id' => null]);
 
     expect(fn () => app(TournamentSeedingService::class)->reseed($tournament, 'by_rank'))
         ->toThrow(SeedingNotAllowedException::class);
@@ -209,7 +214,9 @@ it('rejects reseed with the localised tournaments.errors.reseed_not_allowed mess
     $stage = TournamentStage::factory()->for($tournament)->create();
     $match = GameMatch::factory()->create();
     TournamentBracket::factory()->for($stage, 'stage')->create(['match_id' => $match->id]);
-    MatchResult::factory()->create(['match_id' => $match->id]);
+    // winner_clan_id=null (draw) prevents Phase 6 plan 06-08 MatchResultObserver
+    // from firing advance() on this synthetic bracket (no participants registered).
+    MatchResult::factory()->create(['match_id' => $match->id, 'winner_clan_id' => null]);
 
     try {
         app(TournamentSeedingService::class)->reseed($tournament, 'by_rank');

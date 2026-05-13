@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\MatchResultObserver;
 use Database\Factories\MatchResultFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -80,5 +81,20 @@ class MatchResult extends Model
     public function mvps(): HasMany
     {
         return $this->hasMany(MatchMvp::class, 'match_result_id');
+    }
+
+    /**
+     * Register MatchResultObserver — Phase 6 plan 06-08 Task 2.
+     *
+     * The observer fires BracketAdvancementService::advance() on relevant
+     * MatchResult saves (wasChanged guard inside the observer). Phase 4
+     * shipped MatchResult without a booted() method; this is the first
+     * observer attached to the model. Adding via booted() (Phase 4 idiom,
+     * D-04-08-B) keeps the observer registration colocated with the model
+     * rather than centralised in AppServiceProvider.
+     */
+    protected static function booted(): void
+    {
+        static::observe(MatchResultObserver::class);
     }
 }
