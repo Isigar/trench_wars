@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Phase 4 plan 02 COMPLETE — 6 migrations landed (matches, match_slots with partial UNIQUE, match_access_rules, match_results 1:1, match_mvps with category CHECK, events polymorphic); ready for plan 04-03 (Wave 2 Eloquent models)"
-last_updated: "2026-05-13T14:01:26.721Z"
+last_updated: "2026-05-13T14:07:46.376Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 45
+  completed_plans: 46
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 3 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
+Plan: 4 of 13 complete (04-01 Wave 0 scaffolding done; next: 04-02 Wave 1 migrations)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -84,6 +84,7 @@ Progress: [███░░░░░░░] 33% (3/9 phases; 43/55 plans)
 | Phase 04 P01 | 320s | - tasks | - files |
 | Phase 04 P02 | 3min | 2 tasks | 6 files |
 | Phase 04 P03 | 12 | 3 tasks | 20 files |
+| Phase 04 P04 | 5min | 1 task tasks | 3 files files |
 
 ## Accumulated Context
 
@@ -196,6 +197,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-04-03-A: GameMatch class name (not Match — PHP 8.4 reserved keyword); table stays matches via protected $table override. Binding for plans 04-04..04-13. Supersedes D-04-01-B.
 - [Phase ?]: D-04-03-B: All BelongsTo<GameMatch, $this> pass match_id as explicit FK arg (Laravel cannot infer from match() method name when related class is GameMatch).
 - [Phase ?]: D-04-03-C: SoftDelete-aware FK cascade tests use forceDelete() to fire DB-level cascade.
+- [Phase ?]: [Phase 04]: D-04-04-A — MatchStatusService captures $from BEFORE update(); prevents getOriginal() drift
+- [Phase ?]: [Phase 04]: D-04-04-B — MatchNotOpenException extends \DomainException; defined in plan 04-04 so plan 04-06 MatchSignupService imports without circular dependency
+- [Phase ?]: [Phase 04]: D-04-04-C — MatchStatusService + tests do not use Pitfall 5 alias-on-import (no match() expressions); direct 'use App\Models\GameMatch;' is canonical Phase 4 idiom per D-04-03-A
 
 ### Pending Todos
 
@@ -217,6 +221,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T14:00:51.039Z
+Last session: 2026-05-13T14:07:25.721Z
 Stopped at: Phase 4 plan 02 COMPLETE — 6 migrations landed (matches, match_slots with partial UNIQUE, match_access_rules, match_results 1:1, match_mvps with category CHECK, events polymorphic); ready for plan 04-03 (Wave 2 Eloquent models)
 Resume file: None
