@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\ResolveBotActsAsUser;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +18,16 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             HandleInertiaRequests::class,
+        ]);
+        // Plan 05-03: Sanctum CheckAbilities + ResolveBotActsAsUser aliases for /api/bot/*.
+        // 'abilities' = AND-all required scopes; 'ability' = OR-any (kept for future use).
+        // 'bot.acts-as' rebinds the request-scope auth via Auth::onceUsingId so
+        // LogsActivity attributes the human causer behind each Discord-side action
+        // (RESEARCH Pattern 1; SC-5).
+        $middleware->alias([
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
+            'bot.acts-as' => ResolveBotActsAsUser::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
