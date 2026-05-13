@@ -95,7 +95,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 03-01-PLAN.md — Wave 0 scaffolding (4 factory stubs + 7 test stubs + admin.php i18n key extension)
 - [x] 03-02-PLAN.md — Migrations (4 tables: games, game_roles, game_match_types, game_match_type_role_limits; UNIQUE + CHECK + cascade FKs)
 - [x] 03-03-PLAN.md — Models (4 new) + factories + 4 model tests (UNIQUE + CHECK + cross-game saving guard + audit)
-- [ ] 03-04-PLAN.md — Spatie laravel-data DTOs (4) + TS regen + shared-types sync + GameDataTest
+- [x] 03-04-PLAN.md — Spatie laravel-data DTOs (4) + TS regen + shared-types sync + GameDataTest
 - [ ] 03-05-PLAN.md — GameSeeder (HLL preset: 1 Game + 15 Roles + 5 MatchTypes + capacity matrix) + idempotency tests
 - [ ] 03-06-PLAN.md — GameResource (Filament) + Roles + MatchTypes RelationManagers
 - [ ] 03-07-PLAN.md — GameMatchTypeResource (Filament) + RoleLimits RelationManager (Pattern 3 scoped Select) + MatchTypesRelationManager URL-override amendment
@@ -274,7 +274,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Foundations | 18/18 | Complete | 2026-05-04 |
 | 2. Clans & tags | 14/14 | Complete | 2026-05-12 |
-| 3. Games & match types | 2/10 | In Progress|  |
+| 3. Games & match types | 4/10 | In Progress|  |
 | 4. Matches (manual) | 0/TBD | Not started | - |
 | 5. Discord bot v1 | 0/TBD | Not started | - |
 | 6. Tournaments & brackets | 0/TBD | Not started | - |

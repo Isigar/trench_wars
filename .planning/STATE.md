@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Phase 02 (Clans & tags) COMPLETE — all 14 plans executed, automated gates PASS (Pest 214/214, PHPStan L8 clean, Pint clean, vue-tsc clean). PHASE-VERIFICATION.md status: PENDING_MANUAL_SMOKE (operator UI smokes deferred to user — same handoff pattern as Phase 1). Phase 03 (Games & match types) ready to plan via /gsd-autonomous --from 3 in a fresh session. Note: workflow.skip_discuss is still TRUE from autonomous setup — flip back via /gsd-config if interactive discuss is desired for P3+. Code review + UI review for Phase 2 were not run (out of context budget); user can run /gsd-code-review 2 and /gsd-ui-review 2 in a fresh session before tackling Phase 3."
-last_updated: "2026-05-13T11:52:03.840Z"
+last_updated: "2026-05-13T12:00:55.319Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 42
-  completed_plans: 35
+  completed_plans: 36
   percent: 22
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 3 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Plan: 4 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -74,6 +74,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 02-clans-tags P14 | ~25min | 3 tasks | 9 files |
 | Phase 03 P02 | 12min | 2 tasks | 4 files |
 | Phase 03 P03 | 263 | 3 tasks | 12 files |
+| Phase 03-games-match-types P04 | 300 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -161,6 +162,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 03-03: GameMatchTypeRoleLimit::booted() saving() listener throws DomainException on cross-game pair — only programmatic guard for Pitfall 10 (Postgres cross-table CHECK ruled out by Assumption A6); pairs with Filament Select scoping in plan 03-07.
 - [Phase ?]: Plan 03-03: factory key generation via regexify('[a-z0-9_]{4,12}') instead of Str::slug() — slug emits hyphens which fail the DB ^[a-z0-9_]+$ CHECK.
 - [Phase ?]: Plan 03-03: HasTranslations mutator coerces $model->description = null into JSONB {"en": null}, not SQL NULL — GameMatchTypeModelTest NULL-description assertion uses DB::table()->insert() to bypass the mutator and prove the column's nullable contract.
+- [Phase ?]: Phase 3 DTOs follow the Phase 2 ClanData/ClanTagData pattern verbatim: #[TypeScript] + fromModel factory using getTranslations() for translatable JSONB columns (Pitfall 4 mitigation). Nested DTO hydration is eager-load aware via relationLoaded() checks.
+- [Phase ?]: shared-types local typecheck via apps/web tsc on /repo/packages/shared-types/src files because web container does not have the full pnpm workspace mounted (only /repo/packages/shared-types is mounted). CI runs pnpm --filter @trenchwars/shared-types typecheck (plan 01-16) as the canonical gate.
 
 ### Pending Todos
 
@@ -182,6 +185,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T11:51:56.701Z
+Last session: 2026-05-13T12:00:55.316Z
 Stopped at: Phase 02 (Clans & tags) COMPLETE — all 14 plans executed, automated gates PASS (Pest 214/214, PHPStan L8 clean, Pint clean, vue-tsc clean). PHASE-VERIFICATION.md status: PENDING_MANUAL_SMOKE (operator UI smokes deferred to user — same handoff pattern as Phase 1). Phase 03 (Games & match types) ready to plan via /gsd-autonomous --from 3 in a fresh session. Note: workflow.skip_discuss is still TRUE from autonomous setup — flip back via /gsd-config if interactive discuss is desired for P3+. Code review + UI review for Phase 2 were not run (out of context budget); user can run /gsd-code-review 2 and /gsd-ui-review 2 in a fresh session before tackling Phase 3.
 Resume file: None
