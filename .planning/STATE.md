@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
-last_updated: "2026-05-13T21:03:40.061Z"
+last_updated: "2026-05-13T21:24:15.070Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 75
+  completed_plans: 76
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 7 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 8 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -114,6 +114,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P05 | ~3m | 1 tasks | 4 files |
 | Phase 06 P06 | ~12m | 2 tasks | 10 files |
 | Phase 06 P07 | ~9m | 3 tasks | 9 files |
+| Phase 06 P08 | ~15m | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -333,6 +334,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-07-B: Burton L-bracket N=8 hardcoded loser-drop mapping verified vs brackets-manager.js
 - [Phase ?]: D-06-07-C: Pitfall 5 narrows v1 swiss tournaments to powers of 2 (N must equal 2^ceil(log2(N)))
 - [Phase ?]: Open Question A6 RESOLVED LOCKED inline — Swiss admin-click next-round via SwissGenerator::generateNextRound() (Filament wiring in plan 06-11)
+- [Phase ?]: D-06-08-A: Two-hook MatchResultObserver pattern (created + updated, NOT saved) — saved cannot distinguish create from touch on the pinned Laravel version since wasRecentlyCreated stays true forever on the same instance
+- [Phase ?]: D-06-08-D: Phase 5 discord_outbound_messages.message_type CHECK extended via migration 2026_05_15_100500 to allow bracket_result_announce (Postgres drop+recreate idiom)
+- [Phase ?]: D-06-08-G: StandingsCalculatorService ships as no-op stub (replaced by plan 06-09); resolved via app() lookup at BracketAdvancementService::advance() call site to break circular DI cycle (T-06-08-07)
 
 ### Pending Todos
 
@@ -354,6 +358,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T21:03:22.624Z
+Last session: 2026-05-13T21:23:45.214Z
 Stopped at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
 Resume file: None
