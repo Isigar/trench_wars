@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
-last_updated: "2026-05-13T18:31:24.224Z"
+last_updated: "2026-05-13T18:42:34.626Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
-  completed_plans: 64
+  completed_plans: 65
   percent: 44
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 9 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Plan: 10 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -103,6 +103,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 05 P07 | 407 | - tasks | - files |
 | Phase 05 P08 | 366 | 3 tasks | 9 files |
 | Phase 05 P09 | 353 | 3 tasks | 12 files |
+| Phase 05 P10 | 472 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -280,6 +281,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-05-09-B: /clan apply v1 redirect-to-web stub; live api.post deferred to Phase 6+
 - [Phase ?]: D-05-09-C: Modal customId reuses encodeButtonId from plan 05-08 (m:o:<matchId>) — single-sourced round-trippable scheme
 - [Phase ?]: D-05-09-D: registerCommands().catch() in ready.ts logs but does NOT process.exit(1); bot stays alive on registration failure (T-05-09-06)
+- [Phase ?]: D-05-10-A: matchCard renders only scalar PublicMatchData fields (DTO has no nested relations)
+- [Phase ?]: D-05-10-B: encodeButtonId('m:o:<matchId>') reused on slash command + button sides — single round-trippable customId
+- [Phase ?]: D-05-10-C: buildSignupModal exported from components/signupModal.ts (submit handler module) — locality of cohesion
+- [Phase ?]: D-05-10-D: translateError substring-matches err.message; structured JSON parse deferred to plan 05-12
+- [Phase ?]: D-05-10-E: interactionCreate button branch peeks customId 'm:o:' prefix to skip pre-defer (Pitfall 1 corollary)
+- [Phase ?]: D-05-10-F: matchCard defensive guard on m.game_match_type_id (typeof + non-empty) to handle partial mocks
 
 ### Pending Todos
 
@@ -301,6 +308,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T18:30:53.516Z
+Last session: 2026-05-13T18:42:05.568Z
 Stopped at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
 Resume file: None
