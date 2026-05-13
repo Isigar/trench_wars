@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
-last_updated: "2026-05-13T20:37:08.725Z"
+last_updated: "2026-05-13T20:49:59.982Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 73
+  completed_plans: 74
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 5 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 6 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -112,6 +112,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P03 | 30m | 2 tasks | 16 files |
 | Phase 06 P04 | ~3min | 1 tasks | 3 files |
 | Phase 06 P05 | ~3m | 1 tasks | 4 files |
+| Phase 06 P06 | ~12m | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -320,6 +321,13 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-05-B: by_rank v1 uses tournament_participants.created_at desc as deterministic proxy for skill rank (RESEARCH Assumption A11; Phase 9 ELO upgrade tracked)
 - [Phase ?]: D-06-05-C: PHP match dispatch on strategy gets explicit default => throw new InvalidArgumentException arm — satisfies PHPStan L8 match.unhandled + clear runtime error for typo callers
 - [Phase ?]: D-06-05-D: reseed() audit-log previous_seeds + new_seeds maps keyed by clan_id (stable cross-reseed identity; only the seed column is rewritten)
+- [Phase ?]: D-06-06-A: BracketGeneratorService ships all 4 strategies; 3 are stubs (DoubleElim/RoundRobin/Swiss) — plan 06-07 only replaces stub bodies, not constructor signature.
+- [Phase ?]: D-06-06-B: INNER_OUTER_ORDERINGS hardcodes sizes 2/4/8/16/32; sizes > 32 use recursive computeInnerOuter() validated against the hardcoded 32-element case.
+- [Phase ?]: D-06-06-C: GameMatch ships single scheduled_at column (not scheduled_start_at + scheduled_end_at as plan scaffold suggested); aligned with actual Phase 4 migration.
+- [Phase ?]: D-06-06-D: A10 LOCKED — bracket-spawned GameMatch.host_clan_id = NULL; both participants are guests.
+- [Phase ?]: D-06-06-E: BracketMatchMaterialiserService throws RuntimeException (not DomainException) when default_game_match_type_id is null.
+- [Phase ?]: D-06-06-F: Bracket GameMatch.title inherits tournament.getTranslations('title') — JSONB locales map (D-013).
+- [Phase ?]: D-06-06-G: Bye-winner round-2 slot rule — odd round-1 position p → participant_a_id; even p → participant_b_id.
 
 ### Pending Todos
 
@@ -341,6 +349,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T20:37:08.722Z
+Last session: 2026-05-13T20:49:39.193Z
 Stopped at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
 Resume file: None
