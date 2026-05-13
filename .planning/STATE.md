@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-stopped_at: "Phase 03 plan 02 (Wave 1 — migrations) COMPLETE. Four Phase 3 migrations landed (games, game_roles, game_match_types, game_match_type_role_limits) with composite UNIQUEs, CHECK constraints, and cascade FKs. migrate:fresh green across Phase 1+2+3 (18 migrations). Wave 0 RED stubs from 03-01 still RED as expected (turn GREEN in 03-03). Next: plan 03-03 (Wave 2 — models + factories + LogsActivity)."
-last_updated: "2026-05-13T11:43:32.540Z"
+status: executing
+stopped_at: "Phase 02 (Clans & tags) COMPLETE — all 14 plans executed, automated gates PASS (Pest 214/214, PHPStan L8 clean, Pint clean, vue-tsc clean). PHASE-VERIFICATION.md status: PENDING_MANUAL_SMOKE (operator UI smokes deferred to user — same handoff pattern as Phase 1). Phase 03 (Games & match types) ready to plan via /gsd-autonomous --from 3 in a fresh session. Note: workflow.skip_discuss is still TRUE from autonomous setup — flip back via /gsd-config if interactive discuss is desired for P3+. Code review + UI review for Phase 2 were not run (out of context budget); user can run /gsd-code-review 2 and /gsd-ui-review 2 in a fresh session before tackling Phase 3."
+last_updated: "2026-05-13T11:52:03.840Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 42
-  completed_plans: 34
+  completed_plans: 35
   percent: 22
 ---
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 02 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
-Status: Wave 1 complete — 4 Phase 3 migrations landed (games, game_roles, game_match_types, game_match_type_role_limits)
+Plan: 3 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Status: Ready to execute
 Last activity: 2026-05-13
 
 Progress: [██░░░░░░░░] 20% (Phase 3)
@@ -73,6 +73,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 02-clans-tags P13 | 270 | 3 tasks | 14 files |
 | Phase 02-clans-tags P14 | ~25min | 3 tasks | 9 files |
 | Phase 03 P02 | 12min | 2 tasks | 4 files |
+| Phase 03 P03 | 263 | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -157,6 +158,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: 03-02: Composite UNIQUE on game_match_type_role_limits uses short name gmtrl_match_type_role_unique to fit Postgres 63-byte identifier limit (Pitfall 1)
 - [Phase ?]: 03-02: Cross-game invariant for RoleLimit (matchType.game_id === role.game_id) deferred to model saving() listener in plan 03-03 — DB CHECK cannot reference another table cheaply (Pitfall 10 / Assumption A6)
 - [Phase ?]: 03-02: cascadeOnDelete on both game_match_type_role_limits FKs (matchType + role) — RoleLimits are configuration rows, not historical; revisit if Phase 4 wires signed-up slots to RoleLimit (Assumption A3 / Pitfall 7)
+- [Phase ?]: Plan 03-03: GameMatchTypeRoleLimit::booted() saving() listener throws DomainException on cross-game pair — only programmatic guard for Pitfall 10 (Postgres cross-table CHECK ruled out by Assumption A6); pairs with Filament Select scoping in plan 03-07.
+- [Phase ?]: Plan 03-03: factory key generation via regexify('[a-z0-9_]{4,12}') instead of Str::slug() — slug emits hyphens which fail the DB ^[a-z0-9_]+$ CHECK.
+- [Phase ?]: Plan 03-03: HasTranslations mutator coerces $model->description = null into JSONB {"en": null}, not SQL NULL — GameMatchTypeModelTest NULL-description assertion uses DB::table()->insert() to bypass the mutator and prove the column's nullable contract.
 
 ### Pending Todos
 
@@ -178,6 +182,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T11:41:54.093Z
+Last session: 2026-05-13T11:51:56.701Z
 Stopped at: Phase 02 (Clans & tags) COMPLETE — all 14 plans executed, automated gates PASS (Pest 214/214, PHPStan L8 clean, Pint clean, vue-tsc clean). PHASE-VERIFICATION.md status: PENDING_MANUAL_SMOKE (operator UI smokes deferred to user — same handoff pattern as Phase 1). Phase 03 (Games & match types) ready to plan via /gsd-autonomous --from 3 in a fresh session. Note: workflow.skip_discuss is still TRUE from autonomous setup — flip back via /gsd-config if interactive discuss is desired for P3+. Code review + UI review for Phase 2 were not run (out of context budget); user can run /gsd-code-review 2 and /gsd-ui-review 2 in a fresh session before tackling Phase 3.
 Resume file: None

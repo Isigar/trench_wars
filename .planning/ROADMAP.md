@@ -94,7 +94,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 10 plans
 - [x] 03-01-PLAN.md — Wave 0 scaffolding (4 factory stubs + 7 test stubs + admin.php i18n key extension)
 - [x] 03-02-PLAN.md — Migrations (4 tables: games, game_roles, game_match_types, game_match_type_role_limits; UNIQUE + CHECK + cascade FKs)
-- [ ] 03-03-PLAN.md — Models (4 new) + factories + 4 model tests (UNIQUE + CHECK + cross-game saving guard + audit)
+- [x] 03-03-PLAN.md — Models (4 new) + factories + 4 model tests (UNIQUE + CHECK + cross-game saving guard + audit)
 - [ ] 03-04-PLAN.md — Spatie laravel-data DTOs (4) + TS regen + shared-types sync + GameDataTest
 - [ ] 03-05-PLAN.md — GameSeeder (HLL preset: 1 Game + 15 Roles + 5 MatchTypes + capacity matrix) + idempotency tests
 - [ ] 03-06-PLAN.md — GameResource (Filament) + Roles + MatchTypes RelationManagers
