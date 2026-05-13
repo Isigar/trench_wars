@@ -107,13 +107,13 @@ it('exposes slots HasMany ordered by sort_order then slot_index', function (): v
 });
 
 it('exposes accessRules HasMany, result HasOne, and event MorphOne relations', function (): void {
-    $match = GameMatch::factory()->create();
+    // Public match → MatchObserver (plan 04-08) auto-creates the Event row.
+    $match = GameMatch::factory()->create(['is_public' => true]);
     $rule = MatchAccessRule::factory()->create(['match_id' => $match->id]);
     $result = MatchResult::factory()->create(['match_id' => $match->id]);
-    $event = Event::factory()->create([
-        'eventable_type' => GameMatch::class,
-        'eventable_id' => $match->id,
-    ]);
+    $event = Event::where('eventable_type', GameMatch::class)
+        ->where('eventable_id', $match->id)
+        ->firstOrFail();
 
     $reloaded = $match->fresh();
     expect($reloaded->accessRules->pluck('id')->all())->toContain($rule->id);
