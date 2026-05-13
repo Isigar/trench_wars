@@ -4,29 +4,33 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Game;
+use App\Models\GameRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RuntimeException;
 
 /**
- * Wave 0 stub — replaced by plan 03-03 (Wave 2, Models).
- * Source: .planning/phases/03-games-match-types/03-01-PLAN.md task 1.
+ * Source: .planning/phases/03-games-match-types/03-RESEARCH.md § Code Examples § Factory: GameRole.
  *
- * Deviation note (Rule 3): generics omitted until plan 03-03 creates the model;
- * PHPStan L8 cannot validate `@extends Factory<App\Models\GameRole>` against
- * a non-existent class, and CLAUDE.md §3 forbids baseline regeneration here.
+ * Default scope: a fresh Game is auto-created per row. To attach roles to an existing game,
+ * call `GameRole::factory()->for($game)->create([...])`.
  *
- * @phpstan-ignore-next-line missingType.generics
+ * @extends Factory<GameRole>
  */
 class GameRoleFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\GameRole';
+    protected $model = GameRole::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        throw new RuntimeException('GameRoleFactory definition not yet implemented (Wave 0 stub — replaced by plan 03-03).');
+        return [
+            'game_id' => Game::factory(),
+            'key' => fake()->unique()->regexify('[a-z0-9_]{4,12}'),
+            'display_name' => ['en' => fake()->words(2, true)],
+            'sort_order' => 0,
+            'is_active' => true,
+        ];
     }
 }
