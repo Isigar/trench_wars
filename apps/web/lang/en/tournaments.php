@@ -76,6 +76,7 @@ return [
         'winner_not_participant' => 'Match winner clan is not a registered tournament participant.',
         'no_self_advance' => 'A bracket cannot advance to itself.',
         'reseed_not_allowed' => 'Re-seeding is only available while no matches have been played.',
+        'insufficient_participants' => 'Tournament requires at least :min participants to generate a bracket.',
         'cannot_forfeit_completed' => 'Cannot forfeit a participant after the tournament is completed.',
         'cannot_withdraw_completed' => 'Cannot withdraw a participant after the tournament is completed.',
     ],
