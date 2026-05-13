@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 5 COMPLETE — 05-13 plan executed, 05-PHASE-VERIFICATION.md written, ROADMAP marked 13/13 Complete 2026-05-13; ready for Phase 6 (Tournaments & brackets). Canonical model binding for Phase 6+: App\\Models\\GameMatch (D-04-03-A LOCKED — direct import, no Match alias, BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B)."
-last_updated: "2026-05-13T19:09:00.000Z"
+stopped_at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
+last_updated: "2026-05-13T20:05:00.000Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
-  total_plans: 68
-  completed_plans: 68
-  percent: 56
+  total_plans: 82
+  completed_plans: 70
+  percent: 57
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 05 — Discord bot v1 COMPLETE (PENDING_MANUAL_SMOKE); ready for Phase 06 — Tournaments & brackets (planning)
+**Current focus:** Phase 06 — Tournaments & brackets (executing; Wave 0 scaffolding complete)
 
 ## Current Position
 
-Phase: 05 (Discord bot v1) — COMPLETE (PENDING_MANUAL_SMOKE — 6-item operator walkthrough A-F per 05-PHASE-VERIFICATION.md)
-Plan: 13 of 13 complete (05-13 phase verification — 05-PHASE-VERIFICATION.md authored; ROADMAP/REQUIREMENTS/STATE updated)
-Status: Phase complete; ready to plan Phase 6
+Phase: 06 (Tournaments & brackets) — IN PROGRESS
+Plan: 1 of 14 complete (06-01 Wave 0 scaffolding — 5 factory stubs + 32 Pest RED stubs + apps/web/lang/en/tournaments.php + admin.php extension)
+Status: Plan 06-01 complete; ready for plan 06-02 (migrations — 5 tables)
 Last activity: 2026-05-13
 
-Progress: [██████░░░░] 56% (5/9 phases; 68/68 plans complete through Phase 5 close)
+Progress: [██████░░░░] 57% (5/9 phases; 70/82 plans complete through Phase 6 plan 1)
 
 ## Performance Metrics
 
@@ -107,6 +107,7 @@ Progress: [██████░░░░] 56% (5/9 phases; 68/68 plans complete
 | Phase 05 P11 | 321 | 3 tasks | 7 files |
 | Phase 05 P12 | 322 | 3 tasks | 5 files |
 | Phase 05-discord-bot-v1 P13 | 408s | 2 tasks | 5 files |
+| Phase 06 P01 | 292s | 2 tasks | 38 files |
 
 ## Accumulated Context
 
@@ -299,6 +300,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 05]: D-05-12-E — SC-5 capstone ships 3 it() blocks: happy path with ->not->toBe($bot->id) defence; 422 negative; missing acts-as header documents Pitfall 7 tolerance via contrast
 - [Phase ?]: [Phase 05]: Plan 05-13 — Phase 5 COMPLETE; 618 web Pest tests / 1817 assertions + 117 bot Vitest tests; all 6 quality gates GREEN (Pest, Vitest, Pint, PHPStan L8, bot tsc strict, shared-types tsc, vue-tsc); 05-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-goal-discord-ux + 12 pitfalls + 5 open questions; ROADMAP 13/13 Complete; status PENDING_MANUAL_SMOKE pending operator 6-item walkthrough A-F
 - [Phase ?]: [Phase 05]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 5 (controllers, observers, services, jobs, FormRequests, tests); zero alias-on-import; canonical binding for Phase 6+ tournaments — bracket-match materialisation MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B
+- [Phase ?]: [Phase 06-01]: Wave 0 factory stubs adopt Phase 3 commit 1d4d736 idiom verbatim — string FQN $model + per-line @phpstan-ignore (missingType.generics + property.defaultValue). Plan 06-03 will replace with typed-generic factories once Tournament/TournamentParticipant/TournamentStage/TournamentBracket/TournamentStanding models exist.
+- [Phase ?]: [Phase 06-01]: Wave 0 Pest stubs use bare functional convention (Phase 5 D-05-01-C canonical idiom) — no namespace, no per-file uses() call. Pest.php autowires TestCase + RefreshDatabase via uses(...)->in('Feature'); a per-file uses(TestCase::class, RefreshDatabase::class) was found to trigger TestRepository fatals in Phase 5.
+- [Phase ?]: [Phase 06-01]: Phase 6 i18n namespace pre-shipped in full (apps/web/lang/en/tournaments.php, 90+ leaf keys: formats × 4, status × 6, participant_status × 4, errors × 8, actions × 9 × 4 = 36, tabs × 5, empty × 3, stage_types × 6) rather than incremental per-plan. Prevents NoHardcodedStringsTest + MissingTranslationException mid-execution across plans 06-02..06-13.
 
 ### Pending Todos
 
@@ -320,6 +324,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T19:08:40.036Z
-Stopped at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
+Last session: 2026-05-13T20:03:53.640Z
+Stopped at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
 Resume file: None

@@ -168,20 +168,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. When a bracket match finishes, `winner_participant_id` is recorded and the next bracket pulls participants via `advances_to_bracket_id` automatically; standings recompute with format-appropriate tiebreakers.
   5. Admin can reseed (when no matches played in a stage), forfeit, withdraw a participant, and recalculate standings via Filament actions, all audited.
 **Plans**: 14 plans
-- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
-- [x] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
-- [x] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
-- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
-- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
-- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
-- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+- [x] 06-01-PLAN.md — Wave 0 scaffolding (5 factory stubs + 32 RED Pest stubs + tournaments.php i18n skeleton + admin.php extension)
+- [ ] 06-02-PLAN.md — Migrations (5 tables: tournaments, participants, stages, brackets, standings; CHECK constraints + partial UNIQUE match_id + self-FK no-cycle)
+- [ ] 06-03-PLAN.md — 5 models + 5 real factories + TournamentObserver stub + 5 GREEN model tests
+- [ ] 06-04-PLAN.md — TournamentStatusService + 2 exception classes (state machine + BracketsAlreadyGeneratedException forward-declared) + GREEN test
+- [ ] 06-05-PLAN.md — TournamentSeedingService (by_rank/random/manual) + Tournament::canReseed() + A4 LOCKED + GREEN test
+- [ ] 06-06-PLAN.md — BracketGeneratorService + SingleEliminationGenerator (Pattern 3 inner_outer + byes) + BracketMatchMaterialiserService + 2 GREEN tests
+- [ ] 06-07-PLAN.md — Double-elim + Round-robin + Swiss generators + Open Questions A6 + Pitfall 5 LOCKED + 3 GREEN tests
+- [ ] 06-08-PLAN.md — BracketAdvancementService + MatchResultObserver + StandingsCalculatorService stub + 2 GREEN tests
+- [ ] 06-09-PLAN.md — StandingsCalculatorService (4 strategies) + replaces plan 06-08 stub + GREEN test
+- [ ] 06-10-PLAN.md — 8 DTOs + ParticipantSummary + TS regen + TournamentObserver real impl + 5 GREEN tests
+- [ ] 06-11-PLAN.md — TournamentResource Filament (Tabs + 8 HeaderActions + 4 RelationManagers; A5/A8 LOCKED) + 6 GREEN admin tests
+- [ ] 06-12-PLAN.md — Public controllers + Vue 5-tab Show + BracketCanvas SVG + useTournamentPolling + SC-1 capstone GREEN test
+- [ ] 06-13-PLAN.md — i18n + audit log + bot embed extensions + Pitfall 10 mitigation + 2+1 GREEN tests
+- [ ] 06-14-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + full quality gates
 **UI hint**: yes
 
 ### Phase 7: CMS
