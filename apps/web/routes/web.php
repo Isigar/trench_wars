@@ -7,6 +7,9 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\ClanDirectoryController;
 use App\Http\Controllers\Clans\ClanCreateController;
 use App\Http\Controllers\ClanShowController;
+use App\Http\Controllers\MatchCalendarController;
+use App\Http\Controllers\Matches\MatchSignupController;
+use App\Http\Controllers\MatchShowController;
 use App\Http\Controllers\MyClan\ClanApplicationController;
 use App\Http\Controllers\MyClan\ClanInviteController;
 use App\Http\Controllers\MyClan\MyClanController;
@@ -22,6 +25,11 @@ Route::get('/', fn () => Inertia::render('Home'))->name('home');
 Route::get('/clans', ClanDirectoryController::class)->name('clans.index');
 Route::get('/clans/{clan:slug}', ClanShowController::class)->name('clans.show');
 Route::get('/players/{player:slug}', PlayerProfileController::class)->name('players.show');
+
+// Public match calendar + detail (SC-3 — REQ-goal-match-workflows)
+// is_public + status NOT IN (draft, cancelled) enforced inside the controllers.
+Route::get('/matches', MatchCalendarController::class)->name('matches.index');
+Route::get('/matches/{match}', MatchShowController::class)->name('matches.show');
 
 // Source: 01-RESEARCH.md Pattern 1 + 01-09-PLAN.md Task 1.
 // Discord OAuth flow — guests only (an authenticated visitor revisiting /redirect
@@ -63,4 +71,9 @@ Route::middleware('auth')->group(function (): void {
     // Application cancel — NOT under /my-clan prefix because the applicant may not
     // yet have any clan membership.
     Route::post('/applications/{application}/cancel', [ClanApplicationController::class, 'cancel'])->name('applications.cancel');
+
+    // Match signups (SC-2 + SC-5 — REQ-goal-match-workflows). MatchSignupService
+    // is the SOLE production write path to match_slots.occupant_user_id.
+    Route::post('/matches/{match}/signups', [MatchSignupController::class, 'store'])->name('matches.signups.store');
+    Route::delete('/matches/{match}/signups/{slot}', [MatchSignupController::class, 'destroy'])->name('matches.signups.destroy');
 });

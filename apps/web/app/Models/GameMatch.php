@@ -100,6 +100,19 @@ class GameMatch extends Model
             ->setDescriptionForEvent(fn (string $event): string => "Match {$event}");
     }
 
+    /**
+     * Route model binding uses the UUID primary key (no slug column in Phase 4).
+     *
+     * Plan 04-10 Task 1 amendment: explicit override documents intent. Default
+     * Eloquent behaviour is the same (`getKeyName()` => 'id'), but the explicit
+     * return mirrors Phase 2 Clan::getRouteKeyName()=>'slug' precedent and
+     * makes the routing contract grep-able. URL shape: /matches/{uuid}.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
+
     /** @return BelongsTo<GameMatchType, $this> */
     public function gameMatchType(): BelongsTo
     {

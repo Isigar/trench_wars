@@ -25,6 +25,7 @@ return [
             'no_active_clan' => 'You must be an active member of a clan to sign up for a match.',
         ],
         'success' => 'Signed up to :role.',
+        'cancelled' => 'Your signup has been cancelled.',
     ],
 
     'status' => [
