@@ -114,7 +114,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-tenancy-multi-clan | Phase 2 | Complete |
 | REQ-goal-public-profiles | Phase 2 | Complete |
 | REQ-platform-vision | Phase 3 | Complete |
-| REQ-goal-match-workflows | Phase 4 | In Progress |
+| REQ-goal-match-workflows | Phase 4 | Complete |
 | REQ-goal-discord-ux | Phase 5 | Pending |
 | REQ-success-tournament-end-to-end | Phase 6 | Pending |
 | REQ-goal-cms | Phase 7 | Pending |
@@ -134,4 +134,4 @@ Coverage: 15/15 mappable requirements mapped — complete.
 
 ---
 *Requirements defined: 2026-05-03*
-*Last updated: 2026-05-03 after roadmap initialization from intel ingest*
+*Last updated: 2026-05-13 — Phase 4 close: REQ-goal-match-workflows flipped to Complete*

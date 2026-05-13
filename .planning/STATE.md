@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 04-12-PLAN.md
-last_updated: "2026-05-13T15:56:25.686Z"
+status: planning
+stopped_at: Phase 4 COMPLETE — 04-13 plan executed, 04-PHASE-VERIFICATION.md written, ROADMAP marked 13/13 Complete 2026-05-13; ready for Phase 5 (Discord bot v1). D-04-03-A LOCKED for Phase 5+ canonical naming.
+last_updated: "2026-05-13T16:05:52.369Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 55
-  completed_plans: 54
-  percent: 33
+  completed_plans: 55
+  percent: 44
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 04 — Matches (manual)
+**Current focus:** Phase 05 — Discord bot v1 (ready to start; Phase 4 COMPLETE pending operator manual smoke)
 
 ## Current Position
 
-Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 12 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
-Status: Ready to execute
+Phase: 04 (Matches — manual) — COMPLETE (PENDING_MANUAL_SMOKE)
+Plan: 13 of 13 complete (04-13 phase verification + ROADMAP + REQUIREMENTS update done; 04-PHASE-VERIFICATION.md committed)
+Status: Phase 4 closed; ready to plan Phase 5 (Discord bot v1)
 Last activity: 2026-05-13
 
-Progress: [████░░░░░░] 33% (3/9 phases; 51/55 plans)
+Progress: [████░░░░░░] 44% (4/9 phases; 55/55 plans through Phase 4)
 
 ## Performance Metrics
 
@@ -93,6 +93,7 @@ Progress: [████░░░░░░] 33% (3/9 phases; 51/55 plans)
 | Phase 04-matches-manual P10 | 9 | 2 tasks | 10 files |
 | Phase 04 P11 | 11 | 3 tasks | 12 files |
 | Phase 04 P12 | 11 | 3 tasks | 3 files |
+| Phase 04 P13 | 339s | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -235,6 +236,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-04-12-A: LogsActivity does not populate properties.attributes in this project — explicit activity()->withProperties() is the only path to a populated properties JSON
 - [Phase ?]: D-04-12-B: MatchResourcePresentTest upgraded from 18 smoke (04-09) to 25 comprehensive blocks via assertCanSeeTableRecords on all 4 RelationManagers (Phase 3 Pitfall 3 idiom)
 - [Phase ?]: D-04-12-C: Same-game fixtures mandatory for RelationManager tests that depend on materialiser invariant (MatchSlot factory default is cross-game)
+- [Phase ?]: [Phase 04]: Plan 04-13 — Phase 4 COMPLETE; 493 tests / 1459 assertions / 0 incomplete; all 5 quality gates GREEN; 04-PHASE-VERIFICATION.md written mapping SC-1..SC-5 + REQ-goal-match-workflows; ROADMAP 13/13 Complete; REQUIREMENTS REQ-goal-match-workflows -> Complete; status PENDING_MANUAL_SMOKE pending operator 5-item walkthrough A-E
+- [Phase ?]: [Phase 04]: D-04-03-A LOCKED canonical class binding for Phase 5+: App\\Models\\GameMatch (match is PHP 8.x reserved keyword); table stays 'matches' via $table override; no Match aliases anywhere; direct use App\\Models\\GameMatch; is canonical idiom
 
 ### Pending Todos
 
@@ -256,6 +259,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T15:56:25.683Z
-Stopped at: Completed 04-12-PLAN.md
+Last session: 2026-05-13T16:03:27.995Z
+Stopped at: Phase 4 COMPLETE — 04-13 plan executed, 04-PHASE-VERIFICATION.md written, ROADMAP marked 13/13 Complete 2026-05-13; ready for Phase 5 (Discord bot v1). D-04-03-A LOCKED for Phase 5+ canonical naming.
 Resume file: None
