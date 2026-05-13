@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
-last_updated: "2026-05-13T15:25:55.446Z"
+last_updated: "2026-05-13T15:44:52.463Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 55
-  completed_plans: 52
+  completed_plans: 53
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 04 (Matches — manual) — IN PROGRESS
-Plan: 10 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
+Plan: 11 of 13 complete (04-08 MatchObserver polymorphic Event sync done; next: 04-09 Filament MatchResource)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -91,6 +91,7 @@ Progress: [████░░░░░░] 33% (3/9 phases; 51/55 plans)
 | Phase 04 P08 | 11min | 2 tasks | 6 files |
 | Phase 04 P09 | 12 | 3 tasks | 17 files |
 | Phase 04-matches-manual P10 | 9 | 2 tasks | 10 files |
+| Phase 04 P11 | 11 | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -225,6 +226,11 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-04-09-D: Container-bind stub for final services — replaces Mockery/anonymous-class-extension for testing final services; reusable for plan 04-10+ tests
 - [Phase ?]: D-04-10-A: 4-exception catch order in MatchSignupController::store ends with CapacityExceededException routed to game_role_id; the other three route to general. PHP catches the FIRST exception thrown; order mirrors the service guard order (status > tag > idempotency > capacity).
 - [Phase ?]: D-04-10-D: Inertia ->component(name, false) skips Vue page existence check in tests — Vue pages land in plan 04-11.
+- [Phase 04]: D-04-11-A: Privacy branches use !== null (matching generated TS nullable contract for PublicMatchOccupantData.displayName)
+- [Phase 04]: D-04-11-B: MatchStatusBadge is a standalone Phase 4 composite, not a StatusBadge wrap
+- [Phase 04]: D-04-11-C: No dayjs runtime dep — native Intl.DateTimeFormat
+- [Phase 04]: D-04-11-D: TextInput Rule 2 — type prop accepts 'date'
+- [Phase 04]: D-04-11-E: Templates avoid > comparison literals — refactored into computed booleans (NoHardcodedStringsTest regex constraint)
 
 ### Pending Todos
 
@@ -246,6 +252,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T15:25:55.443Z
+Last session: 2026-05-13T15:44:52.460Z
 Stopped at: Phase 4 plan 08 COMPLETE — MatchObserver polymorphic Event sync (Pattern 8); 8 MatchEventSyncTest GREEN (17 assertions); 3 ripple-effect tests auto-fixed; Pest 404 passed / 7 incomplete; PHPStan + Pint clean; ready for plan 04-09 (Filament MatchResource)
 Resume file: None
