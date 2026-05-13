@@ -172,7 +172,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 06-02-PLAN.md — Migrations (5 tables: tournaments, participants, stages, brackets, standings; CHECK constraints + partial UNIQUE match_id + self-FK no-cycle)
 - [x] 06-03-PLAN.md — 5 models + 5 real factories + TournamentObserver stub + 5 GREEN model tests
 - [x] 06-04-PLAN.md — TournamentStatusService + 2 exception classes (state machine + BracketsAlreadyGeneratedException forward-declared) + GREEN test
-- [ ] 06-05-PLAN.md — TournamentSeedingService (by_rank/random/manual) + Tournament::canReseed() + A4 LOCKED + GREEN test
+- [x] 06-05-PLAN.md — TournamentSeedingService (by_rank/random/manual) + Tournament::canReseed() + A4 LOCKED + GREEN test
 - [ ] 06-06-PLAN.md — BracketGeneratorService + SingleEliminationGenerator (Pattern 3 inner_outer + byes) + BracketMatchMaterialiserService + 2 GREEN tests
 - [ ] 06-07-PLAN.md — Double-elim + Round-robin + Swiss generators + Open Questions A6 + Pitfall 5 LOCKED + 3 GREEN tests
 - [ ] 06-08-PLAN.md — BracketAdvancementService + MatchResultObserver + StandingsCalculatorService stub + 2 GREEN tests

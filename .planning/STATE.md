@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
-last_updated: "2026-05-13T20:30:24.923Z"
+stopped_at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
+last_updated: "2026-05-13T20:37:08.725Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
-  completed_plans: 72
+  completed_plans: 73
   percent: 56
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 4 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
+Plan: 5 of 14 complete (06-03 Wave 2 — 5 tournament models + TournamentObserver stub + 5 real factories + 5 GREEN model tests covering Pitfall 4 + Pitfall 11 + composite UNIQUEs + LogsActivity)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -111,6 +111,7 @@ Progress: [█████████░] 87% (5/9 phases; 71/82 plans complete
 | Phase 06 P02 | 4m 06s | 2 tasks | 5 files |
 | Phase 06 P03 | 30m | 2 tasks | 16 files |
 | Phase 06 P04 | ~3min | 1 tasks | 3 files |
+| Phase 06 P05 | ~3m | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -315,6 +316,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-06-04-A: TournamentStatusService::transition() signature uses ?User $causer = null + Tournament return type — diverges from Phase 4 MatchStatusService (required User + void) to enable Filament admin actions to omit causer arg and fluent chaining.
 - [Phase ?]: D-06-04-B: BracketsAlreadyGeneratedException ships in plan 06-04 (not 06-06) to break circular dependency — plan 06-06 BracketGeneratorService imports it from here.
 - [Phase ?]: D-06-04-C: Activity log description uses format-string 'Tournament status: {from} -> {to}' (more descriptive than Phase 4 static 'Match status transition') for visual scan-ability in Filament audit log.
+- [Phase ?]: D-06-05-A: Open Question A4 RESOLVED — Tournament::canReseed() returns true ONLY when status='seeded' AND no MatchResult rows exist for any bracket-linked match
+- [Phase ?]: D-06-05-B: by_rank v1 uses tournament_participants.created_at desc as deterministic proxy for skill rank (RESEARCH Assumption A11; Phase 9 ELO upgrade tracked)
+- [Phase ?]: D-06-05-C: PHP match dispatch on strategy gets explicit default => throw new InvalidArgumentException arm — satisfies PHPStan L8 match.unhandled + clear runtime error for typo callers
+- [Phase ?]: D-06-05-D: reseed() audit-log previous_seeds + new_seeds maps keyed by clan_id (stable cross-reseed identity; only the seed column is rewritten)
 
 ### Pending Todos
 
@@ -336,6 +341,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T20:28:02.674Z
-Stopped at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
+Last session: 2026-05-13T20:37:08.722Z
+Stopped at: Completed plan 06-05 (Phase 6 Wave 3) — TournamentSeedingService + canReseed() gate + 14 GREEN tests / 52 assertions; Open Question A4 LOCKED; ready for plan 06-06 (BracketGeneratorService)
 Resume file: None
