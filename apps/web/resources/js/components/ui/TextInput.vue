@@ -9,7 +9,7 @@ const props = withDefaults(
         /** Already-translated label text (parent calls t() before passing). */
         label: string;
         id: string;
-        type?: 'text' | 'email' | 'search';
+        type?: 'text' | 'email' | 'search' | 'date';
         placeholder?: string;
         required?: boolean;
         /** Validation error strings — first error is displayed. */
