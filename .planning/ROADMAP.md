@@ -275,7 +275,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 2. Clans & tags | 14/14 | Complete | 2026-05-12 |
 | 3. Games & match types | 10/10 | Complete | 2026-05-13 |
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
-| 5. Discord bot v1 | 0/TBD | Not started | - |
+| 5. Discord bot v1 | 1/13 | In progress | - |
 | 6. Tournaments & brackets | 0/TBD | Not started | - |
 | 7. CMS | 0/TBD | Not started | - |
 | 8. RCON automation | 0/TBD | Not started | - |

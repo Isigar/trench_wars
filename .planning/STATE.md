@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 4 COMPLETE — 04-13 plan executed, 04-PHASE-VERIFICATION.md written, ROADMAP marked 13/13 Complete 2026-05-13; ready for Phase 5 (Discord bot v1). D-04-03-A LOCKED for Phase 5+ canonical naming.
-last_updated: "2026-05-13T16:05:52.369Z"
+status: in_progress
+stopped_at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
+last_updated: "2026-05-13T17:05:00.000Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
-  total_plans: 55
-  completed_plans: 55
-  percent: 44
+  total_plans: 68
+  completed_plans: 57
+  percent: 45
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 05 — Discord bot v1 (ready to start; Phase 4 COMPLETE pending operator manual smoke)
+**Current focus:** Phase 05 — Discord bot v1 (in progress; plan 01 Wave 0 scaffolding complete)
 
 ## Current Position
 
-Phase: 04 (Matches — manual) — COMPLETE (PENDING_MANUAL_SMOKE)
-Plan: 13 of 13 complete (04-13 phase verification + ROADMAP + REQUIREMENTS update done; 04-PHASE-VERIFICATION.md committed)
-Status: Phase 4 closed; ready to plan Phase 5 (Discord bot v1)
+Phase: 05 (Discord bot v1) — IN PROGRESS
+Plan: 1 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Status: Wave 0 complete; ready for plan 05-02 (migrations + DiscordOutboundMessage model)
 Last activity: 2026-05-13
 
-Progress: [████░░░░░░] 44% (4/9 phases; 55/55 plans through Phase 4)
+Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through Phase 5 plan 01)
 
 ## Performance Metrics
 
@@ -94,6 +94,7 @@ Progress: [████░░░░░░] 44% (4/9 phases; 55/55 plans through 
 | Phase 04 P11 | 11 | 3 tasks | 12 files |
 | Phase 04 P12 | 11 | 3 tasks | 3 files |
 | Phase 04 P13 | 339s | 1 tasks | 5 files |
+| Phase 05 P01 | ~15min | 2 tasks (+ 1 Rule 1 follow-up) | 39 files |
 
 ## Accumulated Context
 
@@ -238,6 +239,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-04-12-C: Same-game fixtures mandatory for RelationManager tests that depend on materialiser invariant (MatchSlot factory default is cross-game)
 - [Phase ?]: [Phase 04]: Plan 04-13 — Phase 4 COMPLETE; 493 tests / 1459 assertions / 0 incomplete; all 5 quality gates GREEN; 04-PHASE-VERIFICATION.md written mapping SC-1..SC-5 + REQ-goal-match-workflows; ROADMAP 13/13 Complete; REQUIREMENTS REQ-goal-match-workflows -> Complete; status PENDING_MANUAL_SMOKE pending operator 5-item walkthrough A-E
 - [Phase ?]: [Phase 04]: D-04-03-A LOCKED canonical class binding for Phase 5+: App\\Models\\GameMatch (match is PHP 8.x reserved keyword); table stays 'matches' via $table override; no Match aliases anywhere; direct use App\\Models\\GameMatch; is canonical idiom
+- [Phase 05]: D-05-01-A — laravel/sanctum v4.3.2 (latest 4.x line; Laravel 12 compatible); installed via container composer per D-021; PAT migration applied via install:api
+- [Phase 05]: D-05-01-B — laravel/horizon v5.46.0 (latest 5.x line); HorizonServiceProvider auto-registered in bootstrap/providers.php; QUEUE_CONNECTION=redis (Phase 1 default) drives Horizon
+- [Phase 05]: D-05-01-C — Wave 0 Pest stub idiom is the canonical Phase 4 commit 8435020 bare form (no namespace, no per-file uses() call). Plan <interfaces> sample with namespace + uses(TestCase::class, RefreshDatabase::class) triggered TestRepository fatal because apps/web/tests/Pest.php autowires both via uses(...)->in(...). Rule 3 deviation documented in 05-01-SUMMARY.md
+- [Phase 05]: D-05-01-D — apps/bot/pnpm-lock.yaml does NOT exist (workspace lockfile is at repo root per D-015 pnpm-workspaces). Plan's files_modified entry was wrong; root pnpm-lock.yaml is the canonical commit target
+- [Phase 05]: D-05-01-E — Worker docker healthcheck uses tr+grep on /proc/1/cmdline (busybox-portable) instead of pgrep (unavailable in php-fpm Alpine image); functional outcome identical
+- [Phase 05]: D-05-01-F — SANCTUM_STATEFUL_DOMAINS explicitly empty in .env.example as defence-in-depth on top of framework default; Pitfall 4 verified clean (no bot/web-nginx hostnames in sanctum.stateful)
 
 ### Pending Todos
 
@@ -259,6 +266,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T16:03:27.995Z
-Stopped at: Phase 4 COMPLETE — 04-13 plan executed, 04-PHASE-VERIFICATION.md written, ROADMAP marked 13/13 Complete 2026-05-13; ready for Phase 5 (Discord bot v1). D-04-03-A LOCKED for Phase 5+ canonical naming.
+Last session: 2026-05-13T17:05:00.000Z
+Stopped at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
 Resume file: None
