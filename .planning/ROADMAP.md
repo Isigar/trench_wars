@@ -147,7 +147,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-03-PLAN.md — ResolveBotActsAsUser middleware + Sanctum abilities matrix + 2 GREEN auth tests
 - [x] 05-04-PLAN.md — 6 BotApi controllers + 4 FormRequests + routes/api.php + 6 GREEN HTTP integration tests
 - [x] 05-05-PLAN.md — MatchObserver outbound writer + DiscordOutboundPayloadBuilder
-- [ ] 05-06-PLAN.md — SyncDiscordRolesJob (Horizon retry) + ClanMembershipObserver + 2 GREEN job/dispatch tests
+- [x] 05-06-PLAN.md — SyncDiscordRolesJob (Horizon retry) + ClanMembershipObserver + 2 GREEN job/dispatch tests
 - [ ] 05-07-PLAN.md — DiscordOutboundMessageResource (Filament read-only) + retry action + Artisan trenchwars:bot:issue-token/revoke-token + BotServiceUserSeeder + ClanResource amendment
 - [ ] 05-08-PLAN.md — Bot core (env + client + api + customIds + colors + apiContracts) + GREEN customIds test
 - [ ] 05-09-PLAN.md — Slash commands (clan/match/profile/me) + registerCommands + interactionCreate dispatcher + 3 GREEN command tests
