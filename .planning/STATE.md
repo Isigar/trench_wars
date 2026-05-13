@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
-last_updated: "2026-05-13T18:00:43.602Z"
+last_updated: "2026-05-13T18:10:40.569Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
-  completed_plans: 61
+  completed_plans: 62
   percent: 44
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 6 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Plan: 7 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -100,6 +100,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 05 P04 | 828 | 3 tasks | 17 files |
 | Phase 05 P05 | 383 | 3 tasks | 3 files |
 | Phase 05 P06 | 327 | 2 tasks | 5 files |
+| Phase 05 P07 | 407 | - tasks | - files |
 
 ## Accumulated Context
 
@@ -267,6 +268,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-05-05-E: DiscordOutboundPayloadBuilder eager-loads gameMatchType+hostClan+slots.role - no-op when already loaded; prevents N+1 inside observer save() transaction
 - [Phase ?]: D-05-06-A: role_sync payload keys are discord_user_id/discord_role_id (matches plan 05-04 echo suppression JSONB path lookup); plan <interfaces> wording superseded.
 - [Phase ?]: D-05-06-F: ClanMembership hard-delete fires SyncDiscordRolesJob with action=remove (defensive — D-009 expects left_at but seeders/admin may bypass).
+- [Phase ?]: D-05-07-A: ClanResource discord_announce_channel_id was already shipped in Phase 2 plan 02-12; 05-07 was additive (helperText + maxLength) preserving the T-02-09-02 toggle gate
+- [Phase ?]: D-05-07-B: Bot service user firstOrCreate must include locale='en' — users.locale is NOT NULL with no DB default (Rule 2 auto-add)
+- [Phase ?]: D-05-07-C: PHPStan scope excludes tests/ per phpstan.neon paths (app, bootstrap/app.php, database, routes); test files emit findings on explicit analysis but stay out of CI scope
 
 ### Pending Todos
 
@@ -288,6 +292,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T18:00:33.599Z
+Last session: 2026-05-13T18:10:15.327Z
 Stopped at: Completed plan 05-05 (Wave 4) — MatchObserver outbound writer + DiscordOutboundPayloadBuilder + 12 GREEN tests. SC-3 web-side trigger in place. Ready for plan 05-06 (SyncDiscordRolesJob).
 Resume file: None
