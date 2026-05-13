@@ -89,10 +89,39 @@ final class SingleEliminationGenerator implements BracketGeneratorStrategy
             );
         }
 
+        // Create the single elim stage; layout shared with plan 06-07
+        // DoubleEliminationGenerator W-bracket via layoutInStage().
+        $stage = TournamentStage::create([
+            'tournament_id' => $tournament->id,
+            'type' => 'elim',
+            'ordinal' => 1,
+            'name' => null,
+            'settings' => null,
+        ]);
+
+        self::layoutInStage($stage, $orderedParticipants);
+    }
+
+    /**
+     * Inner_outer ordering + two-pass insert + bye-winner propagation for a single-elim
+     * tree. Extracted in plan 06-07 (Task 1) so DoubleEliminationGenerator can reuse
+     * the W-bracket layout verbatim — see RESEARCH Pattern 6.
+     *
+     * The caller MUST have already created $stage. The map of generated brackets is
+     * returned as `array<int $round, array<int $position, TournamentBracket>>` so
+     * the caller can wire loser_advances_to_bracket_id on each W-bracket against
+     * the L-bracket positions in a subsequent pass.
+     *
+     * @param  Collection<int, TournamentParticipant>  $orderedParticipants
+     * @return array<int, array<int, TournamentBracket>>
+     */
+    public static function layoutInStage(TournamentStage $stage, Collection $orderedParticipants): array
+    {
+        $n = $orderedParticipants->count();
         $bracketSize = 2 ** (int) ceil(log($n, 2));
         $totalRounds = (int) log($bracketSize, 2);
 
-        $ordering = self::INNER_OUTER_ORDERINGS[$bracketSize] ?? $this->computeInnerOuter($bracketSize);
+        $ordering = self::INNER_OUTER_ORDERINGS[$bracketSize] ?? self::computeInnerOuter($bracketSize);
 
         // Map ordering positions (0..bracketSize-1) → participant or null (bye).
         // ordering values are 1-indexed seeds; we resolve by seedPosition - 1
@@ -103,15 +132,6 @@ final class SingleEliminationGenerator implements BracketGeneratorStrategy
         foreach ($ordering as $i => $seedPosition) {
             $participantsByPos[$i] = $orderedParticipants->get($seedPosition - 1);
         }
-
-        // Create the single elim stage.
-        $stage = TournamentStage::create([
-            'tournament_id' => $tournament->id,
-            'type' => 'elim',
-            'ordinal' => 1,
-            'name' => null,
-            'settings' => null,
-        ]);
 
         // Two-pass insert.
         //
@@ -175,6 +195,8 @@ final class SingleEliminationGenerator implements BracketGeneratorStrategy
                 }
             }
         }
+
+        return $byRoundPosition;
     }
 
     /**
@@ -185,15 +207,19 @@ final class SingleEliminationGenerator implements BracketGeneratorStrategy
      * with its mirror (2n + 1 - x for each x). Produces the canonical bracket
      * pairings where seeds 1 and 2 only meet in the final.
      *
+     * Made static in plan 06-07 (Task 1) so the layoutInStage() helper — also
+     * static — can call it without an instance. The existing PHPStan reflection
+     * test invokes it via setAccessible(true), which works for static methods.
+     *
      * @return list<int>
      */
-    private function computeInnerOuter(int $size): array
+    private static function computeInnerOuter(int $size): array
     {
         if ($size <= 2) {
             return [1, 2];
         }
         $half = (int) ($size / 2);
-        $top = $this->computeInnerOuter($half);
+        $top = self::computeInnerOuter($half);
         $bottom = array_map(fn (int $x): int => $size + 1 - $x, $top);
 
         $result = [];
