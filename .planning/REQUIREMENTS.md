@@ -116,7 +116,7 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-platform-vision | Phase 3 | Complete |
 | REQ-goal-match-workflows | Phase 4 | Complete |
 | REQ-goal-discord-ux | Phase 5 | Complete |
-| REQ-success-tournament-end-to-end | Phase 6 | Pending |
+| REQ-success-tournament-end-to-end | Phase 6 | In Progress |
 | REQ-goal-cms | Phase 7 | Pending |
 | REQ-success-public-browse | Phase 7 | Pending |
 | REQ-goal-rcon-history | Phase 8 | Pending |

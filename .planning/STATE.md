@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
-last_updated: "2026-05-13T20:05:00.000Z"
+last_updated: "2026-05-13T20:11:10.727Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 82
   completed_plans: 70
-  percent: 57
+  percent: 56
 ---
 
 # Project State
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 06 (Tournaments & brackets) — IN PROGRESS
-Plan: 1 of 14 complete (06-01 Wave 0 scaffolding — 5 factory stubs + 32 Pest RED stubs + apps/web/lang/en/tournaments.php + admin.php extension)
-Status: Plan 06-01 complete; ready for plan 06-02 (migrations — 5 tables)
+Plan: 2 of 14 complete (06-01 Wave 0 scaffolding — 5 factory stubs + 32 Pest RED stubs + apps/web/lang/en/tournaments.php + admin.php extension)
+Status: Ready to execute
 Last activity: 2026-05-13
 
 Progress: [██████░░░░] 57% (5/9 phases; 70/82 plans complete through Phase 6 plan 1)
@@ -108,6 +108,7 @@ Progress: [██████░░░░] 57% (5/9 phases; 70/82 plans complete
 | Phase 05 P12 | 322 | 3 tasks | 5 files |
 | Phase 05-discord-bot-v1 P13 | 408s | 2 tasks | 5 files |
 | Phase 06 P01 | 292s | 2 tasks | 38 files |
+| Phase 06 P02 | 4m 06s | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -303,6 +304,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 06-01]: Wave 0 factory stubs adopt Phase 3 commit 1d4d736 idiom verbatim — string FQN $model + per-line @phpstan-ignore (missingType.generics + property.defaultValue). Plan 06-03 will replace with typed-generic factories once Tournament/TournamentParticipant/TournamentStage/TournamentBracket/TournamentStanding models exist.
 - [Phase ?]: [Phase 06-01]: Wave 0 Pest stubs use bare functional convention (Phase 5 D-05-01-C canonical idiom) — no namespace, no per-file uses() call. Pest.php autowires TestCase + RefreshDatabase via uses(...)->in('Feature'); a per-file uses(TestCase::class, RefreshDatabase::class) was found to trigger TestRepository fatals in Phase 5.
 - [Phase ?]: [Phase 06-01]: Phase 6 i18n namespace pre-shipped in full (apps/web/lang/en/tournaments.php, 90+ leaf keys: formats × 4, status × 6, participant_status × 4, errors × 8, actions × 9 × 4 = 36, tabs × 5, empty × 3, stage_types × 6) rather than incremental per-plan. Prevents NoHardcodedStringsTest + MissingTranslationException mid-execution across plans 06-02..06-13.
+- [Phase ?]: D-06-02-A: Self-FKs on tournament_brackets deferred to a separate Schema::table() block to avoid Laravel ADD PRIMARY KEY ordering quirk
+- [Phase ?]: D-06-02-B: tournament_standings UNIQUE composite is (stage_id, participant_id) not (tournament_id, participant_id) — round-robin stages carry distinct standings per participant
+- [Phase ?]: D-06-02-C: no-self-advance CHECK covers both advance pointers in a single CHECK; NULL != id allowed (NULL not FALSE in Postgres) so un-materialised brackets coexist
 
 ### Pending Todos
 
@@ -324,6 +328,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T20:03:53.640Z
+Last session: 2026-05-13T20:10:55.728Z
 Stopped at: Completed plan 06-01 (Phase 6 Wave 0) — 5 factory stubs + 32 Pest RED stubs + lang/en/tournaments.php + admin.php extension; pest --filter='placeholder for' = 32 failed (RED baseline); ready for plan 06-02 (migrations)
 Resume file: None
