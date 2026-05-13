@@ -1130,32 +1130,39 @@ Step 2.6 — same environment as Phase 2.
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+> **Resolution mode:** All 5 questions resolved by the autonomous workflow per CTRL-01 (workflow.skip_discuss=true). The planner adopted the researcher's Recommendation as the locked decision for each item. If the operator later disagrees, the change in each case is a small follow-up (Q1: one seeder row delete; Q2: admin fills capacities via UI; Q3: introduce `navigationGroup` in Phase 7/9; Q4: add hard-delete action; Q5: relax regex CHECK).
 
 1. **Officer + Squad Leader: distinct or duplicate?**
    - What we know: HLL canonical roster (verified via gamerant.com + hellletloose.fandom.com) has 14 roles per faction; "Officer" and "Squad Leader" are typically synonymous (Officer = the player serving as squad leader). CONTEXT.md SC-3 lists Commander + Officer + SL as three separate roles totaling 15.
    - What's unclear: Is the league using "Officer" as the high-level coordination role (any squad leader) and "SL" as a SPECIFIC subtype, or are these the same person with different in-game contexts?
-   - Recommendation: Seed both per CONTEXT.md verbatim (A1). If feedback during /gsd-verify-work or smoke says "these should be one", the change is a single `firstOrCreate` removal + one capacity row update — trivial.
+   - Recommendation: Seed both per CONTEXT.md verbatim (A1).
+   - **RESOLVED:** Seed Officer + Squad Leader as distinct roles (15-role roster per CONTEXT.md SC-3). Plan 03-05 (GameSeeder) honors this. Trivial reversal if operator overrides.
 
 2. **Are the 5 starter match-type capacities sensible defaults?**
    - What we know: CONTEXT.md names 5 match types; PROJECT.md Open Questions explicitly flag "Confirm initial HLL match-type set" as unresolved.
    - What's unclear: Should Friendly/Tournament/Clan War have pre-seeded capacity matrices or only blanks (admin fills via UI)?
-   - Recommendation: Pre-seed Scrim 50v50 + Skirmish 6v6 (mathematically definite distributions); leave Friendly/Tournament/Clan War with no capacity rows (admin can copy from a similar match-type or define fresh). This is honest about what the platform knows vs leaves to operator judgment.
+   - Recommendation: Pre-seed Scrim 50v50 + Skirmish 6v6; leave Friendly/Tournament/Clan War with no capacity rows.
+   - **RESOLVED:** Pre-seed only Scrim 50v50 + Skirmish 6v6 with capacity rows; ship Friendly/Tournament/Clan War rows with empty capacity matrix for admin to fill. Plan 03-05 (GameSeeder) honors this split.
 
 3. **`navigationGroup` label — what's the convention?**
    - What we know: Phase 1 didn't set a navigation group on any resource — they're all flat. Phase 2 also flat.
    - What's unclear: Should Phase 3 introduce groups now or defer until phases 4-8 add more resources?
-   - Recommendation: Defer grouping to Phase 7 (CMS) or Phase 9 (Polish); flat is fine for 11 resources. Use `protected static ?int $navigationSort = 10` (Game) + `15` (GameMatchType) to nest them after existing resources but maintain flat layout (Pitfall 8 partial fix).
+   - Recommendation: Defer grouping; use `$navigationSort` only.
+   - **RESOLVED:** Defer `navigationGroup` to Phase 7 (CMS) or Phase 9 (Polish). Phase 3 sets `$navigationSort = 10` (Game) and `$navigationSort = 11` (GameMatchType) — Phase 3 pins these to 10/11 rather than the researcher's example of 10/15 because the 4 phase-1/2 resources already use slots 1–9 and 11 keeps GameMatchType visually adjacent to Game in the sidebar; trivial to renumber if Phase 7/9 introduces groups.
 
 4. **GameMatchTypeRoleLimit lifecycle when admin deletes a Game.**
    - What we know: `cascadeOnDelete` on `game_id` propagates through GameRole and GameMatchType, and through them to RoleLimits.
    - What's unclear: Is "delete a Game" ever a real admin workflow, or is it "deactivate via is_active = false"?
-   - Recommendation: Don't expose a hard-delete action on `GameResource` for now (mirrors Phase 2 `ClanTagResource` no-delete pattern). Admin sets `is_active = false` instead. Document in CONTEXT update post-research if operator agrees.
+   - Recommendation: No hard-delete action on `GameResource`; admin sets `is_active = false`.
+   - **RESOLVED:** No DeleteAction on GameResource. Admin toggles `is_active = false` for retirement. Mirrors Phase 2 ClanTagResource no-delete pattern. Plan 03-06 (GameResource) omits the Delete action.
 
 5. **Are role slugs case-sensitive in the regex CHECK?**
    - What we know: CHECK CONSTRAINT `key ~ '^[a-z0-9_]+$'` enforces lowercase + underscores.
    - What's unclear: Some HLL communities use "AT" or "MG" abbreviations admins might want as keys. Should we allow uppercase?
-   - Recommendation: Lowercase-only enforcement matches the Player.slug + Clan.slug conventions established Phase 1/2. Operator can write "AT" in display_name; key stays `anti_tank`. Document this in admin help text.
+   - Recommendation: Lowercase-only.
+   - **RESOLVED:** Lowercase-only `^[a-z0-9_]+$` regex enforced at DB layer. Admin writes "AT" in `display_name` JSONB; `key` stays `anti_tank`. Consistent with Player.slug + Clan.slug conventions. Plan 03-02 (migrations) honors this.
 
 ---
 
