@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 02 (Clans & tags) COMPLETE — all 14 plans executed, automated gates PASS (Pest 214/214, PHPStan L8 clean, Pint clean, vue-tsc clean). PHASE-VERIFICATION.md status: PENDING_MANUAL_SMOKE (operator UI smokes deferred to user — same handoff pattern as Phase 1). Phase 03 (Games & match types) ready to plan via /gsd-autonomous --from 3 in a fresh session. Note: workflow.skip_discuss is still TRUE from autonomous setup — flip back via /gsd-config if interactive discuss is desired for P3+. Code review + UI review for Phase 2 were not run (out of context budget); user can run /gsd-code-review 2 and /gsd-ui-review 2 in a fresh session before tackling Phase 3."
-last_updated: "2026-05-13T12:00:55.319Z"
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-05-13T12:09:03.133Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 42
-  completed_plans: 36
+  completed_plans: 37
   percent: 22
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 4 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Plan: 5 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -75,6 +75,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 03 P02 | 12min | 2 tasks | 4 files |
 | Phase 03 P03 | 263 | 3 tasks | 12 files |
 | Phase 03-games-match-types P04 | 300 | 2 tasks | 8 files |
+| Phase 03 P05 | 4 minutes | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -164,6 +165,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 03-03: HasTranslations mutator coerces $model->description = null into JSONB {"en": null}, not SQL NULL — GameMatchTypeModelTest NULL-description assertion uses DB::table()->insert() to bypass the mutator and prove the column's nullable contract.
 - [Phase ?]: Phase 3 DTOs follow the Phase 2 ClanData/ClanTagData pattern verbatim: #[TypeScript] + fromModel factory using getTranslations() for translatable JSONB columns (Pitfall 4 mitigation). Nested DTO hydration is eager-load aware via relationLoaded() checks.
 - [Phase ?]: shared-types local typecheck via apps/web tsc on /repo/packages/shared-types/src files because web container does not have the full pnpm workspace mounted (only /repo/packages/shared-types is mounted). CI runs pnpm --filter @trenchwars/shared-types typecheck (plan 01-16) as the canonical gate.
+- [Phase ?]: 03-05: HLL preset seeded via GameSeeder using firstOrCreate idiom per UNIQUE index (Pattern 5); admin edits to translatable name/display_name/capacity survive re-seeds because [other_attrs] fires on create only — D-007 runtime contract
+- [Phase ?]: 03-05: Friendly/Tournament/Clan War match types seeded with ZERO RoleLimit rows (admin fills via Filament per RESEARCH Q2 RESOLVED Recommendation B); only Scrim 50v50 (15 rows, 50 slots) and Skirmish 6v6 (5 rows, 6 slots) get pre-seeded capacity matrices
+- [Phase ?]: 03-05: Canonical 100-tier HLL role key is heavy_machine_gunner / Heavy Machine Gunner (spawn-prompt explicit instruction supersedes the older machine_gunner spec from the plan acceptance criterion — Rule 3 blocking-issue resolution)
 
 ### Pending Todos
 
@@ -185,6 +189,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T12:00:55.316Z
-Stopped at: Phase 02 (Clans & tags) COMPLETE — all 14 plans executed, automated gates PASS (Pest 214/214, PHPStan L8 clean, Pint clean, vue-tsc clean). PHASE-VERIFICATION.md status: PENDING_MANUAL_SMOKE (operator UI smokes deferred to user — same handoff pattern as Phase 1). Phase 03 (Games & match types) ready to plan via /gsd-autonomous --from 3 in a fresh session. Note: workflow.skip_discuss is still TRUE from autonomous setup — flip back via /gsd-config if interactive discuss is desired for P3+. Code review + UI review for Phase 2 were not run (out of context budget); user can run /gsd-code-review 2 and /gsd-ui-review 2 in a fresh session before tackling Phase 3.
+Last session: 2026-05-13T12:08:28.340Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
