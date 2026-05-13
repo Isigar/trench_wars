@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-05-13T12:09:03.133Z"
+last_updated: "2026-05-13T12:15:28.476Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 42
-  completed_plans: 37
+  completed_plans: 38
   percent: 22
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 03 (Games & match types) — IN PROGRESS
-Plan: 5 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
+Plan: 6 of 10 complete (03-01 Wave 0 scaffolding + 03-02 Wave 1 migrations done; next: 03-03 Wave 2 models + factories)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -76,6 +76,7 @@ Progress: [██░░░░░░░░] 20% (Phase 3)
 | Phase 03 P03 | 263 | 3 tasks | 12 files |
 | Phase 03-games-match-types P04 | 300 | 2 tasks | 8 files |
 | Phase 03 P05 | 4 minutes | 2 tasks | 3 files |
+| Phase 03-games-match-types P06 | 202s | 2 tasks tasks | 7 files files |
 
 ## Accumulated Context
 
@@ -168,6 +169,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: 03-05: HLL preset seeded via GameSeeder using firstOrCreate idiom per UNIQUE index (Pattern 5); admin edits to translatable name/display_name/capacity survive re-seeds because [other_attrs] fires on create only — D-007 runtime contract
 - [Phase ?]: 03-05: Friendly/Tournament/Clan War match types seeded with ZERO RoleLimit rows (admin fills via Filament per RESEARCH Q2 RESOLVED Recommendation B); only Scrim 50v50 (15 rows, 50 slots) and Skirmish 6v6 (5 rows, 6 slots) get pre-seeded capacity matrices
 - [Phase ?]: 03-05: Canonical 100-tier HLL role key is heavy_machine_gunner / Heavy Machine Gunner (spawn-prompt explicit instruction supersedes the older machine_gunner spec from the plan acceptance criterion — Rule 3 blocking-issue resolution)
+- [Phase ?]: Phase 3 Plan 03-06: GameResource ships Tabs(Profile+Audit) + 2 RelationManagers (Roles, MatchTypes). No DeleteAction on table (admin uses is_active toggle, Open Question Q4); key field disabledOn('edit') to protect seeder idempotency (T-03-06-03).
+- [Phase ?]: Plan 03-06 Rule 1: Filament v3 RelationManager::getTitle() is STATIC — instance signature triggers fatal error at panel registration. Corrected during phpstan loop on task 2.
+- [Phase ?]: Plan 03-06: Pattern 2 click-through (MatchTypesRelationManager EditAction -> GameMatchTypeResource::edit URL) DEFERRED to plan 03-07 task 3 Rule-2 amendment; ships default modal-based EditAction in this plan since GameMatchTypeResource lives in wave 5.
 
 ### Pending Todos
 
@@ -189,6 +193,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T12:08:28.340Z
+Last session: 2026-05-13T12:15:10.520Z
 Stopped at: Completed 03-05-PLAN.md
 Resume file: None
