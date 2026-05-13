@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
-last_updated: "2026-05-13T19:00:36.031Z"
+stopped_at: "Phase 5 COMPLETE — 05-13 plan executed, 05-PHASE-VERIFICATION.md written, ROADMAP marked 13/13 Complete 2026-05-13; ready for Phase 6 (Tournaments & brackets). Canonical model binding for Phase 6+: App\\Models\\GameMatch (D-04-03-A LOCKED — direct import, no Match alias, BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B)."
+last_updated: "2026-05-13T19:09:00.000Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 68
-  completed_plans: 67
-  percent: 44
+  completed_plans: 68
+  percent: 56
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 05 — Discord bot v1 (in progress; plan 01 Wave 0 scaffolding complete)
+**Current focus:** Phase 05 — Discord bot v1 COMPLETE (PENDING_MANUAL_SMOKE); ready for Phase 06 — Tournaments & brackets (planning)
 
 ## Current Position
 
-Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 12 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
-Status: Ready to execute
+Phase: 05 (Discord bot v1) — COMPLETE (PENDING_MANUAL_SMOKE — 6-item operator walkthrough A-F per 05-PHASE-VERIFICATION.md)
+Plan: 13 of 13 complete (05-13 phase verification — 05-PHASE-VERIFICATION.md authored; ROADMAP/REQUIREMENTS/STATE updated)
+Status: Phase complete; ready to plan Phase 6
 Last activity: 2026-05-13
 
-Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through Phase 5 plan 01)
+Progress: [██████░░░░] 56% (5/9 phases; 68/68 plans complete through Phase 5 close)
 
 ## Performance Metrics
 
@@ -106,6 +106,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 05 P10 | 472 | 3 tasks | 10 files |
 | Phase 05 P11 | 321 | 3 tasks | 7 files |
 | Phase 05 P12 | 322 | 3 tasks | 5 files |
+| Phase 05-discord-bot-v1 P13 | 408s | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -296,6 +297,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: [Phase 05]: D-05-12-B — BotI18nKeyCoverageTest surfaced 1 i18n gap (admin.discord_outbound_message.fields.causer); closed inline (Rule 2 — D-013 enforcement)
 - [Phase ?]: [Phase 05]: D-05-12-C — DiscordOutboundAuditLogTest hits real /api/bot/outbound-messages endpoints (not direct $row->update) — catches future controllers that swap to raw DB::update (T-05-12-04)
 - [Phase ?]: [Phase 05]: D-05-12-E — SC-5 capstone ships 3 it() blocks: happy path with ->not->toBe($bot->id) defence; 422 negative; missing acts-as header documents Pitfall 7 tolerance via contrast
+- [Phase ?]: [Phase 05]: Plan 05-13 — Phase 5 COMPLETE; 618 web Pest tests / 1817 assertions + 117 bot Vitest tests; all 6 quality gates GREEN (Pest, Vitest, Pint, PHPStan L8, bot tsc strict, shared-types tsc, vue-tsc); 05-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-goal-discord-ux + 12 pitfalls + 5 open questions; ROADMAP 13/13 Complete; status PENDING_MANUAL_SMOKE pending operator 6-item walkthrough A-F
+- [Phase ?]: [Phase 05]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 5 (controllers, observers, services, jobs, FormRequests, tests); zero alias-on-import; canonical binding for Phase 6+ tournaments — bracket-match materialisation MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B
 
 ### Pending Todos
 
@@ -317,6 +320,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T18:59:57.976Z
+Last session: 2026-05-13T19:08:40.036Z
 Stopped at: Completed plan 05-11 (Wave 10) — outbound poll worker + render + guildMemberUpdate reconciler. All 117 vitest tests GREEN. Ready for plan 05-12.
 Resume file: None

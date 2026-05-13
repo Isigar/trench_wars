@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Clans & tags** — Clans exist as first-class entities; players have public profiles with privacy controls.
 - [x] **Phase 3: Games & match types** — Admin can model any game's roles and match types fully in Filament; HLL is seeded.
 - [x] **Phase 4: Matches (manual)** — Matches can be created, signed up to, played, and results entered manually.
-- [ ] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync).
+- [x] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync). _Completed 2026-05-13_
 - [ ] **Phase 6: Tournaments & brackets** — Run an end-to-end tournament with a bracket UI and standings.
 - [ ] **Phase 7: CMS** — League can publish editorial content and curate the public calendar.
 - [ ] **Phase 8: RCON automation** — Match results and player stats flow in automatically from CRCON when matches are played on registered servers.
@@ -154,7 +154,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-10-PLAN.md — Embeds + buttons + rsvpButton + signupModal components + match.ts embed upgrade + 3 GREEN tests
 - [x] 05-11-PLAN.md — Outbound polling worker + render service + guildMemberUpdate reconciler + 2 GREEN tests
 - [x] 05-12-PLAN.md — i18n key coverage audit + audit-log integration tests + SC-5 capstone causer attribution test
-- [ ] 05-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + final quality gates
+- [x] 05-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + final quality gates
 **UI hint**: no (bot-only phase; web changes are admin Filament + observer/migration plumbing)
 
 ### Phase 6: Tournaments & brackets
@@ -275,7 +275,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 2. Clans & tags | 14/14 | Complete | 2026-05-12 |
 | 3. Games & match types | 10/10 | Complete | 2026-05-13 |
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
-| 5. Discord bot v1 | 1/13 | In progress | - |
+| 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
 | 6. Tournaments & brackets | 0/TBD | Not started | - |
 | 7. CMS | 0/TBD | Not started | - |
 | 8. RCON automation | 0/TBD | Not started | - |
