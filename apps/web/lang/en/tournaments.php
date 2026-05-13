@@ -79,6 +79,7 @@ return [
         'insufficient_participants' => 'Tournament requires at least :min participants to generate a bracket.',
         'cannot_forfeit_completed' => 'Cannot forfeit a participant after the tournament is completed.',
         'cannot_withdraw_completed' => 'Cannot withdraw a participant after the tournament is completed.',
+        'swiss_rounds_exhausted' => 'All Swiss rounds have been generated.',
     ],
 
     // Admin action labels (D-04-12-A withProperties() pattern; modal copy comes through here — 9 actions × 4 keys = 36 leaf keys)
