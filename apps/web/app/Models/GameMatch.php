@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -135,6 +136,35 @@ class GameMatch extends Model
     public function result(): HasOne
     {
         return $this->hasOne(MatchResult::class, 'match_id');
+    }
+
+    /**
+     * HasManyThrough: Match → MatchResult → MatchMvp
+     *
+     * Plan 04-09 Task 2 amendment (Rule 2): Filament v3's MvpsRelationManager mounts
+     * on MatchResource but MatchMvp is one hop removed (MatchMvp.match_result_id →
+     * MatchResult.id; MatchResult.match_id → Match.id). HasManyThrough is the
+     * canonical Eloquent relation for this two-hop FK chain — Filament v3
+     * RelationManagers natively support HasManyThrough (Context7
+     * filamentphp_3_x docs §relation-managers "Compatible with HasMany,
+     * HasManyThrough, BelongsToMany, MorphMany and MorphToMany relationships.").
+     *
+     * Args: hasManyThrough($related, $through, $firstKey, $secondKey)
+     *   - related:    MatchMvp
+     *   - through:    MatchResult
+     *   - firstKey:   match_results.match_id   (FK on the through table → this model)
+     *   - secondKey:  match_mvps.match_result_id (FK on the related table → through)
+     *
+     * @return HasManyThrough<MatchMvp, MatchResult, $this>
+     */
+    public function mvps(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            MatchMvp::class,
+            MatchResult::class,
+            'match_id',           // FK on match_results pointing at this Match
+            'match_result_id',    // FK on match_mvps pointing at the through MatchResult
+        );
     }
 
     /** @return MorphOne<Event, $this> */
