@@ -74,6 +74,48 @@ services:
       retries: 3
     networks: [trenchwars]
 
+  # Plan 05-01 (Phase 5): Horizon worker. Pitfall 8 recommendation A — D-021 dev-prod
+  # parity (Railway's web/bot/rcon-worker/postgres/redis 5-service topology adds the
+  # worker as a 6th when Horizon is in play). Uses the same docker/web/Dockerfile so
+  # the PHP+composer image is reused; named volume web_vendor shared with `web`.
+  worker:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    container_name: trenchwars-worker
+    working_dir: /app
+    command: ["php", "artisan", "horizon"]
+    volumes:
+      - ./apps/web:/app
+      - web_vendor:/app/vendor
+      - ./packages/shared-types:/repo/packages/shared-types
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-trenchwars}
+      DB_USERNAME: ${DB_USERNAME:-trenchwars}
+      DB_PASSWORD: ${DB_PASSWORD:-trenchwars}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-null}
+      SESSION_DRIVER: ${SESSION_DRIVER:-redis}
+      CACHE_STORE: ${CACHE_STORE:-redis}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-redis}
+      LOG_DEPRECATIONS_CHANNEL: ${LOG_DEPRECATIONS_CHANNEL:-null}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'artisan horizon' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks: [trenchwars]
+
   bot:
     build:
       context: .

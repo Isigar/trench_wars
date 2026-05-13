@@ -40,6 +40,8 @@ docker compose exec web ./vendor/bin/pest --filter=AuthDiscordOAuthTest
 |---|---|---|
 | Web framework | `laravel/framework` | `^12.0` (PHP 8.4) |
 | Server adapter | `inertiajs/inertia-laravel` | `^2.0` (legacy v2 protocol) |
+| API auth (bot) | `laravel/sanctum` | `^4.0` (Phase 5+; personal access tokens + abilities for bot↔web) |
+| Queue worker | `laravel/horizon` | `^5` (Phase 5+; Redis-backed queue with retry/backoff + admin dashboard) |
 | Frontend | Vue 3 + `@inertiajs/vue3@^2` + Vite ^6 | |
 | CSS | Tailwind v4 (CSS-first via `@theme`) | with `tailwindcss-v3@npm:tailwindcss@^3.4` aliased install for Filament theme only |
 | Admin panel | `filament/filament` | `^3.3` (v3 LOCKED — see plan 12 for dual-Tailwind workaround) |
@@ -48,7 +50,7 @@ docker compose exec web ./vendor/bin/pest --filter=AuthDiscordOAuthTest
 | Audit | `spatie/laravel-activitylog` | `^5.0` (PHP 8.4 floor) |
 | Translatable | `spatie/laravel-translatable` | `^6.14` |
 | DTOs / TS | `spatie/laravel-data` + `spatie/laravel-typescript-transformer` | `^4.22` + `^3.0` |
-| Bot | Node 22 + `discord.js@^14.26` (Phase 5 only) | |
+| Bot (Phase 5 active) | Node 22 + `discord.js@^14.26` + `undici@^7` + `ioredis@^5.10` + TypeScript strict | |
 | RCON worker | Node 22 + `undici` + `ws` (Phase 8 only) | |
 | Datastores | Postgres 16 + Redis 7 | |
 
