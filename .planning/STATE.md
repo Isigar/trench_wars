@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
-last_updated: "2026-05-13T17:14:12.836Z"
+last_updated: "2026-05-13T17:24:54.594Z"
 last_activity: 2026-05-13
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 68
-  completed_plans: 57
+  completed_plans: 58
   percent: 44
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 05 (Discord bot v1) — IN PROGRESS
-Plan: 2 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
+Plan: 3 of 13 complete (05-01 Wave 0 scaffolding — Sanctum/Horizon install + worker compose + 20 RED stubs + bot.php + admin.php appendix)
 Status: Ready to execute
 Last activity: 2026-05-13
 
@@ -96,6 +96,7 @@ Progress: [████░░░░░░] 45% (4/9 phases; 57/68 plans through 
 | Phase 04 P13 | 339s | 1 tasks | 5 files |
 | Phase 05 P01 | ~15min | 2 tasks (+ 1 Rule 1 follow-up) | 39 files |
 | Phase 05-discord-bot-v1 P02 | 405 | - tasks | - files |
+| Phase 05 P03 | 428 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -249,6 +250,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-05-02-A: clans.discord_announce_channel_id already shipped by Phase 2 — the second migration prescribed by 05-02 was omitted (would have duplicated existing column).
 - [Phase ?]: D-05-02-B: spatie/laravel-activitylog LogOptions uses dontLogEmptyChanges() — plan's dontSubmitEmptyLogs() does not exist in installed version.
 - [Phase ?]: D-05-02-C: spatie/laravel-activitylog v4+ stores attribute diffs in attribute_changes (collection) column, NOT in properties. Tests must read attribute_changes.
+- [Phase ?]: D-05-03-A: Auth::onceUsingId not callable on Sanctum RequestGuard — middleware uses Auth::setUser + Auth::guard('web')->setUser instead (defence-in-depth for LogsActivity causer chain)
+- [Phase ?]: D-05-03-B: Plan 05-01 personal_access_tokens migration used bigint morphs — incompatible with users.uuid PKs; migration in-place edited to uuidMorphs (safe pre-prod-deploy)
+- [Phase ?]: D-05-03-C: Laravel/Sanctum/HasApiTokens trait added to App/Models/User as Rule 2 amendment — missing from plan 05-01 install:api scaffold
+- [Phase ?]: D-05-03-D: Pitfall 7 wire contract — middleware tolerates missing X-Bot-Acts-As-User header (200 pass-through with token-owner identity); plan 05-04 controllers add the per-route 422 enforcement when a human causer is mandatory
 
 ### Pending Todos
 
@@ -270,6 +275,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T17:14:12.833Z
+Last session: 2026-05-13T17:24:25.915Z
 Stopped at: Phase 5 plan 01 (Wave 0) executed — Sanctum/Horizon installed, worker compose service running, 20 RED stubs committed, bot.php + admin.php appendix; baseline RED=12 web + 22 vitest todos. Ready for plan 05-02 (migrations + DiscordOutboundMessage model).
-Resume file: .planning/phases/05-discord-bot-v1/05-03-PLAN.md
+Resume file: None
