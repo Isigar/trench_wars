@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\MediaLibrary\Conversions\Conversion;
+use Spatie\Sitemap\Tags\Url;
 
 /*
 | Source: .planning/phases/07-cms/07-03-PLAN.md task 2(c). Replaces the Wave 0
@@ -172,9 +173,13 @@ it('registers 3 media conversions all on the hero collection', function (): void
     }
 });
 
-it('throws LogicException from toSitemapTag (deferred to plan 07-12)', function (): void {
-    $article = Article::factory()->create();
+it('returns a Url sitemap tag pointing at the blog.show route (plan 07-12 GREEN)', function (): void {
+    $article = Article::factory()->create(['slug' => 'article-sitemap-tag']);
 
-    expect(fn () => $article->toSitemapTag())
-        ->toThrow(LogicException::class, 'Sitemapable implementation lands in plan 07-12');
+    $tag = $article->toSitemapTag();
+
+    expect($tag)->toBeInstanceOf(Url::class)
+        ->and($tag->url)->toContain('/blog/article-sitemap-tag')
+        ->and($tag->changeFrequency)->toBe(Url::CHANGE_FREQUENCY_WEEKLY)
+        ->and($tag->priority)->toBe(0.7);
 });
