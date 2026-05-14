@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
 stopped_at: Completed 09-04-PLAN.md (Wave 3 — NotificationDispatcher + Schedule cron + 4 observers + prune)
-last_updated: "2026-05-14T07:54:11.584Z"
+last_updated: "2026-05-14T08:11:31.449Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 112
+  completed_plans: 113
   percent: 89
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 09 (Polish) — IN FLIGHT (Wave 3 complete)
-Plan: 09-04 COMPLETE (NotificationDispatcher + Schedule cron + 4 observers + prune); next 09-05 (LeaderboardService + Cache::tags + leaderboards cache flush in observers)
+Plan: 09-05 COMPLETE (LeaderboardService + Cache::flexible SWR + tag-flush observers); next 09-06 (LeaderboardsController + Pages/Leaderboards.vue public surface)
 Status: Phase 9 in flight
 Last activity: 2026-05-14
 
-Progress: [█████████░] 93% (8/9 phases; 112/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04)
+Progress: [█████████░] 94% (8/9 phases; 114/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05)
 
 ## Performance Metrics
 
@@ -150,6 +150,7 @@ Progress: [█████████░] 93% (8/9 phases; 112/120 plans incl. 
 | Phase 09 P02 | ~6min | 2 tasks | 7 files |
 | Phase 09 P03 | ~12min | 2 tasks | 19 files |
 | Phase 09 P04 | 573 | 2 tasks | 12 files |
+| Phase 09 P05 | 757 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -498,6 +499,14 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-09-04-D: ClanApplicationObserver guards pending->{accepted,declined} (schema enum vocabulary, not plan's approved/rejected)
 - [Phase ?]: D-09-04-E: MatchResultPublished fires from MatchResultObserver::created() only — score-edits do NOT re-notify
 - [Phase ?]: D-09-04-F: Guest-clan recipients for MatchResultPublished deferred — v1 GameMatch is host-clan only (no away_clan_id column)
+- [Phase 09]: D-09-05-A: LeaderboardEntryData blanks player_id (empty string) when is_anonymous=true; field shape preserved for stable Vue :key binding
+- [Phase 09]: D-09-05-B: clans.logo_url does NOT exist on v1 schema; DTO carries the field as forward-compat, always null until plan 09-09 medialibrary WebP
+- [Phase 09]: D-09-05-C: Schema-vs-plan drift LOCKED — matches has no game_id (route via game_match_types.game_id); clan_memberships uses left_at IS NULL (no active boolean); clan_memberships keys on user_id (route through players.user_id)
+- [Phase 09]: D-09-05-D: Clan attribution joins on CURRENT active membership at query time (not membership-at-match-time); v1 accepts re-attribution on clan switch; ClanMembershipSnapshot is future-extension
+- [Phase 09]: D-09-05-E: games.id is UUID (not int); LeaderboardService signatures use ?string $gameId
+- [Phase 09]: D-09-05-F: Observers registered via Model::booted() per D-04-08-B (Laravel 11 removed EventServiceProvider); MatchPlayerStat::booted() registers MatchPlayerStatObserver
+- [Phase 09]: D-09-05-G: ClanMembershipObserver tag-flush extension is Rule 2 additive correctness for D-09-05-D current-snapshot semantics (join/leave/rejoin all invalidate the leaderboards tag)
+- [Phase 09]: Plan 09-05 landed: LeaderboardService (topPlayers + topClans with Cache::tags->flexible([600,3600]) SWR) + 2 Spatie DTOs + 3 tag-flush observers + Pitfall 9 safeCompute(). Pest 1187 passed + 21 skipped (delta: +24 / −4 Wave 0 stubs turned GREEN). PHPStan L8 OK. Pint 11/11 PASS.
 
 ### Pending Todos
 
@@ -519,6 +528,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T07:54:11.579Z
-Stopped at: Completed 09-04-PLAN.md (Wave 3 — NotificationDispatcher + Schedule cron + 4 observers + prune)
+Last session: 2026-05-14T08:11:31.445Z
+Stopped at: Completed 09-05-PLAN.md (Wave 3 — LeaderboardService + Cache::flexible SWR + 3 tag-flush observers)
 Resume file: None

@@ -253,7 +253,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 09-02-PLAN.md — Migrations (notifications + user_notification_preferences + bans + match_disputes + abuse_reports + discord_outbound CHECK extension for user_dm + match_player_stats kills index)
 - [x] 09-03-PLAN.md — 5 Eloquent models + 5 Notification classes + DiscordChannel (D-004 outbox writer, no direct HTTP) + 4 real factories + 3 GREEN tests
 - [x] 09-04-PLAN.md — NotificationDispatcher service + dispatch-upcoming + prune commands + 4 observer extensions/creations (MatchObserver, MatchResultObserver, ClanApplicationObserver, ClanInviteObserver) + 2 GREEN tests
-- [ ] 09-05-PLAN.md — LeaderboardService (Cache::tags + flexible SWR) + 2 spatie/laravel-data DTOs + MatchResultObserver + MatchPlayerStatObserver cache-flush hooks + 4 GREEN tests
+- [x] 09-05-PLAN.md — LeaderboardService (Cache::tags + flexible SWR) + 2 spatie/laravel-data DTOs + MatchResultObserver + MatchPlayerStatObserver cache-flush hooks + 4 GREEN tests
 - [ ] 09-06-PLAN.md — NotificationsController + NotificationPreferencesController + LeaderboardsController + Inertia shared.unread_notifications_count + 3 Vue pages + NotificationsBell + LeaderboardTable + 2 GREEN tests
 - [ ] 09-07-PLAN.md — BanService + DisputeService + ModeratorRoleSeeder (5 perms + role) + UserResource/MatchResource BulkActions + MatchDisputeResource + BansRelationManager + 5 GREEN tests
 - [ ] 09-08-PLAN.md — Model::shouldBeStrict(! production) + N+1 sweep across Phase 1-8 controllers + LeaderboardsQueryBudgetTest (<=4) + ClansQueryBudgetTest (<=8) + 3 GREEN tests
