@@ -26,7 +26,12 @@ return [
         // via INERTIA_SSR_ENABLED=true after `php artisan inertia:start-ssr`.
         'enabled' => (bool) env('INERTIA_SSR_ENABLED', false),
 
-        'url' => env('INERTIA_SSR_URL', 'http://127.0.0.1:13714'),
+        // Plan 07-11: url default switched from 'http://127.0.0.1:13714' to
+        // 'http://ssr:13714' so the web service in docker-compose resolves the
+        // ssr sidecar via docker service-name DNS (Open Question 7 LOCKED inline
+        // RESOLVED — split service, RESEARCH Pattern 5 Option B). Operators on
+        // bare-metal or hybrid setups override via INERTIA_SSR_URL.
+        'url' => env('INERTIA_SSR_URL', 'http://ssr:13714'),
 
         'ensure_bundle_exists' => (bool) env('INERTIA_SSR_ENSURE_BUNDLE_EXISTS', false),
 

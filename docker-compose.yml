@@ -20,6 +20,9 @@ services:
       # Plan 01-15: bind-mount packages/shared-types so trenchwars:typescript-generate can
       # sync the emitted api.d.ts to /repo/packages/shared-types/src/api.d.ts (D-020).
       - ./packages/shared-types:/repo/packages/shared-types
+      # Plan 07-11: expose docker-compose.yml read-only so SsrBundleExistsTest can parse
+      # it via Symfony\Component\Yaml\Yaml to assert the ssr service registration.
+      - ./docker-compose.yml:/repo/docker-compose.yml:ro
     environment:
       # Plan 01-06: APP_* env keys removed from compose injection. They were defaulting to
       # empty/local from the host shell (no root .env exists), and Laravel's Env::get() reads
@@ -161,6 +164,58 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    networks: [trenchwars]
+
+  # Plan 07-11 (Phase 7): Inertia v2 SSR Node sidecar. RESEARCH Pattern 5 Option B —
+  # Open Question 7 LOCKED inline RESOLVED (split service for prod-parity over
+  # worker-co-host). SC-3 ("SSR enabled in production for first paint on public
+  # pages") + REQ-success-public-browse. Uses the same docker/web/Dockerfile so
+  # the PHP image is reused; `php artisan inertia:start-ssr` is the long-running
+  # process (Inertia v2 ships the artisan command). Internal-only: ports: [] so
+  # the Node process is never exposed to the host network (T-07-11-04 mitigation).
+  # Dev defaults to off — operator opts in via `docker compose up ssr`; production
+  # turns it on via Railway env group INERTIA_SSR_ENABLED=true (D-014).
+  ssr:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    container_name: trenchwars-ssr
+    working_dir: /app
+    command: ["php", "artisan", "inertia:start-ssr"]
+    volumes:
+      - ./apps/web:/app
+      - web_vendor:/app/vendor
+    environment:
+      # Service-level overrides — these affect ONLY the ssr container, not the web
+      # service default which stays env-driven (INERTIA_SSR_ENABLED=false in dev).
+      INERTIA_SSR_ENABLED: "true"
+      INERTIA_SSR_URL: "http://0.0.0.0:13714"
+      APP_ENV: "${APP_ENV:-production}"
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-trenchwars}
+      DB_USERNAME: ${DB_USERNAME:-trenchwars}
+      DB_PASSWORD: ${DB_PASSWORD:-trenchwars}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-null}
+      LOG_DEPRECATIONS_CHANNEL: ${LOG_DEPRECATIONS_CHANNEL:-null}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:13714/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # T-07-11-04 mitigation — internal docker network only; the Node SSR process
+    # is reachable from the `web` service via http://ssr:13714 (docker service-name
+    # DNS) but never from the host.
+    ports: []
     networks: [trenchwars]
 
   postgres:
