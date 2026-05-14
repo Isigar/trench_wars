@@ -32,6 +32,10 @@ const { t } = useT();
 const hasNotifications = computed<boolean>(() => props.notifications.data.length !== 0);
 const hasPrevPage = computed<boolean>(() => props.notifications.current_page > 1);
 const hasNextPage = computed<boolean>(() => props.notifications.current_page < props.notifications.last_page);
+// NoHardcodedStringsTest regex `/>([^<]{3,})</` confuses `>= 2"` in attribute
+// values with text-between-tags. Extract to a computed ref to keep the template
+// free of inline comparisons. (Pre-existing idiom — see Articles/Index.vue.)
+const hasMultiplePages = computed<boolean>(() => props.notifications.last_page >= 2);
 
 function markRead(id: string): void {
     router.post(
@@ -143,7 +147,7 @@ function paramsFromData(data: Record<string, unknown>): Record<string, string | 
             </ul>
 
             <div
-                v-if="notifications.last_page >= 2"
+                v-if="hasMultiplePages"
                 class="flex items-center justify-between gap-2 text-sm text-[var(--color-text-muted)]"
             >
                 <button
