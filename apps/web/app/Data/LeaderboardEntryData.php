@@ -62,7 +62,16 @@ final class LeaderboardEntryData extends Data
     ): self {
         $gate = app(PlayerPrivacyGate::class);
 
-        $canSeeStats = $gate->allowsSection($player, $viewer, 'show_stats');
+        // D-018 LOCKED — anonymise when EITHER the section flag (show_stats=false)
+        // OR the tier predicate fails for this viewer. Plan 09-06 task 2 test
+        // assertion: clan-tier players are anonymised for cross-clan viewers
+        // and for guests, even when show_stats=true. Plan 09-05 originally
+        // checked only allowsSection('show_stats'); the tier guard is added
+        // here as Rule 1 alignment with D-018 (the on-leaderboard surface IS
+        // the same trust boundary as the /players/{slug} page — both must
+        // honour the tier gate).
+        $canSeeStats = $gate->allowsSection($player, $viewer, 'show_stats')
+            && $gate->passesTier($player, $viewer);
         $isAnonymous = ! $canSeeStats;
 
         $playerName = $isAnonymous
