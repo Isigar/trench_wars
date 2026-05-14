@@ -356,11 +356,19 @@ return [
             'is_public' => 'Public',
             'title' => 'Title',
             'description' => 'Description',
+            // Plan 08-09 — D-019 manual-entry surface; RCON pipeline flags
+            // matches that need admin curation (CRCON unreachable, no
+            // match_end, or zero-kill low-confidence path per plan 08-08).
+            'manual_entry_required' => 'Manual entry required',
         ],
         'actions' => [
             'open_signups' => 'Open signups',
             'lock_signups' => 'Lock signups',
             'cancel' => 'Cancel match',
+            // Plan 08-09 — admin clears the manual-entry flag after curating
+            // or confirming the result.
+            'clear_manual_entry_flag' => 'Clear manual entry flag',
+            'clear_manual_entry_flag_success' => 'Manual entry flag cleared.',
         ],
     ],
 

@@ -10,6 +10,7 @@ use App\Models\GameMatch;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -194,6 +195,17 @@ class MatchResource extends Resource
                 Tables\Columns\IconColumn::make('is_public')
                     ->label(__('admin.match.fields.is_public'))
                     ->boolean(),
+
+                // Plan 08-09 — surfaces matches the RCON pipeline flagged for
+                // manual review (D-019). The danger-coloured triangle catches
+                // admin attention in the table; clear it via the row action.
+                Tables\Columns\IconColumn::make('manual_entry_required')
+                    ->label(__('admin.match.fields.manual_entry_required'))
+                    ->boolean()
+                    ->trueIcon('heroicon-o-exclamation-triangle')
+                    ->trueColor('danger')
+                    ->falseIcon('heroicon-o-check')
+                    ->falseColor('gray'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -208,11 +220,35 @@ class MatchResource extends Resource
 
                 Tables\Filters\TernaryFilter::make('is_public')
                     ->label(__('admin.match.fields.is_public')),
+
+                // Plan 08-09 — admin filter to find every match the RCON
+                // pipeline flagged for manual entry (CRCON unreachable / no
+                // match_end / zero-kill low-confidence path per plan 08-08).
+                Tables\Filters\Filter::make('manual_entry_required')
+                    ->label(__('admin.match.fields.manual_entry_required'))
+                    ->query(fn ($query) => $query->where('manual_entry_required', true)),
             ])
             ->defaultSort('scheduled_at', 'desc')
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+
+                // Plan 08-09 — admin clears the manual-entry flag after
+                // curating the result (or confirming CRCON's automated row).
+                Tables\Actions\Action::make('clear_manual_entry_flag')
+                    ->label(__('admin.match.actions.clear_manual_entry_flag'))
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (GameMatch $record): bool => $record->manual_entry_required === true)
+                    ->action(function (GameMatch $record): void {
+                        $record->update(['manual_entry_required' => false]);
+
+                        Notification::make()
+                            ->title(__('admin.match.actions.clear_manual_entry_flag_success'))
+                            ->success()
+                            ->send();
+                    }),
                 // INTENTIONALLY no DeleteAction — match deletion cascades to slots/result/mvps.
                 // Cancellation goes via HeaderActions on the Edit page (status -> 'cancelled').
             ]);
