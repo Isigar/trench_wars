@@ -48,7 +48,13 @@ const isEmpty = computed<boolean>(
 </script>
 
 <template>
-    <Head :title="meta.title" />
+    <Head :title="meta.title">
+        <!-- Pitfall 4 mitigation: head-key dedupes across SPA navigation. -->
+        <meta head-key="description" name="description" :content="meta.description" />
+        <!-- T-07-12-08 mitigation: search-results pages MUST NOT be indexed
+             (they leak query patterns + amplify thin-content penalties). -->
+        <meta head-key="robots" name="robots" content="noindex" />
+    </Head>
 
     <PublicLayout>
         <section class="max-w-3xl mx-auto px-4 md:px-6 py-8 flex flex-col gap-6" data-test="search-results">

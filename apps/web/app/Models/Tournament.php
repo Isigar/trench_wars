@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -37,7 +39,7 @@ use Spatie\Translatable\HasTranslations;
  *   format: single_elimination | double_elimination | round_robin | swiss
  *   status: draft | registering | seeded | running | completed | cancelled
  */
-class Tournament extends Model
+class Tournament extends Model implements Sitemapable
 {
     /** @use HasFactory<TournamentFactory> */
     use HasFactory;
@@ -202,5 +204,25 @@ class Tournament extends Model
             ->exists();
 
         return ! $hasResult;
+    }
+
+    /**
+     * Sitemapable contract — plan 07-12 (Pattern 6 from 07-RESEARCH).
+     *
+     * Tournaments use WEEKLY changefreq + 0.7 priority — public surface that
+     * changes meaningfully on registration / seeding / status transitions
+     * but stays stable across a single day for crawlers.
+     *
+     * Privacy: the SitemapGenerateCommand filters to is_public=true BEFORE
+     * feeding the collection to ->add() (T-07-12-03 mitigation).
+     *
+     * @return Url|string|array<string, mixed>
+     */
+    public function toSitemapTag(): Url|string|array
+    {
+        return Url::create(route('tournaments.show', $this->slug))
+            ->setLastModificationDate($this->updated_at ?? $this->freshTimestamp())
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+            ->setPriority(0.7);
     }
 }

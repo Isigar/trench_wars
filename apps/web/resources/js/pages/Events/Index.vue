@@ -76,7 +76,8 @@ const calendarOptions = computed<Record<string, unknown>>(() => ({
 
 <template>
     <Head :title="meta.title">
-        <meta name="description" :content="meta.description" />
+        <!-- Pitfall 4 mitigation: head-key dedupes across SPA navigation. -->
+        <meta head-key="description" name="description" :content="meta.description" />
     </Head>
 
     <PublicLayout>

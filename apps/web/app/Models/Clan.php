@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -22,7 +24,7 @@ use Spatie\Translatable\HasTranslations;
  * `description` is a JSONB locale-keyed column managed by spatie/laravel-translatable.
  * `discord_role_id` is NOT in $fillable for any My-Clan-facing route (T-02-02-01 mitigation).
  */
-class Clan extends Model
+class Clan extends Model implements Sitemapable
 {
     /** @use HasFactory<ClanFactory> */
     use HasFactory;
@@ -98,5 +100,22 @@ class Clan extends Model
     public function applications(): HasMany
     {
         return $this->hasMany(ClanApplication::class);
+    }
+
+    /**
+     * Sitemapable contract — plan 07-12 (Pattern 6 from 07-RESEARCH).
+     *
+     * Clans use MONTHLY changefreq + 0.5 priority — public surface but
+     * mutates rarely (logo / description / roster edits, none of which
+     * affect crawl-worthiness within a day).
+     *
+     * @return Url|string|array<string, mixed>
+     */
+    public function toSitemapTag(): Url|string|array
+    {
+        return Url::create(route('clans.show', $this->slug))
+            ->setLastModificationDate($this->updated_at ?? $this->freshTimestamp())
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+            ->setPriority(0.5);
     }
 }

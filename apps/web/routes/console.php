@@ -37,3 +37,20 @@ Schedule::command('articles:publish-scheduled')
     ->everyMinute()
     ->withoutOverlapping()    // single-host single-execution
     ->onOneServer();          // multi-host single-execution via cache lock — Railway multi-replica
+
+/*
+| Source: .planning/phases/07-cms/07-12-PLAN.md task 1 + 07-RESEARCH.md Pitfall 12.
+|
+| Daily sitemap.xml regeneration. dailyAt('03:00') chosen for low-traffic window
+| (UTC); ->onOneServer() prevents multi-replica duplicate writes on Railway D-014.
+| No ->withoutOverlapping() needed because the daily cadence makes overlap
+| effectively impossible — Pitfall 12 only requires the multi-replica guard.
+|
+| SitemapGenerateCommand is a single-pass write (Article::where + Clan::all +
+| Tournament::where, ~1000 URLs total per RESEARCH A8) — well under any
+| meaningful runtime threshold and bounded above by the 50K Spatie URL limit
+| (T-07-12-06 mitigation + Pitfall 7 horizon).
+*/
+Schedule::command('sitemap:generate')
+    ->dailyAt('03:00')
+    ->onOneServer();          // Railway multi-replica safety — Pitfall 12

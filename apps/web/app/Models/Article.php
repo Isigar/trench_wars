@@ -185,16 +185,20 @@ class Article extends Model implements HasMedia, Sitemapable
     }
 
     /**
-     * Sitemapable contract — implementation lands in plan 07-12 alongside the
-     * sitemap.xml route and feed generation. Declared here so downstream code
-     * can typehint Article : Sitemapable without a class-modification round.
+     * Sitemapable contract — plan 07-12 implementation (replaces the 07-03 stub).
+     *
+     * Per 07-RESEARCH Pattern 6: route('blog.show', $slug) + updated_at lastmod +
+     * WEEKLY changefreq + 0.7 priority. The SitemapGenerateCommand filters to
+     * status='published' BEFORE feeding the collection to ->add(), so this method
+     * never serialises a draft article (T-07-12-02 mitigation defence-in-depth).
      *
      * @return Url|string|array<string, mixed>
-     *
-     * @throws \LogicException unconditionally until plan 07-12 fills the body.
      */
     public function toSitemapTag(): Url|string|array
     {
-        throw new \LogicException('Sitemapable implementation lands in plan 07-12');
+        return Url::create(route('blog.show', $this->slug))
+            ->setLastModificationDate($this->updated_at ?? $this->freshTimestamp())
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+            ->setPriority(0.7);
     }
 }

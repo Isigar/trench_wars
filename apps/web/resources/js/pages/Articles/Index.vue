@@ -62,7 +62,10 @@ function goToPage(page: number): void {
 
 <template>
     <Head :title="meta.title">
-        <meta name="description" :content="meta.description" />
+        <!-- Pitfall 4 mitigation: head-key dedupes across SPA navigation
+             (without it, the meta tag stacks when a visitor lands here from
+             another page that ships its own description). -->
+        <meta head-key="description" name="description" :content="meta.description" />
     </Head>
 
     <PublicLayout>
