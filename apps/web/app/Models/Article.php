@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\ArticleObserver;
 use Database\Factories\ArticleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -104,6 +105,17 @@ class Article extends Model implements HasMedia, Sitemapable
             'published_at' => 'datetime',
             'allow_discord_announce' => 'boolean',
         ];
+    }
+
+    /**
+     * Phase 7 plan 07-06 — model-level observer registration (D-06-08-A
+     * precedent). Eloquent registers Observers either via this static hook or
+     * via Service Provider boot(); the model-level path keeps the relationship
+     * colocated with the model and survives package-level rediscovery.
+     */
+    protected static function booted(): void
+    {
+        static::observe(ArticleObserver::class);
     }
 
     public function getActivitylogOptions(): LogOptions
