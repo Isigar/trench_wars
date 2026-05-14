@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: Completed 09-04-PLAN.md (Wave 3 — NotificationDispatcher + Schedule cron + 4 observers + prune)
-last_updated: "2026-05-14T08:11:31.449Z"
+stopped_at: "Completed 09-06-PLAN.md (Wave 4 — NotificationsController + LeaderboardsController + bell + 3 Vue pages)"
+last_updated: "2026-05-14T08:37:30.339Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 113
-  percent: 89
+  completed_plans: 115
+  percent: 95
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 3 complete)
-Plan: 09-05 COMPLETE (LeaderboardService + Cache::flexible SWR + tag-flush observers); next 09-06 (LeaderboardsController + Pages/Leaderboards.vue public surface)
+Phase: 09 (Polish) — IN FLIGHT (Wave 4 complete)
+Plan: 09-06 COMPLETE (NotificationsController + LeaderboardsController + bell + 3 Vue pages + Inertia shared prop + 24 GREEN tests); next 09-07 (search-mode + private indices)
 Status: Phase 9 in flight
 Last activity: 2026-05-14
 
-Progress: [█████████░] 94% (8/9 phases; 114/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05)
+Progress: [██████████] 95% (8/9 phases; 115/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05 + 09-06)
 
 ## Performance Metrics
 
@@ -151,6 +151,7 @@ Progress: [█████████░] 94% (8/9 phases; 114/120 plans incl. 
 | Phase 09 P03 | ~12min | 2 tasks | 19 files |
 | Phase 09 P04 | 573 | 2 tasks | 12 files |
 | Phase 09 P05 | 757 | 2 tasks | 13 files |
+| Phase 09-polish P06 | 1251 | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -507,6 +508,9 @@ Plan-level decisions logged during execution:
 - [Phase 09]: D-09-05-F: Observers registered via Model::booted() per D-04-08-B (Laravel 11 removed EventServiceProvider); MatchPlayerStat::booted() registers MatchPlayerStatObserver
 - [Phase 09]: D-09-05-G: ClanMembershipObserver tag-flush extension is Rule 2 additive correctness for D-09-05-D current-snapshot semantics (join/leave/rejoin all invalidate the leaderboards tag)
 - [Phase 09]: Plan 09-05 landed: LeaderboardService (topPlayers + topClans with Cache::tags->flexible([600,3600]) SWR) + 2 Spatie DTOs + 3 tag-flush observers + Pitfall 9 safeCompute(). Pest 1187 passed + 21 skipped (delta: +24 / −4 Wave 0 stubs turned GREEN). PHPStan L8 OK. Pint 11/11 PASS.
+- [Phase ?]: D-09-06-A — Inertia shared closure prop unread_notifications_count carries the bell badge count; no polling, no WebSocket (SC-1)
+- [Phase ?]: D-09-06-B — Named rate limiters notifications-read + public-api registered at AppServiceProvider boot (idempotent; plan 09-11 may refine)
+- [Phase ?]: D-09-06-C — LeaderboardEntryData privacy guard tightened to AND ::allowsSection AND ::passesTier (D-018 trust-boundary alignment, leaderboard surface)
 
 ### Pending Todos
 
@@ -528,6 +532,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T08:11:31.445Z
+Last session: 2026-05-14T08:37:12.216Z
 Stopped at: Completed 09-05-PLAN.md (Wave 3 — LeaderboardService + Cache::flexible SWR + 3 tag-flush observers)
 Resume file: None
