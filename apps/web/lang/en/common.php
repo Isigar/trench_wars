@@ -18,6 +18,9 @@ return [
         'logout_confirm' => '',
         'skip_to_content' => 'Skip to content',
         'close' => 'Close',
+        'previous' => 'Previous',
+        'next' => 'Next',
+        'save' => 'Save',
     ],
 
     /*

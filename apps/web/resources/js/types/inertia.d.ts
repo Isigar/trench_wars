@@ -37,5 +37,11 @@ declare module '@inertiajs/core' {
             routes: Record<string, unknown>;
             location: string;
         };
+        /**
+         * Plan 09-06 — unread DatabaseNotification count for the auth user.
+         * `0` for guests (closure returns 0 when `auth()->user()` is null).
+         * Rendered by NotificationsBell in PublicLayout (SC-1).
+         */
+        unread_notifications_count: number;
     }
 }

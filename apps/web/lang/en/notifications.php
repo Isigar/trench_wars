@@ -27,6 +27,41 @@ return [
         'empty_state' => 'You have no notifications yet.',
         'aria_open' => 'Open notifications',
         'aria_close' => 'Close notifications',
+        'view_all' => 'View all notifications',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | /notifications page chrome (plan 09-06)
+    |--------------------------------------------------------------------------
+    */
+    'page' => [
+        'title' => 'Notifications',
+        'description' => 'Your inbox of league activity.',
+    ],
+
+    'preferences_saved' => 'Preferences saved.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | /account/notification-preferences page chrome (plan 09-06)
+    |--------------------------------------------------------------------------
+    */
+    'preferences' => [
+        'title' => 'Notification preferences',
+        'description' => 'Choose how you want to be reached for each kind of league event.',
+        'channels' => [
+            'database' => 'In-app',
+            'discord' => 'Discord DM',
+        ],
+        'events' => [
+            'match_starting_soon' => 'Match starting soon',
+            'match_cancelled' => 'Match cancelled',
+            'match_result_published' => 'Match result published',
+            'clan_application_decided' => 'Clan application decided',
+            'clan_invite_received' => 'Clan invite received',
+        ],
+        'save' => 'Save preferences',
     ],
 
     /*

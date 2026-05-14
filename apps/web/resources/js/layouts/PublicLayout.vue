@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import SearchBar from '@/components/cms/SearchBar.vue';
 import LoginButton from '@/components/LoginButton.vue';
+import NotificationsBell from '@/components/NotificationsBell.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
 import UserMenu from '@/components/UserMenu.vue';
 import Wordmark from '@/components/Wordmark.vue';
@@ -24,6 +25,11 @@ const page = usePage();
 // Auth state: user from Inertia shared props.
 // Cast needed because page.props uses an index signature ([key: string]: unknown).
 const user = computed<AuthUser | null>(() => (page.props.auth as AuthUser | null) ?? null);
+
+// Plan 09-06 — bell badge fed by the Inertia shared prop
+// `unread_notifications_count` (HandleInertiaRequests::share). Stays in sync
+// across every Inertia navigation; no polling.
+const unreadCount = computed<number>(() => Number(page.props.unread_notifications_count ?? 0));
 
 // Active-link detection: check if current URL starts with the given path.
 function isActive(path: string): boolean {
@@ -118,6 +124,8 @@ function isActive(path: string): boolean {
                 <div class="flex items-center gap-2">
                     <slot name="locale-switcher" />
                     <ThemeToggle />
+                    <!-- Plan 09-06: NotificationsBell rendered only for authenticated users. -->
+                    <NotificationsBell v-if="user" :count="unreadCount" />
                     <!-- Auth action: UserMenu when logged in, LoginButton when logged out. -->
                     <UserMenu v-if="user" :user="user" />
                     <LoginButton v-else />

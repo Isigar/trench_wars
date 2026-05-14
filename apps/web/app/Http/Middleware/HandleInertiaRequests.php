@@ -54,6 +54,11 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+
+            // Plan 09-06 — bell badge count rendered on every Inertia navigation
+            // without an extra round-trip. Closure (lazy eval) so guests never
+            // touch the notifications table. SC-1 (web bell + shared prop).
+            'unread_notifications_count' => fn (): int => $request->user()?->unreadNotifications()->count() ?? 0,
         ]);
     }
 

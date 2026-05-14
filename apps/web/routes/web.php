@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Account\NotificationPreferencesController;
 use App\Http\Controllers\Auth\DiscordController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BlogIndexController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Clans\ClanCreateController;
 use App\Http\Controllers\ClanShowController;
 use App\Http\Controllers\EventsCalendarController;
 use App\Http\Controllers\EventsFeedJsonController;
+use App\Http\Controllers\LeaderboardsController;
 use App\Http\Controllers\MatchCalendarController;
 use App\Http\Controllers\Matches\MatchSignupController;
 use App\Http\Controllers\MatchShowController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\MyClan\ClanInviteController;
 use App\Http\Controllers\MyClan\MyClanController;
 use App\Http\Controllers\MyClan\MyClanMemberController;
 use App\Http\Controllers\MyClan\MyClanProfileController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\PlayerProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TournamentIndexController;
@@ -73,6 +76,13 @@ Route::get('/blog', BlogIndexController::class)->name('blog.index');
 Route::get('/blog/{slug}', BlogShowController::class)->name('blog.show');
 Route::get('/events', EventsCalendarController::class)->name('events.index');
 
+// Phase 9 plan 09-06 — public leaderboards (SC-2). throttle:public-api caps
+// anonymous scraping at 30/min/IP (T-09-06-05 mitigation; named limiter
+// registered by AppServiceProvider until plan 09-11 refines it).
+Route::get('/leaderboards', [LeaderboardsController::class, 'index'])
+    ->middleware('throttle:public-api')
+    ->name('leaderboards.index');
+
 // Source: 01-RESEARCH.md Pattern 1 + 01-09-PLAN.md Task 1.
 // Discord OAuth flow — guests only (an authenticated visitor revisiting /redirect
 // would otherwise loop through OAuth needlessly). Logout requires an active session.
@@ -118,4 +128,18 @@ Route::middleware('auth')->group(function (): void {
     // is the SOLE production write path to match_slots.occupant_user_id.
     Route::post('/matches/{match}/signups', [MatchSignupController::class, 'store'])->name('matches.signups.store');
     Route::delete('/matches/{match}/signups/{slot}', [MatchSignupController::class, 'destroy'])->name('matches.signups.destroy');
+
+    // Phase 9 plan 09-06 — notifications hub + per-user preference matrix (SC-1).
+    Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationsController::class, 'markAsRead'])
+        ->middleware('throttle:notifications-read')
+        ->name('notifications.markRead');
+    Route::post('/notifications/read-all', [NotificationsController::class, 'markAllAsRead'])
+        ->middleware('throttle:notifications-read')
+        ->name('notifications.markAllRead');
+
+    Route::get('/account/notification-preferences', [NotificationPreferencesController::class, 'edit'])
+        ->name('account.notification-preferences.edit');
+    Route::post('/account/notification-preferences', [NotificationPreferencesController::class, 'update'])
+        ->name('account.notification-preferences.update');
 });
