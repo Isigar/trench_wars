@@ -37,6 +37,7 @@ class MatchResult extends Model
         'allies_score',
         'axis_score',
         'notes',
+        'source',
         'recorded_by_user_id',
         'recorded_at',
     ];
@@ -49,6 +50,22 @@ class MatchResult extends Model
             'allies_score' => 'integer',
             'axis_score' => 'integer',
         ];
+    }
+
+    /**
+     * Plan 08-03 amendment: source-aware accessors. `source` is a text column
+     * (CHECK in 'manual','rcon') landed by plan 08-02 migration. The DB-tier
+     * CHECK is the last line of defence behind MatchResultService::upsertFromRcon
+     * (plan 08-08), which refuses to overwrite manual rows.
+     */
+    public function isManual(): bool
+    {
+        return $this->source === 'manual';
+    }
+
+    public function isRcon(): bool
+    {
+        return $this->source === 'rcon';
     }
 
     public function getActivitylogOptions(): LogOptions

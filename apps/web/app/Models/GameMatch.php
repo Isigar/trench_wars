@@ -81,6 +81,7 @@ class GameMatch extends Model
         'server_address',
         'status',
         'is_public',
+        'manual_entry_required',
     ];
 
     /** @return array<string, string> */
@@ -89,6 +90,7 @@ class GameMatch extends Model
         return [
             'scheduled_at' => 'datetime',
             'is_public' => 'boolean',
+            'manual_entry_required' => 'boolean',
         ];
     }
 
