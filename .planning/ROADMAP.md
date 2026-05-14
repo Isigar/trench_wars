@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync). _Completed 2026-05-13_
 - [x] **Phase 6: Tournaments & brackets** — Run an end-to-end tournament with a bracket UI and standings. _Completed 2026-05-14_
 - [x] **Phase 7: CMS** — League can publish editorial content and curate the public calendar. _Completed 2026-05-14_
-- [ ] **Phase 8: RCON automation** — Match results and player stats flow in automatically from CRCON when matches are played on registered servers.
+- [x] **Phase 8: RCON automation** — Match results and player stats flow in automatically from CRCON when matches are played on registered servers. _Completed 2026-05-14_
 - [ ] **Phase 9: Polish** — Notifications, search, leaderboards, mod tooling, performance, accessibility, and hardening.
 
 ## Phase Details
@@ -234,7 +234,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 08-10-PLAN.md — rcon-worker: HmacSigner + CrconClient (ws + reconnect + last_seen_id resume + heartbeat) + CrconEventNormaliser + WebIngestClient + 15 vitest cases
 - [x] 08-11-PLAN.md — rcon-worker: BookingScheduler + MatchLifecycleManager + RedisFailoverQueue + index.ts entry + 16 vitest cases (9 unit + 7 integration)
 - [x] 08-12-PLAN.md — SC-5 ScrimE2EHappyPathTest capstone + MatchResultObserver match_result_announce branch + DiscordOutboundPayloadBuilder::buildMatchResultAnnounce + RconAuditLogTest + I18nKeyCoverageTest + shared-types regen
-- [ ] 08-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + 7 quality gates GREEN
+- [x] 08-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + 7 quality gates GREEN
+**UI hint**: yes
+**Completed**: 2026-05-14
 
 ### Phase 9: Polish
 **Goal**: Buffer milestone covering the things every shipping product needs but that don't fit cleanly into a feature-driven phase — notifications, search depth, leaderboards, mod tooling, performance, accessibility, and hardening.
@@ -277,5 +279,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
 | 7. CMS | 13/13 | Complete | 2026-05-14 |
-| 8. RCON automation | 1/13 | In Progress|  |
+| 8. RCON automation | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | 0/TBD | Not started | - |

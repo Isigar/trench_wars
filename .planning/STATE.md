@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 08-10-PLAN.md
-last_updated: "2026-05-14T06:11:17.586Z"
+status: Phase 8 COMPLETE (PENDING_MANUAL_SMOKE) — 08-13-PLAN.md executed; 08-PHASE-VERIFICATION.md authored; ROADMAP/REQUIREMENTS/STATE updated
+stopped_at: Phase 8 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 9 ready
+last_updated: "2026-05-14T08:30:00.000Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 108
-  completed_plans: 107
-  percent: 78
+  completed_plans: 108
+  percent: 89
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 08 — RCON automation (next; Phase 7 closed PENDING_MANUAL_SMOKE for 4-item operator walkthrough A-D per 07-PHASE-VERIFICATION.md)
+**Current focus:** Phase 09 — Polish (next; Phase 8 closed PENDING_MANUAL_SMOKE for 4-item operator walkthrough A-D per 08-PHASE-VERIFICATION.md)
 
 ## Current Position
 
-Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 12 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
-Status: Ready to execute
+Phase: 09 (Polish) — READY TO PLAN
+Plan: Phase 8 COMPLETE (13/13 plans; all 7 quality gates GREEN; PENDING_MANUAL_SMOKE)
+Status: Phase 9 ready to plan
 Last activity: 2026-05-14
 
-Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 8: 1/13 plans)
+Progress: [█████████░] 89% (8/9 phases; 108/108 plans through Phase 8)
 
 ## Performance Metrics
 
@@ -145,6 +145,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 08-rcon-automation P10 | 9 | 2 tasks | 8 files |
 | Phase 08 P11 | 10min | 2 tasks | 11 files |
 | Phase 08 P12 | 18min | - tasks | - files |
+| Phase 08 P13 | ~18min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -474,6 +475,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 08-12 (DiscordOutboundPayloadBuilder in App\Support, static methods)
 - [Phase ?]: Plan 08-12 (MatchResultObserver uses created+updated hooks)
 - [Phase ?]: Plan 08-12 (MatchResultAnnounceData lives in App\Data, not App\Data\Internal)
+- [Phase 08]: Plan 08-13 — Phase 8 COMPLETE PENDING_MANUAL_SMOKE; 1134 web Pest tests / 3783 assertions (+97 web / +312 assertions from Phase 7 close) + 139 bot Vitest tests (regressionless from Phase 7) + 40 rcon-worker Vitest tests across 7 files (brand new Node service); all 7 quality gates GREEN (Pest, Vitest×2, Pint 566 files clean, PHPStan L8 [OK], vue-tsc, shared-types tsc, rcon-worker typecheck+lint+test+build, migrate:fresh --seed); 08-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-goal-rcon-history + REQ-constraint-league-owns-servers + REQ-success-end-to-end-scrim + 12 Pitfalls + 5 Open Questions RESOLVED inline + ~60 D-08-* canonical bindings; ROADMAP Phase 8 13/13 Complete (2026-05-14); REQUIREMENTS REQ-goal-rcon-history + REQ-constraint-league-owns-servers + REQ-success-end-to-end-scrim confirmed Complete; STATE completed_phases 7 -> 8 + completed_plans 107 -> 108 + percent 78 -> 89; status PENDING_MANUAL_SMOKE pending operator 4-item walkthrough A-D (live CRCON probe / two-clan SC-5 happy path / mid-match log gap / HMAC key rotation)
+- [Phase 08]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 8 (MatchEventIngestService, MatchPlayerStatAggregator, MatchResultService::upsertFromRcon, MatchResultObserver match_result_announce branch, DiscordOutboundPayloadBuilder::buildMatchResultAnnounce, BookingsRelationManager, ScrimE2EHappyPathTest, all Feature + Unit tests); zero alias-on-import; canonical binding for Phase 9+ Polish plans — leaderboards/aggregates/MatchPlayerStat consumers MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A / D-07-* / D-08-* continuation
 
 ### Pending Todos
 
@@ -495,6 +498,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T06:10:55.531Z
-Stopped at: Completed 08-10-PLAN.md
+Last session: 2026-05-14T08:30:00.000Z
+Stopped at: Phase 8 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 9 ready
 Resume file: None
