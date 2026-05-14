@@ -1,45 +1,62 @@
-// Wave 0 skeleton — Phase 8 plan 08-01 task 1.
-// Source: .planning/phases/08-rcon-automation/08-01-PLAN.md task 1 behaviour list.
-// Source (wire contract): 08-RESEARCH.md § HMAC Architecture → Wire Format + Worker signing.
+// Plan 08-10 task 1 — replaces the Wave-0 skeleton from plan 08-01.
+// Source: .planning/phases/08-rcon-automation/08-10-PLAN.md <interfaces>.
+// Source (wire contract): 08-RESEARCH.md § HMAC Architecture → Wire Format.
 //
-// Contract:
-//   sign(secret, body, timestamp)   → string  (HMAC-SHA256 hex over `${timestamp}.${body}`)
-//   verify(secret, body, timestamp, signature) → boolean  (timing-safe equal)
+// Cross-tier contract (D-021 LOCKED) — must match apps/web/app/Support/Hmac/HmacVerifier.php:
+//   sign:    hash_hmac('sha256', $timestamp . $body, $secret)             — PHP (web side)
+//   sign:    createHmac('sha256').update(timestamp + body).digest('hex')  — Node (this file)
+//   verify:  hash_equals($expected, $providedSig)                         — PHP, constant-time
+//   verify:  timingSafeEqual(Buffer.from(expected,'hex'), Buffer.from(given,'hex'))  — Node, constant-time
 //
-// Both functions are STUBS in Wave 0 — they throw `Error('not implemented')` so the
-// Vitest RED stub (tests/unit/HmacSigner.test.ts) and the worker→web verification
-// middleware (plan 08-05) have a typed contract to handshake against. Real
-// `node:crypto` implementation lands in plan 08-10 (worker side) and 08-05 (web side).
+// Both sides:
+//   - Reject empty secrets at sign() time (T-08-05-06 / mirror in the worker).
+//   - Sign raw body bytes (Pitfall 1: re-serialising on the verification side picks a different
+//     key order and breaks the signature). WebIngestClient.postEvents builds `body` ONCE via
+//     JSON.stringify, signs THAT string, and POSTs the same string.
+//
+// Plan 08-12 SC-5 verifies this contract end-to-end against the Laravel HmacVerifier.
+
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 
 /**
- * Produce an HMAC-SHA256 signature in hex over `${timestamp}.${body}`.
+ * Produce an HMAC-SHA256 signature in lowercase hex over `${timestamp}${body}`.
  *
- * Sign the RAW request body bytes — see Pitfall 1 in 08-RESEARCH.md (re-serialising
- * JSON on the verification side picks a different key order and breaks the signature).
- *
- * @param _secret  Shared HMAC secret (min 32 chars per config.ts).
- * @param _body    Raw request body as sent on the wire (string or Buffer).
- * @param _timestamp  Unix ms timestamp included in the X-Rcon-Timestamp header.
- * @returns Hex-encoded HMAC-SHA256 signature.
+ * @param secret    Shared HMAC secret (env WEB_HMAC_SECRET, ≥32 chars per config.ts).
+ * @param body      Raw request body as sent on the wire. NEVER re-serialise — see Pitfall 1.
+ * @param timestamp Stringified Unix-ms timestamp included in the X-Rcon-Timestamp header.
+ * @returns Hex-encoded HMAC-SHA256 signature (lowercase).
+ * @throws Error when secret is empty (mirror of T-08-05-06 fail-loud guard).
  */
-export function sign(_secret: string, _body: string | Buffer, _timestamp: number): string {
-    throw new Error('HmacSigner.sign not implemented — replaced by plan 08-10');
+export function sign(secret: string, body: string, timestamp: string): string {
+    if (!secret) {
+        throw new Error('HmacSigner: empty secret');
+    }
+    return createHmac('sha256', secret).update(timestamp + body).digest('hex');
 }
 
 /**
  * Constant-time verify of a signature against (timestamp + body) under secret.
  *
- * @param _secret    Shared HMAC secret.
- * @param _body      Raw body bytes received on the wire.
- * @param _timestamp Unix ms timestamp from X-Rcon-Timestamp header.
- * @param _signature Hex signature claimed by the sender.
- * @returns true iff signature matches AND timing-safe comparison succeeds.
+ * Returns false (rather than throwing) on any structural mismatch (unequal length,
+ * non-hex input, etc.). Throws only when the secret itself is empty — that is a
+ * deployment-time fault, not a per-request decision.
  */
 export function verify(
-    _secret: string,
-    _body: string | Buffer,
-    _timestamp: number,
-    _signature: string,
+    secret: string,
+    body: string,
+    timestamp: string,
+    providedSig: string,
 ): boolean {
-    throw new Error('HmacSigner.verify not implemented — replaced by plan 08-10/08-05');
+    const expected = sign(secret, body, timestamp);
+    const a = Buffer.from(expected, 'hex');
+    const b = Buffer.from(providedSig, 'hex');
+    if (a.length === 0 || b.length === 0 || a.length !== b.length) {
+        return false;
+    }
+    return timingSafeEqual(a, b);
+}
+
+/** Produce an RFC4122 v4 UUID for the X-Rcon-Nonce header (per-request replay defence). */
+export function nonce(): string {
+    return randomUUID();
 }
