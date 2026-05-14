@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\DiscordController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\BlogIndexController;
+use App\Http\Controllers\BlogShowController;
 use App\Http\Controllers\ClanDirectoryController;
 use App\Http\Controllers\Clans\ClanCreateController;
 use App\Http\Controllers\ClanShowController;
+use App\Http\Controllers\EventsCalendarController;
+use App\Http\Controllers\EventsFeedJsonController;
 use App\Http\Controllers\MatchCalendarController;
 use App\Http\Controllers\Matches\MatchSignupController;
 use App\Http\Controllers\MatchShowController;
@@ -16,6 +20,7 @@ use App\Http\Controllers\MyClan\MyClanController;
 use App\Http\Controllers\MyClan\MyClanMemberController;
 use App\Http\Controllers\MyClan\MyClanProfileController;
 use App\Http\Controllers\PlayerProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TournamentIndexController;
 use App\Http\Controllers\TournamentPublicJsonController;
 use App\Http\Controllers\TournamentShowController;
@@ -53,6 +58,20 @@ Route::middleware(['throttle:60,1'])->group(function (): void {
 Route::get('/tournaments/{tournament:slug}', TournamentShowController::class)
     ->name('tournaments.show')
     ->where('tournament', '[A-Za-z0-9_-]+');
+
+// Phase 7 — Public CMS + Events + Search (SC-2 + SC-3 + SC-4).
+// Routes ordered per Phase 6 D-06-12-C precedent: /events/feed.json BEFORE /events
+// so Laravel's first-match-wins router does not capture `.json` as part of a slug.
+// /events/feed.json + /search routed under throttle:60,1 — Phase 6 D-06-12-A precedent
+// (T-07-09-01 + T-07-09-03 mitigation chain for DoS-shaped public endpoints).
+Route::middleware(['throttle:60,1'])->group(function (): void {
+    Route::get('/events/feed.json', EventsFeedJsonController::class)->name('events.feed');
+    Route::get('/search', SearchController::class)->name('search.index');
+});
+
+Route::get('/blog', BlogIndexController::class)->name('blog.index');
+Route::get('/blog/{slug}', BlogShowController::class)->name('blog.show');
+Route::get('/events', EventsCalendarController::class)->name('events.index');
 
 // Source: 01-RESEARCH.md Pattern 1 + 01-09-PLAN.md Task 1.
 // Discord OAuth flow — guests only (an authenticated visitor revisiting /redirect

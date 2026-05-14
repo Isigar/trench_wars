@@ -142,4 +142,46 @@ return [
             'label' => 'No events scheduled.',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search UI (plan 07-09 SearchController + plan 07-10 Search/Results.vue)
+    |--------------------------------------------------------------------------
+    */
+    'search' => [
+        'placeholder' => 'Search clans, players, articles…',
+        'results' => [
+            'heading' => 'Search results for ":query"',
+            'count' => ':count result|:count results',
+            'section_articles' => 'Articles',
+            'section_clans' => 'Clans',
+            'section_players' => 'Players',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Page meta tags (consumed by Inertia <Head> in plans 07-10 + 07-12)
+    |--------------------------------------------------------------------------
+    | Per-page title + description used to render <title> and
+    | <meta name="description"> via Inertia's Head component with head-key.
+    */
+    'page_meta' => [
+        'blog_index' => [
+            'title' => 'Blog — Trenchwars',
+            'description' => 'News, match reports, and tournament updates from the Trenchwars league.',
+        ],
+        'blog_show' => [
+            'title_template' => ':title — Trenchwars Blog',
+            'description_fallback' => 'Read the latest from the Trenchwars league.',
+        ],
+        'events' => [
+            'title' => 'Events Calendar — Trenchwars',
+            'description' => 'Upcoming matches, tournaments, and league news on the Trenchwars calendar.',
+        ],
+        'search' => [
+            'title' => 'Search ":query" — Trenchwars',
+            'description' => 'Search across clans, players, and articles on the Trenchwars league platform.',
+        ],
+    ],
 ];
