@@ -44,6 +44,12 @@ class Player extends Model
         'avatar_path',
         'bio',
         'country_code',
+        // Phase 8 plan 08-08 — steam_id_64 (nullable, UNIQUE) added so the RCON
+        // MatchPlayerStatAggregator can resolve CRCON event payloads to Player rows
+        // via `Player::firstWhere('steam_id_64', $payload['steam_id_64'])`.
+        // Round-1 acceptance assumes admins backfill before scrim; orphan events
+        // (no matching Player row) are silently skipped per Pitfall 5.
+        'steam_id_64',
     ];
 
     /**

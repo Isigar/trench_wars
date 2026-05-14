@@ -17,6 +17,11 @@ class DatabaseSeeder extends Seeder
             // seeders that reference role-sync attribution (none currently; reserved for
             // Phase 9 reactivation flows). Discord guild + bot user are paired singletons.
             BotServiceUserSeeder::class,
+            // Phase 8 plan 08-08 — RCON worker service user singleton. Provides the
+            // attribution causer for match_results.source='rcon' rows written by
+            // MatchResultService::upsertFromRcon(). Idempotent firstOrCreate keyed on
+            // discord_id='SYSTEM_RCON_WORKER'. No Filament access, no roles.
+            RconWorkerSystemUserSeeder::class,
             ClanTagSeeder::class,
             // Phase 3 — game catalogue (D-007: HLL preset). MUST run AFTER ClanTagSeeder
             // because Phase 3 migrations land later than Phase 2 (Pitfall 9 — ordering).
