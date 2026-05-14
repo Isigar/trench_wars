@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 08-06-PLAN.md
-last_updated: "2026-05-14T05:02:25.613Z"
+last_updated: "2026-05-14T05:20:55.271Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 108
-  completed_plans: 103
+  completed_plans: 104
   percent: 78
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 8 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
+Plan: 9 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -141,6 +141,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 08 P05 | 13m05s | 2 tasks | 5 files |
 | Phase 08 P06 | 6min | 2 tasks | 11 files |
 | Phase 08 P07 | 9min | 2 tasks | 6 files |
+| Phase 08 P09 | 12min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -456,6 +457,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Per-event ingest INSERT wrapped in DB::transaction() for Postgres SAVEPOINT semantics — defuses SQLSTATE 25P02 under RefreshDatabase outer transaction (08-07 auto-fix Rule 1)
 - [Phase ?]: MatchEventsController response shape gains skipped_count (additive — InternalApiRoutesPresentTest case 6 toHaveKeys non-strict)
 - [Phase ?]: CloseMatchJob constructor takes readonly string matchId (primitive-ID job idiom — matches Phase 5 SyncDiscordRolesJob)
+- [Phase 08]: Filament v3 MatchServerResource gated behind manage-rcon permission via canViewAny() — T-08-09-03 mitigation; Bookings relation manager is read-only with view_match link to MatchResource.
+- [Phase 08]: TestMatchServerConnectionJob is async via Horizon (T-08-09-02 PHP-FPM 30s timeout); CrconHealthProbe runs from web container directly (not worker) — D-021-consistent because web has outbound HTTPS; calls CRCON GET /api/get_map_rotation (no-side-effect probe per RESEARCH line 179).
+- [Phase 08]: MatchResource surgical extension preserves Phase 4 wizard + 4 RelationManagers; adds IconColumn (danger triangle) + Filter + clear-flag Action for D-019 manual_entry_required admin surface.
 
 ### Pending Todos
 
@@ -477,6 +481,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T05:02:25.609Z
+Last session: 2026-05-14T05:20:55.267Z
 Stopped at: Completed 08-06-PLAN.md
 Resume file: None

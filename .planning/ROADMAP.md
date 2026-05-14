@@ -230,7 +230,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 08-06-PLAN.md — Internal API endpoints (POST /events + GET /bookings/due + GET /match-servers/{id}/credentials) + 2 DTOs + FormRequest + SignsRconRequests test helper
 - [x] 08-07-PLAN.md — MatchEventIngestService + MatchEventNormaliser + CloseMatchJob placeholder + controller refactor
 - [x] 08-08-PLAN.md — MatchPlayerStatAggregator + MatchResultService::upsertFromRcon + CloseMatchJob handle + RconWorkerSystemUserSeeder + ManualOverrideWinsTest + RconMatchResultIngestionTest GREEN
-- [ ] 08-09-PLAN.md — MatchServerResource Filament + BookingsRelationManager + TestMatchServerConnectionJob + CrconHealthProbe + MatchResource manual_entry_required surface + manage-rcon permission
+- [x] 08-09-PLAN.md — MatchServerResource Filament + BookingsRelationManager + TestMatchServerConnectionJob + CrconHealthProbe + MatchResource manual_entry_required surface + manage-rcon permission
 - [ ] 08-10-PLAN.md — rcon-worker: HmacSigner + CrconClient (ws + reconnect + last_seen_id resume + heartbeat) + CrconEventNormaliser + WebIngestClient + 15 vitest cases
 - [ ] 08-11-PLAN.md — rcon-worker: BookingScheduler + MatchLifecycleManager + RedisFailoverQueue + index.ts entry + 16 vitest cases (9 unit + 7 integration)
 - [ ] 08-12-PLAN.md — SC-5 ScrimE2EHappyPathTest capstone + MatchResultObserver match_result_announce branch + DiscordOutboundPayloadBuilder::buildMatchResultAnnounce + RconAuditLogTest + I18nKeyCoverageTest + shared-types regen
