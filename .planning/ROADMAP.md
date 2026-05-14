@@ -201,7 +201,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 07-04-PLAN.md — cms-editor role permissions + ArticlePolicy + CategoryPolicy + trenchwars:make-cms-editor artisan
 - [x] 07-05-PLAN.md — Filament ArticleResource + CategoryResource + 6 page classes + PublicArticleData tiptap_converter wiring (Pitfall 10 mitigation)
 - [x] 07-06-PLAN.md — ArticleObserver + ArticleStatusService + DiscordOutboundPayloadBuilder buildArticleAnnounce + config(discord.league_announce_channel_id)
-- [ ] 07-07-PLAN.md — ArticlesPublishScheduledCommand + ArticlePublishService + scheduler entry (Pitfall 12 dual-guard)
+- [x] 07-07-PLAN.md — ArticlesPublishScheduledCommand + ArticlePublishService + scheduler entry (Pitfall 12 dual-guard)
 - [ ] 07-08-PLAN.md — SearchService (Postgres FTS + PlayerPrivacyGate filter + Pitfall 2 plainto_tsquery) + SearchResultData DTOs
 - [ ] 07-09-PLAN.md — 5 public controllers (BlogIndex/BlogShow/EventsCalendar/EventsFeedJson/Search) + 2 FormRequests + CalendarFeedService + 5 routes + throttle:60,1
 - [ ] 07-10-PLAN.md — 4 Vue pages (Articles/Index, Articles/Show, Events/Index, Search/Results) + 4 Cms/* components + PublicLayout SearchBar + FullCalendar mount
