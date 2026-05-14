@@ -4,30 +4,46 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\AbuseReport;
+use App\Models\Player;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RuntimeException;
 
 /**
- * Wave 0 RED stub — real implementation lands in plan 09-02 (migrations) +
- * plan 09-11 (AbuseReport model + ReportAbuseController + AbuseReportResource).
+ * Source: .planning/phases/09-polish/09-03-PLAN.md task 1.
  *
- * Source: .planning/phases/09-polish/09-01-PLAN.md task 1.
- * Idiom: canonical Phase 4 D-04-01 + Phase 8 plan 08-01 wave 0 (commit 9ea301b).
+ * Replaces the Wave 0 stub (plan 09-01). Default target is a Player (the most
+ * common report-abuse target in v1 — clan members reporting harassment by other
+ * players). Reason code is randomised across the v1 enum set so tests that
+ * filter by reason_code see realistic distributions.
  *
- * @phpstan-ignore-next-line missingType.generics
+ * target_id is stored as VARCHAR (D-09-02-E) — coerce to string so PHPStan +
+ * runtime both see the canonical text type.
+ *
+ * @extends Factory<AbuseReport>
  */
-class AbuseReportFactory extends Factory
+final class AbuseReportFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\AbuseReport';
+    protected $model = AbuseReport::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        throw new RuntimeException(
-            'Wave 0 stub — AbuseReportFactory will be implemented in plan 09-02 (migration) + 09-11 (model).'
-        );
+        return [
+            'reporter_user_id' => User::factory(),
+            'target_type' => Player::class,
+            'target_id' => fn (): string => (string) Player::factory()->create()->id,
+            'reason_code' => fake()->randomElement([
+                'harassment',
+                'spam',
+                'cheating',
+                'inappropriate_content',
+                'other',
+            ]),
+            'body' => fake()->sentence(),
+            'status' => 'pending',
+        ];
     }
 }

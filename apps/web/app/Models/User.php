@@ -9,6 +9,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -150,5 +151,93 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function memberships(): HasMany
     {
         return $this->hasMany(ClanMembership::class);
+    }
+
+    /*
+    | -----------------------------------------------------------------------
+    | Phase 9 plan 09-03 amendment — notification + ban relations + channel
+    | preference resolver (Pattern 7 of 09-RESEARCH.md).
+    | -----------------------------------------------------------------------
+    | enabledNotificationChannels(string $eventType): array is the single
+    | authority on which channels fire for a given user+event pair. Every
+    | App\Notifications\* class delegates to it from its `via()` hook.
+    |
+    | Default policy:
+    |   - database bell: default-ON for every event_type.
+    |   - discord DM:    default-ON IF user has discord_id AND event_type is
+    |                    NOT 'match_result_published' (Open Question 3 LOCKED
+    |                    — match-result Discord DMs are opt-in only).
+    |
+    | Explicit `enabled=false` preference rows always override the default to OFF.
+    */
+
+    /** @return HasMany<UserNotificationPreference, $this> */
+    public function notificationPreferences(): HasMany
+    {
+        return $this->hasMany(UserNotificationPreference::class);
+    }
+
+    /** @return HasMany<Ban, $this> */
+    public function bans(): HasMany
+    {
+        return $this->hasMany(Ban::class);
+    }
+
+    /**
+     * Currently-active ban (lifted_at NULL AND not expired) if any.
+     *
+     * Used by the ban-check middleware (plan 09-11). Returns the first row
+     * matched by Ban::scopeActive() ordered by created_at DESC — for the
+     * lookup-by-id semantics the middleware uses, ordering is immaterial,
+     * but ordering by created_at DESC makes the result deterministic when
+     * a user has stacked bans.
+     */
+    public function activeBan(): ?Ban
+    {
+        return $this->bans()
+            ->active()
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
+    /**
+     * Channel keys the user wants for the given event_type, honouring
+     * preference rows + default policy. See class-level docblock for the
+     * default rules.
+     *
+     * Event types with Discord DM default-OFF (Open Question 3 LOCKED).
+     *
+     * @return array<int, string> e.g. ['database', 'discord'] or ['database']
+     */
+    public function enabledNotificationChannels(string $eventType): array
+    {
+        /** @var Collection<int, UserNotificationPreference> $rows */
+        $rows = $this->notificationPreferences
+            ->where('event_type', $eventType);
+
+        /** @var array<string, bool> $prefs */
+        $prefs = [];
+        foreach ($rows as $row) {
+            $prefs[$row->channel] = (bool) $row->enabled;
+        }
+
+        $channels = [];
+
+        // database bell — default-ON everywhere.
+        if (($prefs['database'] ?? true) === true) {
+            $channels[] = 'database';
+        }
+
+        // discord DM — default-ON UNLESS the event is match_result_published
+        // (Open Question 3 LOCKED: result spam is opt-in). Either way, the
+        // user must have a discord_id (the bot DMs to their snowflake).
+        if (! empty($this->discord_id)) {
+            $discordDefault = $eventType !== 'match_result_published';
+            if (($prefs['discord'] ?? $discordDefault) === true) {
+                $channels[] = 'discord';
+            }
+        }
+
+        return $channels;
     }
 }
