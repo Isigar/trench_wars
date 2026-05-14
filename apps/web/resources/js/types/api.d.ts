@@ -1,5 +1,16 @@
 declare namespace App {
 namespace Data {
+export type ArticleSummaryData = {
+id: string,
+slug: string,
+title: string,
+excerpt: string | null,
+categoryName: string,
+authorName: string | null,
+publishedAt: string | null,
+heroThumbUrl: string | null,
+url: string,
+};
 export type BracketEdgeData = {
 from_bracket_id: string,
 to_bracket_id: string,
@@ -17,6 +28,15 @@ winner_participant_id: string | null,
 match_id: string | null,
 status: string,
 scheduled_at: string | null,
+};
+export type CalendarEventData = {
+id: string,
+title: string,
+start: string,
+end: string | null,
+type: string,
+url: string,
+color: string,
 };
 export type ClanApplicationData = {
 id: string,

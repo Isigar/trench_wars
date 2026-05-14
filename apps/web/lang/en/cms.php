@@ -145,6 +145,44 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Blog Index/Show public Vue chrome (plan 07-10 Articles/Index.vue + Show.vue)
+    |--------------------------------------------------------------------------
+    */
+    'blog' => [
+        'empty' => [
+            'label' => 'No articles published yet — check back soon.',
+        ],
+        'pagination' => [
+            'prev' => 'Previous',
+            'next' => 'Next',
+        ],
+        'read_more' => [
+            'label' => 'Read more',
+        ],
+        'category_filter' => [
+            'label' => 'Filter by category',
+            'all' => 'All',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Article detail meta strip (plan 07-10 Articles/Show.vue)
+    |--------------------------------------------------------------------------
+    */
+    'article' => [
+        'meta' => [
+            'published_on' => 'Published',
+            'author' => 'By',
+            'category' => 'In',
+        ],
+        'hero_alt' => [
+            'label' => 'Article hero image',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Search UI (plan 07-09 SearchController + plan 07-10 Search/Results.vue)
     |--------------------------------------------------------------------------
     */

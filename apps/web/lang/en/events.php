@@ -51,6 +51,39 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Calendar legend chips (plan 07-10 CalendarLegend.vue — Open Question 6 LOCKED)
+    |--------------------------------------------------------------------------
+    | match=#3B82F6 blue, tournament=#8B5CF6 purple, article=#10B981 green
+    | (matches CalendarEventData::colourFor in 07-09; same hex values inline in
+    | the Vue component so the legend never drifts from the calendar painting).
+    */
+    'legend' => [
+        'match' => [
+            'label' => 'Match',
+        ],
+        'tournament' => [
+            'label' => 'Tournament',
+        ],
+        'article' => [
+            'label' => 'Article',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | FullCalendar toolbar buttons (plan 07-10 Events/Index.vue)
+    |--------------------------------------------------------------------------
+    | Wired into the FullCalendar options.buttonText slot so the prev/next/today
+    | buttons render localised labels instead of FullCalendar's English defaults.
+    */
+    'navigation' => [
+        'prev' => 'Previous',
+        'next' => 'Next',
+        'today' => 'Today',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Empty state
     |--------------------------------------------------------------------------
     */

@@ -3,12 +3,16 @@
      text rows. Pure presentational; the parent BracketCanvas positions us via the
      :transform binding. Status-driven fill via CSS variables (Phase 1 palette). -->
 <script setup lang="ts">
+import { NODE_HEIGHT, NODE_WIDTH } from '@/components/tournaments/bracket-node-dimensions';
 import { computed } from 'vue';
 
+// Plan 07-10 Rule 3 fix: the NODE_WIDTH/NODE_HEIGHT constants previously lived
+// inline in this <script setup> as `export const` declarations. Vue's
+// compiler-sfc 3.5+ refuses module-level exports inside <script setup>
+// (the script-setup RFC enforces component-scope only). Constants now live in
+// sibling bracket-node-dimensions.ts and are re-imported here for the template
+// bindings; BracketCanvas.vue imports the same module directly.
 type BracketNodeData = App.Data.BracketNodeData;
-
-export const NODE_WIDTH = 200;
-export const NODE_HEIGHT = 60;
 
 const props = defineProps<{
     node: BracketNodeData;

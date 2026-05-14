@@ -8,7 +8,8 @@
      losers-bracket / grand-final in separate vertical bands without overlap
      (Pitfall 9 mitigation). -->
 <script setup lang="ts">
-import BracketNode, { NODE_HEIGHT, NODE_WIDTH } from '@/components/tournaments/BracketNode.vue';
+import { NODE_HEIGHT, NODE_WIDTH } from '@/components/tournaments/bracket-node-dimensions';
+import BracketNode from '@/components/tournaments/BracketNode.vue';
 import { useT } from '@/composables/useT';
 import { computed } from 'vue';
 

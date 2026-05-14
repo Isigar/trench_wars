@@ -2,8 +2,12 @@
      Plan 08 routes the skip-link label and footer copy through `t()` per D-013.
      Phase 2 (plan 02-08): nav slot populated with Clans + Players links + UserMenu auth action.
      Phase 4 (plan 04-11): /matches link inserted alphabetically between Clans and Players.
+     Phase 7 (plan 07-10): <SearchBar /> appended to the header chrome; appears between the
+       nav slot and the theme/auth toggles so the search input is reachable on every public
+       page. Hidden on mobile alongside the nav per UI-SPEC § Responsive Breakpoints.
      Nav items hidden on mobile (hidden md:flex) per UI-SPEC § Responsive Breakpoints. -->
 <script setup lang="ts">
+import SearchBar from '@/components/cms/SearchBar.vue';
 import LoginButton from '@/components/LoginButton.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
 import UserMenu from '@/components/UserMenu.vue';
@@ -105,6 +109,11 @@ function isActive(path: string): boolean {
                         {{ t('common.nav.players') }}
                     </a>
                 </nav>
+
+                <!-- Header search bar (plan 07-10) — hidden on mobile alongside the nav links. -->
+                <div class="hidden md:flex">
+                    <SearchBar />
+                </div>
 
                 <div class="flex items-center gap-2">
                     <slot name="locale-switcher" />
