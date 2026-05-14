@@ -36,6 +36,10 @@ class PermissionSeeder extends Seeder
             'articles.publish',     // Move status draft → scheduled/published (plan 07-06 observer).
             'articles.delete',      // Soft-delete articles (super-admin only; plan 07-12 retention concerns).
             'categories.manage',    // Full CRUD on categories (plan 07-05).
+            // Phase 8 plan 08-09 — gates MatchServerResource in the Filament admin
+            // panel. League IT staff manage CRCON server registrations + run
+            // Test Connection actions (T-08-09-03 mitigation).
+            'manage-rcon',
         ];
 
         foreach ($permissions as $name) {

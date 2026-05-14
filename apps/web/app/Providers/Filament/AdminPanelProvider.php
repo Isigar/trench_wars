@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Audit;
 use App\Filament\Resources\ArticleResource;
 use App\Filament\Resources\CategoryResource;
+use App\Filament\Resources\MatchServerResource;
 use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\PlayerResource;
 use App\Filament\Resources\RoleResource;
@@ -59,6 +60,9 @@ class AdminPanelProvider extends PanelProvider
                 // Phase 7 (CMS) — plan 07-05 ArticleResource + CategoryResource.
                 ArticleResource::class,
                 CategoryResource::class,
+                // Phase 8 (RCON automation) — plan 08-09 MatchServerResource
+                // (gated behind manage-rcon permission).
+                MatchServerResource::class,
             ])
             ->pages([
                 Dashboard::class,
