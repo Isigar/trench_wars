@@ -120,6 +120,7 @@ return [
         'invalid_status_transition' => 'Cannot transition article from :from to :to.',
         'scheduled_at_in_past' => 'Scheduled publication time must be in the future.',
         'tiptap_unsafe_node' => 'Article body contains a disallowed node (:node) — only safe nodes are accepted.',
+        'category_in_use' => 'This category has articles assigned — re-assign or delete the articles first.',
     ],
 
     /*

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Audit;
+use App\Filament\Resources\ArticleResource;
+use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\PlayerResource;
 use App\Filament\Resources\RoleResource;
@@ -54,6 +56,9 @@ class AdminPanelProvider extends PanelProvider
                 PlayerResource::class,
                 RoleResource::class,
                 PermissionResource::class,
+                // Phase 7 (CMS) — plan 07-05 ArticleResource + CategoryResource.
+                ArticleResource::class,
+                CategoryResource::class,
             ])
             ->pages([
                 Dashboard::class,

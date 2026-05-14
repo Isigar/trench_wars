@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bba46683b1505cffd526b178663a97c",
+    "content-hash": "dd45248d76feefffe9018caf9ba12796",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1417,6 +1417,44 @@
                 "source": "https://github.com/filamentphp/filament"
             },
             "time": "2026-01-01T16:29:16+00:00"
+        },
+        {
+            "name": "filament/spatie-laravel-media-library-plugin",
+            "version": "v3.3.50",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filamentphp/spatie-laravel-media-library-plugin.git",
+                "reference": "d244fe7031f0cab35576e34352ff6edd5e3fcb9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-media-library-plugin/zipball/d244fe7031f0cab35576e34352ff6edd5e3fcb9f",
+                "reference": "d244fe7031f0cab35576e34352ff6edd5e3fcb9f",
+                "shasum": ""
+            },
+            "require": {
+                "filament/support": "self.version",
+                "illuminate/support": "^10.45|^11.0|^12.0",
+                "php": "^8.1",
+                "spatie/laravel-medialibrary": "^10.0|^11.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Filament\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Filament support for `spatie/laravel-medialibrary`.",
+            "homepage": "https://github.com/filamentphp/filament",
+            "support": {
+                "issues": "https://github.com/filamentphp/filament/issues",
+                "source": "https://github.com/filamentphp/filament"
+            },
+            "time": "2026-02-07T21:52:00+00:00"
         },
         {
             "name": "filament/support",

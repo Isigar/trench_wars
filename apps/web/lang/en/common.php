@@ -53,4 +53,10 @@ return [
     'locale' => [
         'label' => 'Language',
     ],
+
+    /*
+    | Generic table column labels reused across Filament resources (plan 07-05).
+    */
+    'updated_at' => 'Updated',
+    'created_at' => 'Created',
 ];
