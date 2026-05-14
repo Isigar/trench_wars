@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Completed 07-05-PLAN.md (Wave 3: ArticleResource + CategoryResource + tiptap_converter)"
-last_updated: "2026-05-14T00:55:59.951Z"
+stopped_at: Completed 07-06-PLAN.md
+last_updated: "2026-05-14T01:09:01.155Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 87
+  completed_plans: 88
   percent: 67
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 5 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Plan: 6 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -126,6 +126,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P03 | 11m 58s | 2 tasks | 12 files |
 | Phase 07 P04 | 3m 49s | 2 tasks | 7 files |
 | Phase 07 P05 | 13m 37s | 2 tasks | 15 files |
+| Phase 07 P06 | 9m 2s | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -392,6 +393,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-07-05-C: Article slug ->disabledOn('edit') + ->unique(ignoreRecord) form rule (Open Question 4 LOCKED — permalink integrity, no auto-suffix).
 - [Phase ?]: D-07-05-F: CreateArticle::mutateFormDataBeforeCreate force-sets author_user_id = auth()->id() (T-07-05-07 mitigation; form does not expose author_user_id field).
 - [Phase ?]: D-07-05-G: Filament tests use assertFormFieldIsHidden (NOT assertFormFieldHidden — that method does not exist in Filament v3.3).
+- [Phase ?]: D-07-06-A: DiscordOutboundPayloadBuilder lives at app/Support/ not app/Services/ — plan path label was incorrect; extended in-place
+- [Phase ?]: D-07-06-B: Pitfall 10 republish guard uses outbox-row existence query (payload->article_id JSONB lookup) — plan's wasChanged+getOriginal trio passes on republish second leg
+- [Phase ?]: D-07-06-C: config/discord.php is new — Phase 5 placed Discord OAuth in services.php; non-OAuth runtime settings get a dedicated namespace
+- [Phase ?]: D-07-06-F: buildArticleAnnounce uses url('/news/'.slug) — route('blog.show') ships in plan 07-09; one-line migration when route binds
 
 ### Pending Todos
 
@@ -413,6 +418,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T00:55:59.946Z
-Stopped at: Completed 07-05-PLAN.md (Wave 3: ArticleResource + CategoryResource + tiptap_converter)
+Last session: 2026-05-14T01:09:01.151Z
+Stopped at: Completed 07-06-PLAN.md
 Resume file: None
