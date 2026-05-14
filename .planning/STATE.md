@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 7 plan 3 (Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO) COMPLETE; 22 GREEN Pest tests / 0 regressions; Pint + PHPStan L8 clean
-last_updated: "2026-05-14T00:24:15.000Z"
+status: executing
+stopped_at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
+last_updated: "2026-05-14T00:37:54.296Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 85
+  completed_plans: 86
   percent: 67
 ---
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 03 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
-Status: Plan complete — ready for verifier
+Plan: 4 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Status: Ready to execute
 Last activity: 2026-05-14
 
 Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans; 85/95 plans complete)
@@ -124,6 +124,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P01 | 8m 35s | 2 tasks | 32 files |
 | Phase 07 P02 | 7m 14s | 2 tasks | 6 files |
 | Phase 07 P03 | 11m 58s | 2 tasks | 12 files |
+| Phase 07 P04 | 3m 49s | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -383,6 +384,9 @@ Plan-level decisions logged during execution:
 - [Phase 07]: D-07-03-D Article::events() uses morphMany (collection-shaped return) even though events_one_per_owner UNIQUE makes it functionally one-to-one; Tournament + GameMatch use morphOne — Article diverges per plan must_haves to give plan 07-12 sitemap consumers flexibility for batched calendar projections
 - [Phase 07]: D-07-03-E PublicArticleData::fromModel() emits bodyHtml='' as documented partial-impl marker; plan 07-05 wires tiptap_converter()->asHTML; DTO shape stabilises here so 4 downstream plans (07-05, 07-09, 07-10, 07-12) can typehint without further class-modification churn
 - [Phase 07]: D-07-03-F Article media conversions ALL bound to 'hero' collection (the only collection articles use in v1); plan 07-05 SpatieMediaLibraryFileUpload field must use ->collection('hero') matching performOnCollections('hero') — zero re-configuration of disk / collection names downstream
+- [Phase ?]: D-07-04-A: ArticlePolicy::before() admin-bypass excludes delete (super-admin-role double-gate)
+- [Phase ?]: D-07-04-B: Open Question 2 LOCKED via trenchwars:make-cms-editor artisan (mirrors Phase 1 make-admin idiom)
+- [Phase ?]: D-07-04-C: articles.delete is super-admin only (perm-omit + policy-role double-gate per T-07-04-01)
 
 ### Pending Todos
 
@@ -404,6 +408,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T00:09:06.098Z
+Last session: 2026-05-14T00:37:54.293Z
 Stopped at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
 Resume file: None
