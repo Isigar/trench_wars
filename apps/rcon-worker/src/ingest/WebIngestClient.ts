@@ -86,4 +86,44 @@ export class WebIngestClient {
         const parsed = await resp.json().catch(() => null);
         return { status: resp.status, body: parsed };
     }
+
+    /**
+     * Plan 08-11 extension: HMAC-signed GET that returns parsed JSON.
+     *
+     * Used by BookingScheduler to poll `GET /api/internal/bookings/due` and by
+     * MatchLifecycleManager to fetch `GET /api/internal/match-servers/{id}/credentials`.
+     *
+     * For GET the body is empty (""), so the digest input is `timestamp + ""` =
+     * `timestamp` — the timestamp's uniqueness per request still defends against
+     * replay (combined with the worker's X-Rcon-Nonce header). The Laravel-side
+     * VerifyRconSignature middleware (plan 08-05) computes its expected digest
+     * over `timestamp . raw_body` — for GET this is `timestamp . ""` which matches
+     * the byte-for-byte signing we do here.
+     *
+     * Throws on non-2xx status or JSON parse failure so the caller can
+     * differentiate transient failures (handled — logger.warn, no manager spawn)
+     * from happy-path responses.
+     */
+    async fetchSignedJson<T>(path: string): Promise<T> {
+        const body = '';
+        const timestamp = Date.now().toString();
+        const signature = sign(this.opts.secret, body, timestamp);
+        const url = `${this.opts.baseUrl}${path}`;
+
+        const resp = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Rcon-Timestamp': timestamp,
+                'X-Rcon-Nonce': nonce(),
+                'X-Rcon-Signature': signature,
+            },
+        });
+
+        if (resp.status < 200 || resp.status >= 300) {
+            throw new Error(`fetchSignedJson: ${path} returned status ${resp.status}`);
+        }
+
+        return (await resp.json()) as T;
+    }
 }
