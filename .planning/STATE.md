@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-06-PLAN.md
-last_updated: "2026-05-14T01:23:19.816Z"
+stopped_at: Completed 07-08-PLAN.md
+last_updated: "2026-05-14T01:37:08.211Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 89
+  completed_plans: 90
   percent: 67
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 7 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Plan: 8 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -128,6 +128,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P05 | 13m 37s | 2 tasks | 15 files |
 | Phase 07 P06 | 9m 2s | 2 tasks | 10 files |
 | Phase 07-cms P07 | 11m 19s | 2 tasks | 5 files |
+| Phase 07 P08 | 9m 24s | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -401,6 +402,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-07-07-A — chunkById 250-row boundary test shares one Category to avoid Faker UniqueGenerator overflow
 - [Phase ?]: D-07-07-B — container resolution test asserts indirectly via side effect because ArticlePublishService is final and cannot be subclassed/mocked
 - [Phase ?]: D-07-07-C — Schedule entry appended to existing inspire Artisan::command in routes/console.php; no prior Schedule entries existed in Phase 1-6
+- [Phase ?]: D-07-08-A: SearchResultData.rank is a PHP-side ordinal (0-based descending), NOT the raw Postgres ts_rank float — preserves DB ordering without a second SELECT
+- [Phase ?]: D-07-08-B: ts_rank test asserts ordering via term-frequency (NOT title-position weight) — plan 07-02 unweighted vector + 'simple' config cannot differentiate title-vs-excerpt position; future setweight() migration deferred
+- [Phase ?]: D-07-08-C: SearchResultsData factory renamed empty() to forEmptyQuery() to avoid Spatie LaravelData Data::empty() override collision (Rule 3 — framework method LSP)
+- [Phase ?]: D-07-08-F: PlayerPrivacyGate::canShowInSearch added as Rule 2 amendment to Phase 2 gate — tier semantics mirror passesTier; separate entry point keeps SearchService decoupled from controller abort(404)
 
 ### Pending Todos
 
@@ -422,6 +427,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T01:23:19.812Z
-Stopped at: Completed 07-06-PLAN.md
+Last session: 2026-05-14T01:37:08.207Z
+Stopped at: Completed 07-08-PLAN.md
 Resume file: None
