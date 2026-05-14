@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Article;
+use App\Models\Category;
 use App\Models\Clan;
 use App\Models\ClanMembership;
+use App\Policies\ArticlePolicy;
+use App\Policies\CategoryPolicy;
 use App\Policies\ClanMembershipPolicy;
 use App\Policies\ClanPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
- * Source: 02-09-PLAN.md Task 1.
+ * Source: 02-09-PLAN.md Task 1 + 07-04-PLAN.md Task 2 (Article + Category).
  *
  * Registers Policy classes with Laravel's Gate. Laravel 12 does not ship
  * AuthServiceProvider by default; this provider is created explicitly for
@@ -27,6 +31,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Clan::class => ClanPolicy::class,
         ClanMembership::class => ClanMembershipPolicy::class,
+        Article::class => ArticlePolicy::class,
+        Category::class => CategoryPolicy::class,
     ];
 
     /**
