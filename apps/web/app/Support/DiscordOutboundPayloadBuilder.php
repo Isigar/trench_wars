@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\Article;
 use App\Models\GameMatch;
 use App\Models\MatchSlot;
 use App\Models\Tournament;
 use App\Models\TournamentBracket;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Source: .planning/phases/05-discord-bot-v1/05-05-PLAN.md task 1 + 05-RESEARCH.md
@@ -159,6 +161,81 @@ final class DiscordOutboundPayloadBuilder
             'organiser_user_id' => $tournament->organiser_user_id,
             'max_participants' => $tournament->max_participants,
             'is_public' => $tournament->is_public,
+        ];
+    }
+
+    /**
+     * Phase 7 plan 07-06 addition — canonical article-announce payload built by
+     * ArticleObserver when an Article transitions to status='published' for the
+     * FIRST time AND allow_discord_announce=true AND
+     * config('discord.league_announce_channel_id') is non-empty.
+     *
+     * The bot worker (plan 05-11) resolves the destination channel at delivery
+     * time from config('discord.league_announce_channel_id') — this is the
+     * Open Question 1 LOCKED v1 design (a single global league announce channel;
+     * per-article channel override deferred to CMS-V2).
+     *
+     * Shape matches the Discord embed JSON contract that the bot renders:
+     *   - embeds[0].title — article title (locale 'en' canonical)
+     *   - embeds[0].description — article excerpt truncated to 300 chars
+     *   - embeds[0].url — public permalink (route('blog.show'))
+     *   - embeds[0].color — '#10B981' (Open Question 6 LOCKED — CMS green v1)
+     *   - embeds[0].thumbnail.url — hero og-image (1200x630, non-queued conversion)
+     *   - embeds[0].fields[] — { name: 'Category', value: category.name.en }
+     *
+     * The 'kind' field mirrors buildMatchAnnounce / buildTournamentAnnounce so
+     * the bot's renderer can switch on a single key.
+     *
+     * Color stored as a literal hex string '#10B981'. The bot worker is
+     * responsible for converting to the Discord integer color when posting
+     * (some Discord client SDKs require integer, others accept hex — keeping
+     * the canonical hex here gives the worker flexibility).
+     *
+     * Threat refs:
+     *   - T-07-06-02 (Tampering — crafted JSONB in payload): Article.excerpt is
+     *     translatable user content (D-013 trust boundary); the bot renderer
+     *     sanitizes at the Discord-embed boundary, never v-html'd raw on web.
+     *
+     * @return array<string, mixed>
+     */
+    public static function buildArticleAnnounce(Article $a): array
+    {
+        $a->loadMissing(['category']);
+
+        $titleEn = $a->getTranslation('title', 'en', useFallbackLocale: false);
+        $excerptEn = $a->getTranslation('excerpt', 'en', useFallbackLocale: false) ?? '';
+        $categoryName = $a->category?->getTranslation('name', 'en', useFallbackLocale: false) ?? '';
+
+        $ogImageUrl = $a->getFirstMediaUrl('hero', 'og-image');
+        $thumbnailUrl = $ogImageUrl !== '' ? $ogImageUrl : null;
+
+        return [
+            'kind' => 'article_announce',
+            'article_id' => $a->id,
+            'article_slug' => $a->slug,
+            'embeds' => [
+                [
+                    'title' => $titleEn,
+                    'description' => Str::limit($excerptEn, 300, '…'),
+                    // Public permalink — plan 07-09 lands the route('blog.show', ...) binding;
+                    // until then we emit url('/news/' . $slug) which matches the canonical
+                    // permalink used by PublicArticleData::fromModel (07-05) and the
+                    // articles slug column (07-02 unique constraint). The bot worker
+                    // does not differentiate — it forwards the literal URL.
+                    'url' => url('/news/' . $a->slug),
+                    'color' => '#10B981',
+                    'thumbnail' => [
+                        'url' => $thumbnailUrl,
+                    ],
+                    'fields' => [
+                        [
+                            'name' => 'Category',
+                            'value' => $categoryName,
+                            'inline' => true,
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
