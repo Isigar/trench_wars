@@ -221,21 +221,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. When a booked match runs, `rcon-worker` opens a CRCON session, streams normalised events to `web` via HMAC-signed `POST /api/internal/match/{id}/events`, and at `match_end` the system auto-populates `MatchResult` (`source = 'rcon'`) plus per-player `MatchPlayerStat` rows.
   4. CRCON failure modes (unreachable on session open, mid-match log gap, key rotated) degrade gracefully — match flagged for manual entry, error event surfaced in admin, manual override still wins.
   5. Two clans can complete the full round-1 happy path end-to-end: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded result + per-player stats — without manual data entry on the happy path.
-**Plans**: 14 plans
-- [x] 02-01-PLAN.md — Wave 0 scaffolding (composer install + test stubs + factory stubs)
-- [x] 02-02-PLAN.md — Migrations (7 tables incl. partial unique index for D-009)
-- [x] 02-03-PLAN.md — Models (6 new + Player HasTranslations migration) + factories + model tests
-- [x] 02-04-PLAN.md — Seeders (DiscordGuild singleton + ClanTag starter set) + single-row tests
-- [x] 02-05-PLAN.md — PlayerPrivacyGate service + 6 DTOs + 2 unit tests
-- [x] 02-06-PLAN.md — ClanSlugGenerator + i18n key files + 8 Vue UI primitive components
-- [x] 02-07-PLAN.md — Public controllers (Clans Directory/Show + Player Profile) + routes + 4 feature tests
-- [ ] 02-08-PLAN.md — Public Vue pages (Clans/Players) + UserMenu + PublicLayout nav slot
-- [ ] 02-09-PLAN.md — My Clan controllers (Create/Profile/Members) + Policies + MyClanManagementTest
-- [ ] 02-10-PLAN.md — ClanInviteService + controller + ClanInviteTest
-- [ ] 02-11-PLAN.md — ClanApplicationService + MyClan/Index.vue (4-tab UI) + ClanApplicationTest
-- [ ] 02-12-PLAN.md — ClanResource + ClanTagResource (Filament) + 3 RelationManagers + presence test
-- [ ] 02-13-PLAN.md — Remaining Filament resources (Membership/Invite/Application/DiscordGuild) + admin tests
-- [ ] 02-14-PLAN.md — [BLOCKING] phase verification + ROADMAP update + final quality gates
+**Plans**: 13 plans
+- [x] 08-01-PLAN.md — Wave 0 scaffolding (rcon-worker deps install + 10 Pest RED stubs + 3 Vitest RED stubs + 4 factory stubs + lang/en/rcon.php + worker skeletons)
+- [ ] 08-02-PLAN.md — Migrations (match_servers + match_server_bookings w/ btree_gist EXCLUDE + match_player_stats + match_events + match_results.source enum + matches.manual_entry_required + discord_outbound match_result_announce)
+- [ ] 08-03-PLAN.md — MatchServer + MatchServerBooking models w/ encrypted:array cast + EXCLUDE overlap test + MatchResult/GameMatch fillable amendments
+- [ ] 08-04-PLAN.md — MatchEvent + MatchPlayerStat models + factories + idempotency feature test + model unit tests
+- [ ] 08-05-PLAN.md — HMAC middleware (VerifyRconSignature) + HmacVerifier + config/rcon.php + Redis nonce store + 8-case VerifyRconSignatureTest
+- [ ] 08-06-PLAN.md — Internal API endpoints (POST /events + GET /bookings/due + GET /match-servers/{id}/credentials) + 2 DTOs + FormRequest + SignsRconRequests test helper
+- [ ] 08-07-PLAN.md — MatchEventIngestService + MatchEventNormaliser + CloseMatchJob placeholder + controller refactor
+- [ ] 08-08-PLAN.md — MatchPlayerStatAggregator + MatchResultService::upsertFromRcon + CloseMatchJob handle + RconWorkerSystemUserSeeder + ManualOverrideWinsTest + RconMatchResultIngestionTest GREEN
+- [ ] 08-09-PLAN.md — MatchServerResource Filament + BookingsRelationManager + TestMatchServerConnectionJob + CrconHealthProbe + MatchResource manual_entry_required surface + manage-rcon permission
+- [ ] 08-10-PLAN.md — rcon-worker: HmacSigner + CrconClient (ws + reconnect + last_seen_id resume + heartbeat) + CrconEventNormaliser + WebIngestClient + 15 vitest cases
+- [ ] 08-11-PLAN.md — rcon-worker: BookingScheduler + MatchLifecycleManager + RedisFailoverQueue + index.ts entry + 16 vitest cases (9 unit + 7 integration)
+- [ ] 08-12-PLAN.md — SC-5 ScrimE2EHappyPathTest capstone + MatchResultObserver match_result_announce branch + DiscordOutboundPayloadBuilder::buildMatchResultAnnounce + RconAuditLogTest + I18nKeyCoverageTest + shared-types regen
+- [ ] 08-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + 7 quality gates GREEN
 
 ### Phase 9: Polish
 **Goal**: Buffer milestone covering the things every shipping product needs but that don't fit cleanly into a feature-driven phase — notifications, search depth, leaderboards, mod tooling, performance, accessibility, and hardening.
@@ -278,5 +277,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
 | 7. CMS | 13/13 | Complete | 2026-05-14 |
-| 8. RCON automation | 0/TBD | Not started | - |
+| 8. RCON automation | 1/13 | In Progress|  |
 | 9. Polish | 0/TBD | Not started | - |
