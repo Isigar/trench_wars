@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 08-02-PLAN.md (Wave 1 migrations)
-last_updated: "2026-05-14T03:55:08.711Z"
+stopped_at: Completed 08-04-PLAN.md (Wave 3 MatchEvent + MatchPlayerStat models)
+last_updated: "2026-05-14T04:06:27.484Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 108
-  completed_plans: 98
+  completed_plans: 99
   percent: 78
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 3 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
+Plan: 4 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -137,6 +137,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 08 P01 | 11min | 2 tasks | 25 files |
 | Phase 08-rcon-automation P02 | 10min | 2 tasks | 6 files |
 | Phase 08 P03 | 8min | 2 tasks | 10 files |
+| Phase 08-rcon-automation P04 | 7min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -438,6 +439,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 08-02: down() does NOT drop btree_gist extension — CREATE EXTENSION IF NOT EXISTS on up() is idempotent; mirrors 0001 enable_postgres_extensions posture for uuid-ossp/citext.
 - [Phase ?]: Plan 08-03: ALTER credentials_encrypted from jsonb to text — Laravel encrypted:array cast writes a base64 envelope (not JSON); column type must align with cast output.
 - [Phase ?]: Plan 08-03: MatchServerBookingFactory uses explicit forMatch/onServer state helpers (not Eloquent ->for()) — avoids reserved-keyword reflection ambiguity on match() relation.
+- [Phase ?]: MatchEvent uses $timestamps=false (append-only stream — occurred_at + ingested_at handle timeline; migration deliberately omits created_at/updated_at)
+- [Phase ?]: Unit tests opt into RefreshDatabase explicitly — Pest.php global binding only attaches to Feature/, Phase 8 Unit tests use real DB factory fixtures
+- [Phase ?]: DB::transaction() savepoint pattern for UNIQUE-violation probes that need follow-on queries — outer RefreshDatabase transaction otherwise enters failed state on 23505
 
 ### Pending Todos
 
@@ -459,6 +463,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T03:55:05.025Z
-Stopped at: Completed 08-02-PLAN.md (Wave 1 migrations)
+Last session: 2026-05-14T04:06:27.480Z
+Stopped at: Completed 08-04-PLAN.md (Wave 3 MatchEvent + MatchPlayerStat models)
 Resume file: None
