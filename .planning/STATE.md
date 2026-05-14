@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: Completed 09-02-PLAN.md (Wave 1 schema — 7 migrations)
-last_updated: "2026-05-14T07:39:35.143Z"
+stopped_at: Completed 09-04-PLAN.md (Wave 3 — NotificationDispatcher + Schedule cron + 4 observers + prune)
+last_updated: "2026-05-14T07:54:11.584Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 111
+  completed_plans: 112
   percent: 89
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 2 complete)
-Plan: 09-03 COMPLETE (notifications + prefs models + DiscordChannel + 5 Notification classes); next 09-04 (NotificationDispatcher cron + idempotency)
+Phase: 09 (Polish) — IN FLIGHT (Wave 3 complete)
+Plan: 09-04 COMPLETE (NotificationDispatcher + Schedule cron + 4 observers + prune); next 09-05 (LeaderboardService + Cache::tags + leaderboards cache flush in observers)
 Status: Phase 9 in flight
 Last activity: 2026-05-14
 
-Progress: [█████████░] 92% (8/9 phases; 111/120 plans incl. Phase 9 09-01 + 09-02 + 09-03)
+Progress: [█████████░] 93% (8/9 phases; 112/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04)
 
 ## Performance Metrics
 
@@ -149,6 +149,7 @@ Progress: [█████████░] 92% (8/9 phases; 111/120 plans incl. 
 | Phase 09 P01 | ~8min | 1 task tasks | 39 files files |
 | Phase 09 P02 | ~6min | 2 tasks | 7 files |
 | Phase 09 P03 | ~12min | 2 tasks | 19 files |
+| Phase 09 P04 | 573 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -491,6 +492,12 @@ Plan-level decisions logged during execution:
 - [Phase 09]: Plan 09-03 — D-09-03-C — Default-policy fallback in User::enabledNotificationChannels uses array key existence (`$prefs['discord'] ?? $discordDefault`), NOT row presence in the DB. Users with ZERO preference rows still get default policy applied without seeding default rows on signup. Account-settings UI (plan 09-06) will UPSERT preference rows only when the user toggles away from the default; unp_unique constraint handles idempotency. Trade-off: 'default' state is implicit rather than materialised — but materialising defaults would require 5 events × 2 channels = 10 rows per user, AND every default-policy change (e.g. adding a 6th event_type) would need a backfill migration.
 - [Phase 09]: Plan 09-03 — D-09-03-D — `discord_id` "no snowflake" edge case is tested via empty string (`''`), NOT NULL discord_id (users.discord_id is text NOT NULL UNIQUE per D-002 Discord OAuth canonical). The enabledNotificationChannels guard `if (! empty($this->discord_id))` is defensive code that handles both null and empty string identically via empty(); if D-002 ever relaxes (e.g. email-only accounts), the guard already covers it. Testing via empty string exercises the same empty() branch without violating NOT NULL.
 - [Phase 09]: Plan 09-03 — Wave 2 landed: 5 Eloquent models (Notification, UserNotificationPreference, Ban, MatchDispute, AbuseReport) + 5 Notification classes (MatchStartingSoon, MatchCancelled, MatchResultPublished, ClanApplicationDecided, ClanInviteReceived) + DiscordChannel + 4 real factories. Pitfall 3 LOCKED (Http::assertNothingSent on DiscordChannel::send — D-004 compliance) + Pitfall 4 LOCKED (every Notification has unique databaseType discriminator via reflection test). Pest 1153 passed + 27 skipped (delta: +19 / −3 Wave 0 stubs turned GREEN). PHPStan L8 OK. Pint 19/19 PASS.
+- [Phase ?]: D-09-04-A: NotificationDispatcher uses GameMatch::slots.occupantUser + Clan::activeMembers.user relations (plan-vs-reality drift)
+- [Phase ?]: D-09-04-B: dispatcher match-status filter whereIn('status',['open','locked']) — matches enum has no 'scheduled' value
+- [Phase ?]: D-09-04-C: MatchObserver cancel trigger fires on (status=cancelled AND original!=cancelled)
+- [Phase ?]: D-09-04-D: ClanApplicationObserver guards pending->{accepted,declined} (schema enum vocabulary, not plan's approved/rejected)
+- [Phase ?]: D-09-04-E: MatchResultPublished fires from MatchResultObserver::created() only — score-edits do NOT re-notify
+- [Phase ?]: D-09-04-F: Guest-clan recipients for MatchResultPublished deferred — v1 GameMatch is host-clan only (no away_clan_id column)
 
 ### Pending Todos
 
@@ -512,6 +519,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T07:21:38Z
-Stopped at: Completed 09-02-PLAN.md (Wave 1 schema — 7 migrations)
+Last session: 2026-05-14T07:54:11.579Z
+Stopped at: Completed 09-04-PLAN.md (Wave 3 — NotificationDispatcher + Schedule cron + 4 observers + prune)
 Resume file: None
