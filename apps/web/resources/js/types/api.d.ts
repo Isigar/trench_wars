@@ -129,6 +129,25 @@ display_name: Record<string, string> | null,
 sort_order: number,
 is_active: boolean,
 };
+export type LeaderboardClanEntryData = {
+clan_id: string,
+clan_name: string,
+clan_slug: string,
+logo_url: string | null,
+kills: number,
+matches_played: number,
+wins: number,
+};
+export type LeaderboardEntryData = {
+player_id: string,
+player_name: string,
+clan_name: string | null,
+kills: number,
+deaths: number,
+kdr: number | null,
+matches_played: number,
+is_anonymous: boolean,
+};
 export type MatchAccessRuleData = {
 id: string,
 match_id: string,
