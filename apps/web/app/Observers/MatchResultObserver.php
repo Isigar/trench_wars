@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Models\DiscordOutboundMessage;
 use App\Models\MatchResult;
 use App\Services\BracketAdvancementService;
+use App\Support\DiscordOutboundPayloadBuilder;
 
 /**
  * Source: .planning/phases/06-tournaments-brackets/06-08-PLAN.md Task 2 +
@@ -63,11 +65,16 @@ class MatchResultObserver
      */
     public function created(MatchResult $result): void
     {
-        if ($result->winner_clan_id === null) {
-            return;
+        // Phase 6 BracketAdvancement — only fires when a winner has been
+        // recorded. Round-1 RCON-sourced results land with winner_clan_id=null
+        // (CRCON cannot map allies/axis labels to clan IDs deterministically);
+        // the bracket advance is a no-op in that case.
+        if ($result->winner_clan_id !== null) {
+            app(BracketAdvancementService::class)->advance($result);
         }
 
-        app(BracketAdvancementService::class)->advance($result);
+        // Phase 8 plan 08-12 — RCON-sourced result announce.
+        $this->maybeAnnounceRconResult($result);
     }
 
     /**
@@ -81,21 +88,85 @@ class MatchResultObserver
      */
     public function updated(MatchResult $result): void
     {
-        if ($result->winner_clan_id === null) {
+        // Phase 6 BracketAdvancement gated on a relevant attribute change AND
+        // a non-null winner_clan_id (round-1 RCON results never advance the
+        // bracket — they're scrims, not tournament matches).
+        if ($result->winner_clan_id !== null) {
+            $relevantChange = $result->wasChanged([
+                'winner_clan_id',
+                'allies_score',
+                'axis_score',
+                'recorded_at',
+            ]);
+
+            if ($relevantChange) {
+                app(BracketAdvancementService::class)->advance($result);
+            }
+        }
+
+        // Phase 8 plan 08-12 — re-runs of upsertFromRcon hit the `updated`
+        // path; the `alreadyAnnounced` guard inside maybeAnnounceRconResult
+        // keeps the outbox row count idempotent (must_haves.truths #2 +
+        // T-08-12-02 mitigation — RconBotResultAnnounceTest case 4).
+        $this->maybeAnnounceRconResult($result);
+    }
+
+    /**
+     * Phase 8 plan 08-12 — outbound match-result announce branch.
+     *
+     * Fires when:
+     *   - $result->source === 'rcon'                  (D-019 — only auto-recorded results announce)
+     *   - $result->match->host_clan_id !== null       (we need a host clan to resolve the channel)
+     *   - $result->match->hostClan->discord_announce_channel_id is non-null
+     *   - No prior `match_result_announce` row exists for this match (idempotency)
+     *
+     * The destination channel resolution mirrors the Phase 5 outbox pattern: the
+     * outbox `channel_id` column carries the resolved Discord snowflake; the bot
+     * worker posts to whatever channel the row names. We resolve here (not in the
+     * builder) because the builder is shape-only — the outbox row stores the
+     * routing decision so a channel-id rename mid-flight still emits the correct
+     * snowflake-of-record at the time the result landed.
+     *
+     * Threat refs:
+     *   - T-08-12-01 — payload uses `display_name` only (never Steam ID); enforced
+     *     in DiscordOutboundPayloadBuilder::buildMatchResultAnnounce.
+     *   - T-08-12-02 — alreadyAnnounced check makes the observer re-fire safe.
+     */
+    private function maybeAnnounceRconResult(MatchResult $result): void
+    {
+        if ($result->source !== 'rcon') {
             return;
         }
 
-        $relevantChange = $result->wasChanged([
-            'winner_clan_id',
-            'allies_score',
-            'axis_score',
-            'recorded_at',
+        $result->loadMissing(['match.hostClan']);
+
+        $match = $result->match;
+        if ($match === null || $match->host_clan_id === null) {
+            return;
+        }
+
+        $channelId = $match->hostClan?->discord_announce_channel_id;
+        if ($channelId === null || $channelId === '') {
+            return;
+        }
+
+        $alreadyAnnounced = DiscordOutboundMessage::query()
+            ->where('message_type', 'match_result_announce')
+            ->whereJsonContains('payload->match_id', $result->match_id)
+            ->exists();
+
+        if ($alreadyAnnounced) {
+            return;
+        }
+
+        $payload = DiscordOutboundPayloadBuilder::buildMatchResultAnnounce($result);
+
+        DiscordOutboundMessage::create([
+            'channel_id' => $channelId,
+            'message_type' => 'match_result_announce',
+            'status' => 'pending',
+            'payload' => $payload,
+            'causer_user_id' => null,
         ]);
-
-        if (! $relevantChange) {
-            return;
-        }
-
-        app(BracketAdvancementService::class)->advance($result);
     }
 }

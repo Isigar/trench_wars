@@ -6,6 +6,8 @@ namespace App\Support;
 
 use App\Models\Article;
 use App\Models\GameMatch;
+use App\Models\MatchPlayerStat;
+use App\Models\MatchResult;
 use App\Models\MatchSlot;
 use App\Models\Tournament;
 use App\Models\TournamentBracket;
@@ -236,6 +238,110 @@ final class DiscordOutboundPayloadBuilder
                     ],
                 ],
             ],
+        ];
+    }
+
+    /**
+     * Phase 8 plan 08-12 addition — canonical match-result-announce payload built
+     * by MatchResultObserver when an RCON-sourced MatchResult lands AND the parent
+     * GameMatch has a non-null host_clan_id (so we can resolve the destination
+     * Discord channel).
+     *
+     * Shape mirrors buildMatchAnnounce / buildBracketResult conventions:
+     *   - kind                  match_result_announce
+     *   - match_id              UUID of the parent GameMatch
+     *   - allies_score / axis_score  ints from CRCON match_end payload
+     *   - winner_clan_name      pre-resolved server-side (eager-loaded winnerClan)
+     *   - embeds[]              Discord embed shape consumed by bot renderer
+     *
+     * The embed contains three fields:
+     *   - Score                ":allies - :axis" (both nullable, '—' fallback)
+     *   - Winner               winnerClan->name or '—' when null
+     *   - MVPs                 top-3 from match_player_stats ordered by (kills-deaths) DESC,
+     *                          formatted as one line per player: "username: K{n}/D{n}"
+     *
+     * **T-08-12-01 mitigation:** the MVP list emits only `player->username` —
+     * `steam_id_64` is NEVER surfaced in the embed. The Discord channel may be
+     * public, and a public-channel announce must never leak Steam IDs.
+     *
+     * **N+1 safety:** eager-loads `winnerClan` + the MatchPlayerStat::with('player')
+     * top-3 query is bounded to 3 rows. No nested loops fire DB hits per row.
+     *
+     * @return array<string, mixed>
+     */
+    public static function buildMatchResultAnnounce(MatchResult $result): array
+    {
+        $result->loadMissing(['match', 'winnerClan']);
+
+        /** @var Collection<int, MatchPlayerStat> $stats */
+        $stats = MatchPlayerStat::with('player')
+            ->where('match_id', $result->match_id)
+            ->orderByRaw('(kills - deaths) DESC')
+            ->limit(3)
+            ->get();
+
+        $allies = $result->allies_score !== null ? (string) $result->allies_score : '—';
+        $axis = $result->axis_score !== null ? (string) $result->axis_score : '—';
+        // PHPStan infers winnerClan as non-null from the BelongsTo signature, but
+        // T-08-12 + plan 08-08 (Round-1 RCON results have winner_clan_id=NULL)
+        // means the relation IS nullable in practice. The `winner_clan_id`
+        // explicit check keeps PHPStan happy while preserving the same fallback.
+        $winnerName = $result->winner_clan_id !== null
+            ? ($result->winnerClan->name ?? '—')
+            : '—';
+
+        // Player.slug is NOT NULL at the DB layer (plan 01 players migration);
+        // display_name IS nullable. PHPStan's view of MatchPlayerStat->player is
+        // `Player|null` (BelongsTo on a NOT-NULL FK is logically non-null but
+        // not declared as such), so guard with a nullsafe + 'unknown' fallback
+        // to keep the call chain safe in PHPStan's view + at runtime.
+        $resolveUsername = static function (MatchPlayerStat $s): string {
+            $player = $s->player;
+            if ($player === null) {
+                return 'unknown';
+            }
+
+            return $player->display_name ?? $player->slug;
+        };
+
+        $mvpLines = $stats->map(fn (MatchPlayerStat $s): string => $resolveUsername($s) . ': K' . $s->kills . '/D' . $s->deaths)->all();
+
+        $mvpsValue = $mvpLines === [] ? '—' : implode("\n", $mvpLines);
+
+        $mvpsData = $stats->map(fn (MatchPlayerStat $s): array => [
+            'username' => $resolveUsername($s),
+            'kills' => (int) $s->kills,
+            'deaths' => (int) $s->deaths,
+        ])->all();
+
+        return [
+            'kind' => 'match_result_announce',
+            'match_id' => $result->match_id,
+            'allies_score' => $result->allies_score,
+            'axis_score' => $result->axis_score,
+            'winner_clan_name' => $result->winnerClan?->name,
+            'mvps' => $mvpsData,
+            'embeds' => [[
+                'title' => __('rcon.embed.match_result.title', ['match' => $result->match_id]),
+                'color' => 0x9B2C3D,
+                'fields' => [
+                    [
+                        'name' => __('rcon.embed.match_result.score'),
+                        'value' => $allies . ' - ' . $axis,
+                        'inline' => true,
+                    ],
+                    [
+                        'name' => __('rcon.embed.match_result.winner'),
+                        'value' => $winnerName,
+                        'inline' => true,
+                    ],
+                    [
+                        'name' => __('rcon.embed.match_result.mvps'),
+                        'value' => $mvpsValue,
+                        'inline' => false,
+                    ],
+                ],
+            ]],
         ];
     }
 

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Data\Internal\MatchEventInputData;
 use App\Models\GameMatch;
 use App\Models\MatchEvent;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 /**
  * Source: .planning/phases/08-rcon-automation/08-04-PLAN.md task 1 +
@@ -179,5 +181,50 @@ class MatchEventFactory extends Factory
             'crcon_stream_id' => null,
             'payload' => ['kind' => $kind, 'detail' => $detail],
         ]);
+    }
+
+    /**
+     * Plan 08-12 helper — produce the WIRE-FORMAT array shape that the
+     * `POST /api/internal/match/{match}/events` endpoint expects (NOT a model).
+     *
+     * Used by ScrimE2EHappyPathTest (SC-5) to drive the full ingest pipeline via
+     * the HTTP layer instead of bypassing it with MatchEvent::create() calls. The
+     * returned shape mirrors {@see MatchEventInputData} and is
+     * validated by StoreMatchEventsRequest's rules.
+     *
+     * Resolves the same factory state pipeline as `make()` so chaining all the
+     * existing state helpers (`->kill()`, `->matchEnd()`, etc.) yields a wire
+     * payload identical in payload shape to a `->make()` model — only the
+     * envelope differs (no `match_id`, ISO-8601 `occurred_at` string).
+     *
+     * @return array<string, mixed>
+     */
+    public function wireMake(): array
+    {
+        /** @var MatchEvent $event */
+        $event = $this->makeOne();
+
+        // PHPStan reads occurred_at as `string|null` from the model's $casts
+        // declaration, but on a make()'d instance (not yet persisted/refetched)
+        // the attribute may still be the raw Carbon value the factory put there.
+        // Carbon::parse accepts both — Carbon strings AND any DateTimeInterface
+        // (via __toString) — so we stringify before parsing to satisfy both the
+        // runtime AND PHPStan's view.
+        $raw = $event->occurred_at;
+        if ($raw === null) {
+            $iso = now()->toIso8601String();
+        } else {
+            // Carbon-as-string is safe; Carbon's __toString emits ISO-compatible
+            // output that Carbon::parse accepts losslessly.
+            $iso = Carbon::parse((string) $raw)->toIso8601String();
+        }
+
+        return [
+            'crcon_stream_id' => $event->crcon_stream_id,
+            'event_type' => $event->event_type,
+            'crcon_action' => $event->crcon_action,
+            'payload' => $event->payload,
+            'occurred_at' => $iso,
+        ];
     }
 }

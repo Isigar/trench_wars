@@ -74,4 +74,25 @@ return [
         'test_connection_ok' => 'TestConnection succeeded — :server reachable + log stream open.',
         'test_connection_error' => 'TestConnection failed for :server — :reason.',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Discord embed copy (plan 08-12 — match_result_announce)
+    |--------------------------------------------------------------------------
+    | Consumed by:
+    |   - DiscordOutboundPayloadBuilder::buildMatchResultAnnounce (web)
+    |   - apps/bot embed renderer (Phase 5 outbox poller; resolves these via the
+    |     localized payload — Phase 5 D-013 i18n contract)
+    |
+    | `:match` is the GameMatch UUID (operator/admin debug aid; renderers may
+    | truncate to a short hash before display).
+    */
+    'embed' => [
+        'match_result' => [
+            'title' => 'Match result · :match',
+            'score' => 'Score (Allies — Axis)',
+            'winner' => 'Winner',
+            'mvps' => 'MVPs',
+        ],
+    ],
 ];

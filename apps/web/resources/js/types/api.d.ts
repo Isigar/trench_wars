@@ -154,6 +154,17 @@ player_id: string,
 category: string,
 value: number | null,
 };
+export type MatchResultAnnounceData = {
+match_id: string,
+allies_score: number | null,
+axis_score: number | null,
+winner_clan_name: string | null,
+mvps: {
+username: string,
+kills: number,
+deaths: number,
+}[],
+};
 export type MatchResultData = {
 id: string,
 match_id: string,

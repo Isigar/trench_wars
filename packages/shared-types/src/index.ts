@@ -54,3 +54,15 @@ export type TournamentStandingData = App.Data.TournamentStandingData;
 export type BracketNodeData = App.Data.BracketNodeData;
 export type BracketEdgeData = App.Data.BracketEdgeData;
 export type ParticipantSummary = App.Data.ParticipantSummary;
+
+// Phase 8 DTOs — RCON automation
+//   - MatchEventInputData     : wire INPUT shape for POST /api/internal/match/{id}/events
+//   - BookingDueData          : wire OUTPUT shape for GET  /api/internal/bookings/due
+//   - MatchResultAnnounceData : payload shape produced by DiscordOutboundPayloadBuilder
+//                               ::buildMatchResultAnnounce and persisted as the JSONB
+//                               payload of a `match_result_announce` outbox row.
+// The first two live under the App.Data.Internal sub-namespace because spatie/laravel-data
+// reflects PHP namespaces into nested TS namespaces (`App\Data\Internal\X` → `App.Data.Internal.X`).
+export type MatchEventInputData = App.Data.Internal.MatchEventInputData;
+export type BookingDueData = App.Data.Internal.BookingDueData;
+export type MatchResultAnnounceData = App.Data.MatchResultAnnounceData;
