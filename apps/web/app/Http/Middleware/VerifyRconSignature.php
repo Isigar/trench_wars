@@ -7,6 +7,7 @@ namespace App\Http\Middleware;
 use App\Support\Hmac\HmacVerifier;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -59,9 +60,11 @@ final class VerifyRconSignature
             abort(401, 'missing rcon auth headers');
         }
 
-        /** @var int $freshnessWindowMs */
         $freshnessWindowMs = (int) config('rcon.freshness_window_ms', 60_000);
-        $nowMs = (int) (microtime(true) * 1000);
+        // Use Carbon::now() so Carbon::setTestNow() in tests pins the clock.
+        // `microtime(true) * 1000` would bypass the test-now binding and break
+        // deterministic timestamp assertions in the Pest suite.
+        $nowMs = (int) (Carbon::now()->getTimestamp() * 1000) + (int) (Carbon::now()->milli);
         $age = abs($nowMs - (int) $timestamp);
         if ($age > $freshnessWindowMs) {
             abort(401, 'stale signature');
