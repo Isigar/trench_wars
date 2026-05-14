@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Matches (manual)** — Matches can be created, signed up to, played, and results entered manually.
 - [x] **Phase 5: Discord bot v1** — Most match interactions can happen from Discord (slash commands, modals, RSVPs, role sync). _Completed 2026-05-13_
 - [x] **Phase 6: Tournaments & brackets** — Run an end-to-end tournament with a bracket UI and standings. _Completed 2026-05-14_
-- [ ] **Phase 7: CMS** — League can publish editorial content and curate the public calendar.
+- [x] **Phase 7: CMS** — League can publish editorial content and curate the public calendar. _Completed 2026-05-14_
 - [ ] **Phase 8: RCON automation** — Match results and player stats flow in automatically from CRCON when matches are played on registered servers.
 - [ ] **Phase 9: Polish** — Notifications, search, leaderboards, mod tooling, performance, accessibility, and hardening.
 
@@ -207,8 +207,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 07-10-PLAN.md — 4 Vue pages (Articles/Index, Articles/Show, Events/Index, Search/Results) + 4 Cms/* components + PublicLayout SearchBar + FullCalendar mount
 - [x] 07-11-PLAN.md — Inertia v2 SSR enable + 6th ssr docker-compose service (Open Question 7 LOCKED — split service)
 - [x] 07-12-PLAN.md — sitemap:generate + Sitemapable on 3 models + Inertia <Head> meta tags + CmsI18nKeyCoverageTest + ArticleAuditLogTest
-- [ ] 07-13-PLAN.md — [BLOCKING] phase verification + ROADMAP update + REQUIREMENTS update + final quality gates
+- [x] 07-13-PLAN.md — [BLOCKING] phase verification + ROADMAP/REQUIREMENTS/STATE updates + 7 quality gates GREEN
 **UI hint**: yes
+**Completed**: 2026-05-14
 
 ### Phase 8: RCON automation
 **Goal**: Close the round-1 acceptance loop — when a match is played on a registered match server, results and per-player stats arrive automatically from CRCON, with manual override always available as a safety net.
@@ -276,6 +277,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
-| 7. CMS | 3/13 | In Progress | - |
+| 7. CMS | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | 0/TBD | Not started | - |
 | 9. Polish | 0/TBD | Not started | - |

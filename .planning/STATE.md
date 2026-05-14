@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 07-08-PLAN.md
-last_updated: "2026-05-14T02:36:34.122Z"
+status: "Phase 7 COMPLETE (PENDING_MANUAL_SMOKE) — 07-13-PLAN.md executed; 07-PHASE-VERIFICATION.md authored; ROADMAP/REQUIREMENTS/STATE updated"
+stopped_at: "Phase 7 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 8 ready"
+last_updated: "2026-05-14T02:45:40.490Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 95
-  completed_plans: 94
-  percent: 67
+  completed_plans: 95
+  percent: 78
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 07 — CMS (next; Phase 6 closed PENDING_MANUAL_SMOKE for 4-item operator walkthrough A-D per 06-PHASE-VERIFICATION.md)
+**Current focus:** Phase 08 — RCON automation (next; Phase 7 closed PENDING_MANUAL_SMOKE for 4-item operator walkthrough A-D per 07-PHASE-VERIFICATION.md)
 
 ## Current Position
 
-Phase: 07 (CMS) — IN PROGRESS
-Plan: 12 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
-Status: Ready to execute
+Phase: 07 (CMS) — COMPLETE PENDING_MANUAL_SMOKE
+Plan: 13 of 13 complete (07-13 phase verification + ROADMAP/REQUIREMENTS/STATE updates + 7 quality gates GREEN)
+Status: Ready to plan Phase 8 (RCON automation)
 Last activity: 2026-05-14
 
-Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans; 85/95 plans complete)
+Progress: [████████░░] 78% (7/9 phases; 95/95 v1 plans complete; 0/TBD Phase 8 plans)
 
 ## Performance Metrics
 
@@ -133,6 +133,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P10 | 18m 04s | 2 tasks | - files |
 | Phase 07-cms P11 | 5min | 2 tasks | 5 files |
 | Phase 07 P12 | 12min | 2 tasks | 14 files |
+| Phase 07 P13 | ~8min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -426,6 +427,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Category is NOT a Sitemapable in v1 (no public show route); deferred to v2 alongside CategoryShowController
 - [Phase ?]: Individual Player URLs NEVER per-row in sitemap (T-07-12-01 hard rule); only /players index URL exposed
 - [Phase ?]: Search/Results.vue ships head-key='robots' content='noindex' (T-07-12-08) — must not be indexed
+- [Phase 07]: Plan 07-13 — Phase 7 COMPLETE PENDING_MANUAL_SMOKE; 1037 web Pest tests / 3471 assertions (+171 web / +752 assertions from Phase 6 close) + 139 bot Vitest tests (regressionless from Phase 6); all 7 quality gates GREEN (Pest, Vitest, Pint 507 files clean, PHPStan L8 [OK], bot tsc strict, shared-types tsc, vue-tsc); 07-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-goal-cms + REQ-success-public-browse + 12 Pitfalls + 8 Open Questions RESOLVED inline + ~50 D-07-* canonical bindings; ROADMAP Phase 7 13/13 Complete (2026-05-14); REQUIREMENTS REQ-goal-cms + REQ-success-public-browse confirmed Complete; STATE completed_phases 6 -> 7 + completed_plans 94 -> 95 + percent 67 -> 78; status PENDING_MANUAL_SMOKE pending operator 4-item walkthrough A-D (Filament editor flow / FullCalendar UX / search ranking / sitemap + Discord announce + SSR first-paint)
+- [Phase 07]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 7 (CalendarFeedService projections, SearchService joins, Article observer chain, tests); zero alias-on-import; canonical binding for Phase 8+ RCON plans — RCON-driven MatchResult create + per-player MatchPlayerStat MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A / D-07-* continuation
 
 ### Pending Todos
 
@@ -447,6 +450,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T02:36:14.331Z
-Stopped at: Completed 07-08-PLAN.md
+Last session: 2026-05-14T02:45:40.490Z
+Stopped at: Phase 7 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 8 ready
 Resume file: None
