@@ -21,8 +21,8 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### RCON & Match History
 
-- [ ] **REQ-goal-rcon-history**: When a match is played on a registered match server, MatchResult and per-player MatchPlayerStat rows are populated automatically from CRCON events. (D-005, D-019)
-- [ ] **REQ-constraint-league-owns-servers**: League-owned HLL match servers are league-managed entries; CRCON deployment alongside each server is in scope; no per-clan-managed servers in round 1.
+- [x] **REQ-goal-rcon-history**: When a match is played on a registered match server, MatchResult and per-player MatchPlayerStat rows are populated automatically from CRCON events. (D-005, D-019)
+- [x] **REQ-constraint-league-owns-servers**: League-owned HLL match servers are league-managed entries; CRCON deployment alongside each server is in scope; no per-clan-managed servers in round 1.
 
 ### Profiles & Privacy
 
@@ -47,7 +47,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### Round-1 Acceptance Gates
 
-- [ ] **REQ-success-end-to-end-scrim**: End-to-end flow works without manual data entry on the happy path: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded MatchResult + MatchPlayerStat.
+- [x] **REQ-success-end-to-end-scrim**: End-to-end flow works without manual data entry on the happy path: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded MatchResult + MatchPlayerStat.
 - [x] **REQ-success-tournament-end-to-end**: An 8-clan single-elim tournament can be created, seeded, brackets generated, matches materialised, played, results captured, advancements computed — without admin patching.
 - [x] **REQ-success-public-browse**: All public surfaces (clans, players, calendar, bracket views, articles) are accessible without auth; SSR enabled in production for first paint on public pages.
 
@@ -119,9 +119,9 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-success-tournament-end-to-end | Phase 6 | Complete |
 | REQ-goal-cms | Phase 7 | Complete |
 | REQ-success-public-browse | Phase 7 | Complete |
-| REQ-goal-rcon-history | Phase 8 | Pending |
-| REQ-constraint-league-owns-servers | Phase 8 | Pending |
-| REQ-success-end-to-end-scrim | Phase 8 | Pending |
+| REQ-goal-rcon-history | Phase 8 | Complete |
+| REQ-constraint-league-owns-servers | Phase 8 | Complete |
+| REQ-success-end-to-end-scrim | Phase 8 | Complete |
 | REQ-non-goals-round-1 | (Out of Scope) | N/A — acceptance is "none of these ship in round 1"; documented in Out of Scope table above |
 
 **Coverage:**

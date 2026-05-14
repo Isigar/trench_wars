@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 8 Plan 01 complete — Wave 0 scaffolding green (10 Pest RED + 3 Vitest RED + worker deps + i18n)
-last_updated: "2026-05-14T03:29:31.419Z"
+status: executing
+stopped_at: Completed 08-02-PLAN.md (Wave 1 migrations)
+last_updated: "2026-05-14T03:43:44.154Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 108
-  completed_plans: 96
+  completed_plans: 97
   percent: 78
 ---
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 1 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
-Status: Plan complete — ready for plan 08-02 (Wave 1 migrations)
+Plan: 2 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
+Status: Ready to execute
 Last activity: 2026-05-14
 
 Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 8: 1/13 plans)
@@ -135,6 +135,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 07 P12 | 12min | 2 tasks | 14 files |
 | Phase 07 P13 | ~8min | 2 tasks | 5 files |
 | Phase 08 P01 | 11min | 2 tasks | 25 files |
+| Phase 08-rcon-automation P02 | 10min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -431,6 +432,9 @@ Plan-level decisions logged during execution:
 - [Phase 07]: Plan 07-13 — Phase 7 COMPLETE PENDING_MANUAL_SMOKE; 1037 web Pest tests / 3471 assertions (+171 web / +752 assertions from Phase 6 close) + 139 bot Vitest tests (regressionless from Phase 6); all 7 quality gates GREEN (Pest, Vitest, Pint 507 files clean, PHPStan L8 [OK], bot tsc strict, shared-types tsc, vue-tsc); 07-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-goal-cms + REQ-success-public-browse + 12 Pitfalls + 8 Open Questions RESOLVED inline + ~50 D-07-* canonical bindings; ROADMAP Phase 7 13/13 Complete (2026-05-14); REQUIREMENTS REQ-goal-cms + REQ-success-public-browse confirmed Complete; STATE completed_phases 6 -> 7 + completed_plans 94 -> 95 + percent 67 -> 78; status PENDING_MANUAL_SMOKE pending operator 4-item walkthrough A-D (Filament editor flow / FullCalendar UX / search ranking / sitemap + Discord announce + SSR first-paint)
 - [Phase 07]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 7 (CalendarFeedService projections, SearchService joins, Article observer chain, tests); zero alias-on-import; canonical binding for Phase 8+ RCON plans — RCON-driven MatchResult create + per-player MatchPlayerStat MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A / D-07-* continuation
 - [Phase ?]: Phase 8 Plan 01 (2026-05-14): undici pinned to ^7 NOT ^8 for Node 22 fetch-compat (nodejs/undici#3901); Pino redact paths baked in at Wave 0 (T-08-01-02 mitigation prep); admin.audit.match_servers.* nested INSIDE existing top-level audit array to avoid Phase 1-7 regression.
+- [Phase ?]: Plan 08-02: aligned with on-disk reality for discord_outbound CHECK constraint name (doutmsg_message_type_chk, not plan-text-claimed discord_outbound_messages_message_type_check) and 7-value baseline (Rule 1, Phase 7 plan 07-02 precedent).
+- [Phase ?]: Plan 08-02: added match_server_bookings_range_check (reserved_to > reserved_from) as defence-in-depth alongside EXCLUDE — Postgres treats empty/inverted ranges as never-overlapping, so the CHECK closes that escape (Rule 2).
+- [Phase ?]: Plan 08-02: down() does NOT drop btree_gist extension — CREATE EXTENSION IF NOT EXISTS on up() is idempotent; mirrors 0001 enable_postgres_extensions posture for uuid-ossp/citext.
 
 ### Pending Todos
 
@@ -452,6 +456,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T03:29:21.536Z
-Stopped at: Phase 7 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 8 ready
+Last session: 2026-05-14T03:43:44.150Z
+Stopped at: Completed 08-02-PLAN.md (Wave 1 migrations)
 Resume file: None

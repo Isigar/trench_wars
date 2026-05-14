@@ -223,7 +223,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Two clans can complete the full round-1 happy path end-to-end: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded result + per-player stats — without manual data entry on the happy path.
 **Plans**: 13 plans
 - [x] 08-01-PLAN.md — Wave 0 scaffolding (rcon-worker deps install + 10 Pest RED stubs + 3 Vitest RED stubs + 4 factory stubs + lang/en/rcon.php + worker skeletons)
-- [ ] 08-02-PLAN.md — Migrations (match_servers + match_server_bookings w/ btree_gist EXCLUDE + match_player_stats + match_events + match_results.source enum + matches.manual_entry_required + discord_outbound match_result_announce)
+- [x] 08-02-PLAN.md — Migrations (match_servers + match_server_bookings w/ btree_gist EXCLUDE + match_player_stats + match_events + match_results.source enum + matches.manual_entry_required + discord_outbound match_result_announce)
 - [ ] 08-03-PLAN.md — MatchServer + MatchServerBooking models w/ encrypted:array cast + EXCLUDE overlap test + MatchResult/GameMatch fillable amendments
 - [ ] 08-04-PLAN.md — MatchEvent + MatchPlayerStat models + factories + idempotency feature test + model unit tests
 - [ ] 08-05-PLAN.md — HMAC middleware (VerifyRconSignature) + HmacVerifier + config/rcon.php + Redis nonce store + 8-case VerifyRconSignatureTest
