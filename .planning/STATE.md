@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 07-08-PLAN.md
-last_updated: "2026-05-14T01:37:08.211Z"
+last_updated: "2026-05-14T01:52:46.737Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 90
+  completed_plans: 91
   percent: 67
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 8 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Plan: 9 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -129,6 +129,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P06 | 9m 2s | 2 tasks | 10 files |
 | Phase 07-cms P07 | 11m 19s | 2 tasks | 5 files |
 | Phase 07 P08 | 9m 24s | 2 tasks | 9 files |
+| Phase 07 P09 | 11m 22s | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -406,6 +407,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-07-08-B: ts_rank test asserts ordering via term-frequency (NOT title-position weight) — plan 07-02 unweighted vector + 'simple' config cannot differentiate title-vs-excerpt position; future setweight() migration deferred
 - [Phase ?]: D-07-08-C: SearchResultsData factory renamed empty() to forEmptyQuery() to avoid Spatie LaravelData Data::empty() override collision (Rule 3 — framework method LSP)
 - [Phase ?]: D-07-08-F: PlayerPrivacyGate::canShowInSearch added as Rule 2 amendment to Phase 2 gate — tier semantics mirror passesTier; separate entry point keeps SearchService decoupled from controller abort(404)
+- [Phase ?]: D-07-09-A: Retain ArticleSummaryData (do not collapse to PublicArticleData) — listing cards drop bodyHtml + heroOgImageUrl to save tiptap_converter render cost per card
+- [Phase ?]: D-07-09-B: /events/feed.json route declared BEFORE /events (Phase 6 D-06-12-C continuation) so first-match-wins captures the .json suffix
+- [Phase ?]: D-07-09-C: EventsFeedRequest uses per-request endUpperBound() helper for 90-day range cap — Laravel grammar does not support before_or_equal:start+90 days
+- [Phase ?]: D-07-09-D: Open Question 6 LOCKED color palette inline in CalendarEventData::colourFor — match=#3B82F6, tournament=#8B5CF6, article=#10B981
+- [Phase ?]: D-07-09-E: Web routes return 302+session errors on validation failure (not JSON 422); /events/feed.json with getJson() returns 422
+- [Phase ?]: D-07-09-F: Inertia data-page attribute is htmlspecialchars(ENT_QUOTES) double-encoded — apostrophes become &#039; (T-07-09-06 XSS mitigation proof)
 
 ### Pending Todos
 
@@ -427,6 +434,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T01:37:08.207Z
+Last session: 2026-05-14T01:52:12.160Z
 Stopped at: Completed 07-08-PLAN.md
 Resume file: None
