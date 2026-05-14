@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\ClanApplicationObserver;
 use Database\Factories\ClanApplicationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,5 +69,16 @@ class ClanApplication extends Model
     public function decidedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'decided_by');
+    }
+
+    /**
+     * Register ClanApplicationObserver — Phase 9 plan 09-04.
+     *
+     * Fires ClanApplicationDecided on pending→accepted|declined transitions.
+     * static::observe is idempotent (D-04-08-B precedent).
+     */
+    protected static function booted(): void
+    {
+        static::observe(ClanApplicationObserver::class);
     }
 }

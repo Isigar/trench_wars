@@ -7,6 +7,8 @@ namespace App\Observers;
 use App\Models\DiscordOutboundMessage;
 use App\Models\Event;
 use App\Models\GameMatch;
+use App\Models\User;
+use App\Notifications\MatchCancelled;
 use App\Support\DiscordOutboundPayloadBuilder;
 
 /**
@@ -119,6 +121,63 @@ class MatchObserver
             isUpdate: true,
             priorSentMessageId: $prior?->sent_message_id,
         );
+
+        $this->maybeNotifyCancellation($match);
+    }
+
+    /**
+     * Phase 9 plan 09-04 addition — fire MatchCancelled to every signed-up
+     * player + every active host-clan member when a match transitions INTO
+     * the `cancelled` status from any prior state.
+     *
+     * Plan asked for `scheduled→cancelled` specifically; the matches.status
+     * enum has no `scheduled` value (it's `draft|open|locked|played|cancelled`).
+     * The semantically correct trigger is "transitioning into cancelled from
+     * a non-cancelled state" — which matches the user-facing intent (notify
+     * participants when their booked match is called off, regardless of which
+     * draft-vs-open-vs-locked state it was in when the organiser hit cancel).
+     *
+     * Recipients are merged unique by user id; null users are filtered. The
+     * loop fires `$user->notify(new MatchCancelled(...))` per recipient — each
+     * `via()` call resolves the user's enabledNotificationChannels matrix
+     * (Pattern 7 of 09-RESEARCH.md, locked in plan 09-03).
+     *
+     * Eager-loads `slots.occupantUser` + `hostClan.activeMembers.user` before
+     * the iteration so plan 09-08's strict-mode flip does not trip an N+1.
+     */
+    private function maybeNotifyCancellation(GameMatch $match): void
+    {
+        if ($match->status !== 'cancelled') {
+            return;
+        }
+        if ($match->getOriginal('status') === 'cancelled') {
+            // Same status (cancelled→cancelled) — already announced.
+            return;
+        }
+
+        $match->loadMissing([
+            'slots.occupantUser',
+            'hostClan.activeMembers.user',
+        ]);
+
+        $signedUp = $match->slots
+            ->pluck('occupantUser')
+            ->filter(fn (?User $u): bool => $u !== null);
+
+        $clanMembers = $match->hostClan
+            ? $match->hostClan->activeMembers
+                ->pluck('user')
+                ->filter(fn (?User $u): bool => $u !== null)
+            : collect();
+
+        $recipients = $signedUp
+            ->merge($clanMembers)
+            ->unique(fn (User $u): string => $u->id)
+            ->values();
+
+        foreach ($recipients as $user) {
+            $user->notify(new MatchCancelled($match));
+        }
     }
 
     /**

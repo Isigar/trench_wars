@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\ClanInviteObserver;
 use Database\Factories\ClanInviteFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -70,5 +71,16 @@ class ClanInvite extends Model
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'inviting_user_id');
+    }
+
+    /**
+     * Register ClanInviteObserver — Phase 9 plan 09-04.
+     *
+     * Fires ClanInviteReceived on row creation. static::observe is idempotent
+     * (D-04-08-B precedent).
+     */
+    protected static function booted(): void
+    {
+        static::observe(ClanInviteObserver::class);
     }
 }

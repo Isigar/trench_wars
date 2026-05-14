@@ -6,6 +6,8 @@ namespace App\Observers;
 
 use App\Models\DiscordOutboundMessage;
 use App\Models\MatchResult;
+use App\Models\User;
+use App\Notifications\MatchResultPublished;
 use App\Services\BracketAdvancementService;
 use App\Support\DiscordOutboundPayloadBuilder;
 
@@ -75,6 +77,10 @@ class MatchResultObserver
 
         // Phase 8 plan 08-12 — RCON-sourced result announce.
         $this->maybeAnnounceRconResult($result);
+
+        // Phase 9 plan 09-04 — additive notification dispatch.
+        // Plan 09-05 will add the leaderboards cache flush in the same hook.
+        $this->notifyResultPublished($result);
     }
 
     /**
@@ -168,5 +174,61 @@ class MatchResultObserver
             'payload' => $payload,
             'causer_user_id' => null,
         ]);
+    }
+
+    /**
+     * Phase 9 plan 09-04 — fire MatchResultPublished to every signed-up
+     * player + every active host-clan member when the result is created
+     * for the first time.
+     *
+     * Fires from the `created()` hook ONLY (per plan: "on first MatchResult
+     * create"). Updates to the result (score edits, winner reassignment) do
+     * NOT re-fire — the user has already been told the result was published
+     * and the result-edit audit lives in activity_log.
+     *
+     * The Notification class delegates `via()` to
+     * User::enabledNotificationChannels('match_result_published') — which
+     * per Open Question 3 LOCKED is database-only by default; Discord DMs
+     * require an explicit opt-in row in user_notification_preferences. This
+     * is intentional: the dispatch path is uniform, the policy is one layer
+     * up in the Notifiable matrix.
+     *
+     * Recipient set: signed-up players + active host-clan members merged
+     * unique by user id. Plan also mentioned guest-clan active members, but
+     * the GameMatch schema has no `away_clan_id` / `guest_clan_id` column on
+     * the matches table — the v1 GameMatch is host-clan only (see plan 04
+     * + GameMatch model docblock). Adding guest-clan recipients would be a
+     * schema change and is deferred to a future phase.
+     */
+    private function notifyResultPublished(MatchResult $result): void
+    {
+        $result->loadMissing([
+            'match.slots.occupantUser',
+            'match.hostClan.activeMembers.user',
+        ]);
+
+        $match = $result->match;
+        if ($match === null) {
+            return;
+        }
+
+        $signedUp = $match->slots
+            ->pluck('occupantUser')
+            ->filter(fn (?User $u): bool => $u !== null);
+
+        $clanMembers = $match->hostClan
+            ? $match->hostClan->activeMembers
+                ->pluck('user')
+                ->filter(fn (?User $u): bool => $u !== null)
+            : collect();
+
+        $recipients = $signedUp
+            ->merge($clanMembers)
+            ->unique(fn (User $u): string => $u->id)
+            ->values();
+
+        foreach ($recipients as $user) {
+            $user->notify(new MatchResultPublished($match, $result->winnerClan));
+        }
     }
 }
