@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
+status: Phase 9 in flight
 stopped_at: Completed 09-02-PLAN.md (Wave 1 schema — 7 migrations)
-last_updated: "2026-05-14T07:21:38Z"
+last_updated: "2026-05-14T07:39:35.143Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
   completed_plans: 111
-  percent: 90
+  percent: 89
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 1)
-Plan: 09-02 COMPLETE (Wave 1 schema — 7 migrations); next 09-03 (notifications + prefs models)
+Phase: 09 (Polish) — IN FLIGHT (Wave 2 complete)
+Plan: 09-03 COMPLETE (notifications + prefs models + DiscordChannel + 5 Notification classes); next 09-04 (NotificationDispatcher cron + idempotency)
 Status: Phase 9 in flight
 Last activity: 2026-05-14
 
-Progress: [█████████░] 90% (8/9 phases; 110/120 plans incl. Phase 9 09-01 + 09-02)
+Progress: [█████████░] 92% (8/9 phases; 111/120 plans incl. Phase 9 09-01 + 09-02 + 09-03)
 
 ## Performance Metrics
 
@@ -148,6 +148,7 @@ Progress: [█████████░] 90% (8/9 phases; 110/120 plans incl. 
 | Phase 08 P13 | ~18min | 2 tasks | 4 files |
 | Phase 09 P01 | ~8min | 1 task tasks | 39 files files |
 | Phase 09 P02 | ~6min | 2 tasks | 7 files |
+| Phase 09 P03 | ~12min | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -485,6 +486,11 @@ Plan-level decisions logged during execution:
 - [Phase 09]: Plan 09-02 — D-09-02-D — mps_player_kills_idx as plain ASC composite (player_id, kills); Postgres B-tree planner walks backwards for DESC; explicit DESC reserved for fallback if 09-05 LeaderboardService profiling proves Bitmap Heap Scan + Sort.
 - [Phase 09]: Plan 09-02 — D-09-02-E — abuse_reports.target_id as varchar (NOT uuid via uuidMorphs) to admit BOTH UUID PK and bigint PK targets; application code in 09-11 casts per target_type.
 - [Phase 09]: Plan 09-02 — Wave 1 schema landed: 7 migrations on 2026_05_18_100[0-6]00; migrate:fresh + rollback --step=7 + re-migrate all GREEN; Pest 1134 passed + 30 skipped preserved; Pint 7/7 PASS; PHPStan L8 OK. doutmsg_message_type_chk now 9 values incl. user_dm. Schema ready for Wave 2+ model/service plans (09-03..09-12).
+- [Phase 09]: Plan 09-03 — D-09-03-A — Ban/MatchDispute/AbuseReport models intentionally do NOT use the LogsActivity trait per plan Anti-Patterns; the moderator service layer (plan 09-07 BanService + DisputeService, plan 09-11 AbuseReportService) emits hand-rolled activity_log rows so descriptions are human-readable rather than the trait's auto-generated "Ban created" skeleton, and avoids logging internal lifecycle noise (resolved_by_user_id flips) the audit log doesn't need to expose to Filament.
+- [Phase 09]: Plan 09-03 — D-09-03-B — DiscordChannel carries recipient snowflake INSIDE payload.recipient_id (jsonb) rather than a dedicated discord_outbound_messages column. Plan's <interfaces> mentioned a hypothetical recipient_user_discord_id column that does not exist on the actual Phase 5 schema (verified via `\d discord_outbound_messages`). The table's routing inputs are channel_id (text NOT NULL; empty string for user DMs) + payload (jsonb); bot worker will inspect payload.recipient_id for message_type='user_dm' and call createDM at dispatch. Rule 1 deviation — aligned with on-disk reality, same pattern as 09-02 D-09-02-A.
+- [Phase 09]: Plan 09-03 — D-09-03-C — Default-policy fallback in User::enabledNotificationChannels uses array key existence (`$prefs['discord'] ?? $discordDefault`), NOT row presence in the DB. Users with ZERO preference rows still get default policy applied without seeding default rows on signup. Account-settings UI (plan 09-06) will UPSERT preference rows only when the user toggles away from the default; unp_unique constraint handles idempotency. Trade-off: 'default' state is implicit rather than materialised — but materialising defaults would require 5 events × 2 channels = 10 rows per user, AND every default-policy change (e.g. adding a 6th event_type) would need a backfill migration.
+- [Phase 09]: Plan 09-03 — D-09-03-D — `discord_id` "no snowflake" edge case is tested via empty string (`''`), NOT NULL discord_id (users.discord_id is text NOT NULL UNIQUE per D-002 Discord OAuth canonical). The enabledNotificationChannels guard `if (! empty($this->discord_id))` is defensive code that handles both null and empty string identically via empty(); if D-002 ever relaxes (e.g. email-only accounts), the guard already covers it. Testing via empty string exercises the same empty() branch without violating NOT NULL.
+- [Phase 09]: Plan 09-03 — Wave 2 landed: 5 Eloquent models (Notification, UserNotificationPreference, Ban, MatchDispute, AbuseReport) + 5 Notification classes (MatchStartingSoon, MatchCancelled, MatchResultPublished, ClanApplicationDecided, ClanInviteReceived) + DiscordChannel + 4 real factories. Pitfall 3 LOCKED (Http::assertNothingSent on DiscordChannel::send — D-004 compliance) + Pitfall 4 LOCKED (every Notification has unique databaseType discriminator via reflection test). Pest 1153 passed + 27 skipped (delta: +19 / −3 Wave 0 stubs turned GREEN). PHPStan L8 OK. Pint 19/19 PASS.
 
 ### Pending Todos
 

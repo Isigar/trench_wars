@@ -251,7 +251,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 12 plans
 - [x] 09-01-PLAN.md — Wave 0 scaffolding (29 RED Pest stubs + 4 factory stubs + 5 i18n namespace files + Imagick + CACHE_STORE=redis preflight)
 - [x] 09-02-PLAN.md — Migrations (notifications + user_notification_preferences + bans + match_disputes + abuse_reports + discord_outbound CHECK extension for user_dm + match_player_stats kills index)
-- [ ] 09-03-PLAN.md — 5 Eloquent models + 5 Notification classes + DiscordChannel (D-004 outbox writer, no direct HTTP) + 4 real factories + 3 GREEN tests
+- [x] 09-03-PLAN.md — 5 Eloquent models + 5 Notification classes + DiscordChannel (D-004 outbox writer, no direct HTTP) + 4 real factories + 3 GREEN tests
 - [ ] 09-04-PLAN.md — NotificationDispatcher service + dispatch-upcoming + prune commands + 4 observer extensions/creations (MatchObserver, MatchResultObserver, ClanApplicationObserver, ClanInviteObserver) + 2 GREEN tests
 - [ ] 09-05-PLAN.md — LeaderboardService (Cache::tags + flexible SWR) + 2 spatie/laravel-data DTOs + MatchResultObserver + MatchPlayerStatObserver cache-flush hooks + 4 GREEN tests
 - [ ] 09-06-PLAN.md — NotificationsController + NotificationPreferencesController + LeaderboardsController + Inertia shared.unread_notifications_count + 3 Vue pages + NotificationsBell + LeaderboardTable + 2 GREEN tests
@@ -278,4 +278,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
 | 7. CMS | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | 13/13 | Complete | 2026-05-14 |
-| 9. Polish | 2/12 | In Progress|  |
+| 9. Polish | 3/12 | In Progress|  |
