@@ -10,15 +10,16 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Source: .planning/phases/07-cms/07-03-PLAN.md <interfaces> PublicArticleData block.
+ * Source: .planning/phases/07-cms/07-03-PLAN.md <interfaces> PublicArticleData block
+ * + .planning/phases/07-cms/07-05-PLAN.md task 2 (tiptap_converter wiring).
  *
  * Visitor-safe Article projection consumed by the public /news + /news/{slug}
  * Vue pages (plan 07-09) AND the article-announce Discord outbound (plan 07-10).
  *
- * SHAPE-ONLY in this plan — Plan 07-05 fills the fromModel() body with the
- * tiptap_converter integration that resolves the JSONB body array into HTML.
- * For now fromModel() emits $bodyHtml = '' and the test marker covers the
- * TODO. Plan 07-12 uses the same DTO for the sitemap feed.
+ * Plan 07-05 update: fromModel() now FULLY WIRES tiptap_converter()->asHTML for
+ * $bodyHtml. The previous bodyHtml='' marker is removed. The tiptap-php parser
+ * registers the same extension set as the editor's 'default' profile (no iframe-
+ * bearing nodes — Pitfall 10 mitigation continues to hold end-to-end).
  *
  * Translatable resolution: title + excerpt fields are resolved to the active
  * locale via getTranslation('field', app()->getLocale()). Locale fallback
@@ -51,9 +52,17 @@ final class PublicArticleData extends Data
     /**
      * Build a PublicArticleData from an Article Eloquent model.
      *
-     * Partial implementation (plan 07-03): emits $bodyHtml='' — plan 07-05
-     * swaps in the tiptap_converter()->asHTML() call. Plan 07-12 sitemap
-     * feed reuses this factory verbatim once 07-05 lands.
+     * Plan 07-05: bodyHtml is now wired via tiptap_converter()->asHTML, which
+     * accepts the JSONB Tiptap document (string|array) and renders it to safe
+     * HTML. The converter's parser registers the same node/mark set as the
+     * editor's 'default' profile — no iframe/script extensions are loaded, so
+     * any author-inserted iframe node would be silently dropped at parse time
+     * (Pitfall 10 mitigation chain — defence-in-depth alongside the editor
+     * toolbar allowlist and the TiptapOutput::Json storage format).
+     *
+     * Locale resolution: title + excerpt + categoryName fall back to 'en' when
+     * the active locale lacks a translation (D-013). body is resolved by index
+     * lookup on the translations array (HasTranslations stores per-locale arrays).
      *
      * Caller must eager-load `category` + `author` for N+1-free hydration.
      */
@@ -69,12 +78,21 @@ final class PublicArticleData extends Data
         $thumbUrl = $article->getFirstMediaUrl('hero', 'thumb');
         $ogImageUrl = $article->getFirstMediaUrl('hero', 'og-image');
 
+        // Body JSONB → HTML via tiptap_converter (Pitfall 10 end-to-end mitigation).
+        // getTranslations('body') returns ['en' => ..., 'cs' => ..., ...]; we pick
+        // the active locale with 'en' fallback, then feed the raw value (string or
+        // array) into asHTML which handles both.
+        $bodyTranslations = $article->getTranslations('body');
+        $bodyValue = $bodyTranslations[$locale] ?? $bodyTranslations['en'] ?? [];
+        /** @var string|array<mixed>|null $bodyValue */
+        $bodyHtml = tiptap_converter()->asHTML($bodyValue);
+
         return new self(
             id: $article->id,
             slug: $article->slug,
             title: $article->getTranslation('title', $locale, useFallbackLocale: true),
             excerpt: $article->getTranslation('excerpt', $locale, useFallbackLocale: true) ?: null,
-            bodyHtml: '', // TODO plan 07-05 — tiptap_converter()->asHTML($article->getTranslation('body', $locale))
+            bodyHtml: $bodyHtml,
             categoryName: $article->category?->getTranslation('name', $locale, useFallbackLocale: true) ?? '',
             authorName: $article->author?->username,
             heroThumbUrl: $thumbUrl !== '' ? $thumbUrl : null,
