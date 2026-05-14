@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Concerns\HasUuidPrimaryKey;
+use App\Observers\MatchPlayerStatObserver;
 use Database\Factories\MatchPlayerStatFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -93,5 +94,20 @@ class MatchPlayerStat extends Model
         }
 
         return round($this->kills / $this->deaths, 2);
+    }
+
+    /**
+     * Register MatchPlayerStatObserver — Phase 9 plan 09-05 task 2.
+     *
+     * The observer flushes the `leaderboards` cache tag on every saved()
+     * event (created and updated branches consolidated — see observer
+     * docblock for the RESEARCH-anti-pattern-exception justification).
+     *
+     * D-04-08-B precedent — register via model booted() (idempotent;
+     * Eloquent dedupes by observer class name).
+     */
+    protected static function booted(): void
+    {
+        static::observe(MatchPlayerStatObserver::class);
     }
 }

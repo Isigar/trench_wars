@@ -7,6 +7,7 @@ namespace App\Observers;
 use App\Jobs\SyncDiscordRolesJob;
 use App\Models\ClanMembership;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Source: .planning/phases/05-discord-bot-v1/05-06-PLAN.md task 2 +
@@ -53,6 +54,12 @@ final class ClanMembershipObserver
         }
 
         $this->dispatchSyncIfBindingComplete($membership, 'add');
+
+        // Phase 9 plan 09-05 — flush leaderboards on join (Rule 2
+        // additive correctness): a new active membership re-attributes
+        // historical kills to the joined clan on the next clan
+        // leaderboard read (D-09-05-D current-snapshot semantics).
+        Cache::tags(['leaderboards'])->flush();
     }
 
     /**
@@ -69,6 +76,12 @@ final class ClanMembershipObserver
         if (! $membership->wasChanged('left_at')) {
             return;
         }
+
+        // Phase 9 plan 09-05 — both transitions of left_at re-attribute
+        // historical kill counts in the clan leaderboard (D-09-05-D
+        // current-snapshot semantics); flush the leaderboards tag on
+        // either edge of the left_at transition.
+        Cache::tags(['leaderboards'])->flush();
 
         if ($membership->left_at !== null) {
             $this->dispatchSyncIfBindingComplete($membership, 'remove');

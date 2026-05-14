@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\MatchResultPublished;
 use App\Services\BracketAdvancementService;
 use App\Support\DiscordOutboundPayloadBuilder;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Source: .planning/phases/06-tournaments-brackets/06-08-PLAN.md Task 2 +
@@ -79,8 +80,15 @@ class MatchResultObserver
         $this->maybeAnnounceRconResult($result);
 
         // Phase 9 plan 09-04 — additive notification dispatch.
-        // Plan 09-05 will add the leaderboards cache flush in the same hook.
         $this->notifyResultPublished($result);
+
+        // Phase 9 plan 09-05 — flush the leaderboards cache tag. A new
+        // result changes both top-clans (wins+kills attribution) and the
+        // top-players aggregate (matches_played count + per-window totals).
+        // Tag flush is O(1); the next read repopulates lazily via
+        // Cache::flexible's compute callback. Pitfall 9 keeps the read
+        // safe even if recompute fails.
+        Cache::tags(['leaderboards'])->flush();
     }
 
     /**
@@ -115,6 +123,14 @@ class MatchResultObserver
         // keeps the outbox row count idempotent (must_haves.truths #2 +
         // T-08-12-02 mitigation — RconBotResultAnnounceTest case 4).
         $this->maybeAnnounceRconResult($result);
+
+        // Phase 9 plan 09-05 — flush leaderboards cache tag ONLY when a
+        // score-bearing column changed. Unrelated edits (notes,
+        // recorded_by_user_id) do NOT invalidate. This mirrors the
+        // bracket-advance guard above — same wasChanged() attribute set.
+        if ($result->wasChanged(['allies_score', 'axis_score', 'winner_clan_id'])) {
+            Cache::tags(['leaderboards'])->flush();
+        }
     }
 
     /**
