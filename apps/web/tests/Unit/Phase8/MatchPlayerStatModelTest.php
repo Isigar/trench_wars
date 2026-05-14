@@ -6,8 +6,11 @@ use App\Models\GameMatch;
 use App\Models\MatchPlayerStat;
 use App\Models\Player;
 use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
+uses(RefreshDatabase::class);
 
 /*
 | Source: .planning/phases/08-rcon-automation/08-04-PLAN.md task 2.
@@ -24,9 +27,15 @@ it('rejects a duplicate (match_id, player_id) at the DB tier and is idempotent u
 
     MatchPlayerStat::factory()->forMatch($match)->forPlayer($player)->create();
 
+    // Wrap the duplicate INSERT in a nested DB::transaction so the Postgres
+    // failed-transaction abort stays inside the savepoint — the outer
+    // RefreshDatabase transaction (and subsequent queries in this test) stay
+    // healthy. Mirrors the Phase 4 / 8 pattern for UNIQUE-violation probes.
     $threw = false;
     try {
-        MatchPlayerStat::factory()->forMatch($match)->forPlayer($player)->create();
+        DB::transaction(function () use ($match, $player): void {
+            MatchPlayerStat::factory()->forMatch($match)->forPlayer($player)->create();
+        });
     } catch (QueryException $e) {
         $threw = true;
         expect($e->getMessage())->toContain('mps_match_player_unique');

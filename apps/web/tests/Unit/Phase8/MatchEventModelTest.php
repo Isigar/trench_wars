@@ -5,8 +5,11 @@ declare(strict_types=1);
 use App\Models\GameMatch;
 use App\Models\MatchEvent;
 use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
+uses(RefreshDatabase::class);
 
 /*
 | Source: .planning/phases/08-rcon-automation/08-04-PLAN.md task 2.
