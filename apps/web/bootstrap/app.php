@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\ResolveBotActsAsUser;
+use App\Http\Middleware\VerifyRconSignature;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,10 +25,16 @@ return Application::configure(basePath: dirname(__DIR__))
         // 'bot.acts-as' rebinds the request-scope auth via Auth::onceUsingId so
         // LogsActivity attributes the human causer behind each Discord-side action
         // (RESEARCH Pattern 1; SC-5).
+        // Plan 08-05: HMAC signature gate for worker→web internal channel.
+        // Verifies (X-Rcon-Timestamp, X-Rcon-Nonce, X-Rcon-Signature) triple,
+        // 60s freshness window (abs() — Pitfall 2), and Redis-SETNX nonce
+        // single-use within a 120s TTL (T-08-05-01). Mounted by plan 08-06
+        // on internal RCON ingest routes.
         $middleware->alias([
             'abilities' => CheckAbilities::class,
             'ability' => CheckForAnyAbility::class,
             'bot.acts-as' => ResolveBotActsAsUser::class,
+            'rcon.signature' => VerifyRconSignature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
