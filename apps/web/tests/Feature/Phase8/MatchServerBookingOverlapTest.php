@@ -19,9 +19,6 @@ use Illuminate\Database\QueryException;
 |   - Back-to-back bookings sharing an endpoint → ACCEPTED (half-open `[)` range).
 |   - Cancelled booking → does NOT block (partial WHERE status='active' clause).
 |   - Different server, identical window → ACCEPTED (server_id WITH = predicate).
-|
-| Plan 08-03 EXCLUDES the GREEN test for overlap on purpose — only the RED test
-| body is replaced. Per plan text "EXCLUDE overlap GREEN test." in execution rules.
 */
 
 it('rejects overlapping bookings on the same server with EXCLUDE violation', function (): void {

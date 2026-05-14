@@ -4,35 +4,51 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\MatchServer;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RuntimeException;
+use Illuminate\Support\Str;
 
 /**
- * Wave 0 RED stub — real implementation lands in plan 08-03.
+ * Source: .planning/phases/08-rcon-automation/08-03-PLAN.md task 1.
  *
- * Source: .planning/phases/08-rcon-automation/08-01-PLAN.md task 2.
- * Analog (canonical Phase 4 D-04-01 idiom): apps/web/database/factories/MatchSlotFactory.php
- * Wave 0 form (commit 6e5024c).
+ * Replaces the Wave 0 stub (plan 08-01). `credentials_encrypted` is passed as a
+ * plain array — the model's `encrypted:array` cast handles encryption at write
+ * time. The per-line PHPStan ignore annotations on the stub are removed now that
+ * `App\Models\MatchServer` exists and the generic
+ * `@extends Factory<MatchServer>` resolves.
  *
- * Deviation note (Rule 3, blocking issue): the canonical generic
- * `@extends Factory<\App\Models\MatchServer>` fails PHPStan L8 against the
- * as-yet-uncreated `App\Models\MatchServer` class — plan 08-02 lands the
- * migration and plan 08-03 lands the model + generic. CLAUDE.md §3 forbids
- * regenerating phpstan-baseline.neon, so per-line @phpstan-ignore is the
- * Wave 0 escape hatch.
- *
- * @phpstan-ignore-next-line missingType.generics
+ * @extends Factory<MatchServer>
  */
 class MatchServerFactory extends Factory
 {
-    /** @phpstan-ignore-next-line property.defaultValue */
-    protected $model = 'App\\Models\\MatchServer';
+    protected $model = MatchServer::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        throw new RuntimeException('MatchServerFactory definition not yet implemented (Wave 0 stub — replaced by plan 08-03).');
+        return [
+            'name' => 'Server ' . fake()->unique()->numerify('##'),
+            'host' => 'crcon-' . fake()->unique()->word() . '.example.com',
+            'port_rcon' => 8010 + fake()->unique()->numberBetween(0, 200),
+            'region' => fake()->randomElement(['eu-central', 'us-east', 'us-west', 'ap-southeast']),
+            'credentials_encrypted' => ['api_token' => 'fake-bearer-' . Str::random(40)],
+            'is_active' => true,
+            'last_test_at' => null,
+            'last_test_status' => null,
+            'last_test_error' => null,
+        ];
+    }
+
+    /**
+     * State: server is soft-disabled (is_active=false). Filament admin can still
+     * see it; the scheduler ignores it.
+     */
+    public function inactive(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_active' => false,
+        ]);
     }
 }
