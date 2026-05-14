@@ -196,7 +196,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Sitemap and meta tags are emitted; `<html lang>` reflects active locale; Discord announce on publish is wired (per-article configurable).
 **Plans**: 13 plans
 - [x] 07-01-PLAN.md — Wave 0 scaffolding (4 composer + 5 npm deps + Tiptap safe-node profile + 17 RED Pest stubs + 3 i18n namespaces)
-- [ ] 07-02-PLAN.md — Migrations (categories + articles + media uuidMorphs amendment + FTS triggers on 3 tables + discord_outbound CHECK extension for article_announce)
+- [x] 07-02-PLAN.md — Migrations (categories + articles + media uuidMorphs amendment + FTS triggers on 3 tables + discord_outbound CHECK extension for article_announce)
 - [ ] 07-03-PLAN.md — Article + Category models + factories + CategorySeeder (4 starter categories — Open Question 3 LOCKED)
 - [ ] 07-04-PLAN.md — cms-editor role permissions + ArticlePolicy + CategoryPolicy + trenchwars:make-cms-editor artisan
 - [ ] 07-05-PLAN.md — Filament ArticleResource + CategoryResource + 6 page classes + PublicArticleData tiptap_converter wiring (Pitfall 10 mitigation)

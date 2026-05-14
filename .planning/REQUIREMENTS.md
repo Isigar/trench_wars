@@ -30,7 +30,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 ### CMS & Editorial
 
-- [ ] **REQ-goal-cms**: Articles, Categories, and Events are first-class entities, editorially managed in Filament, and surfaced on public pages.
+- [x] **REQ-goal-cms**: Articles, Categories, and Events are first-class entities, editorially managed in Filament, and surfaced on public pages.
 
 ### Discord UX
 
@@ -49,7 +49,7 @@ Requirements for round-1 release. Each maps to exactly one phase in `ROADMAP.md`
 
 - [ ] **REQ-success-end-to-end-scrim**: End-to-end flow works without manual data entry on the happy path: Discord OAuth → clan create → roster build → scrim schedule → Discord signup → CRCON-played → auto-recorded MatchResult + MatchPlayerStat.
 - [x] **REQ-success-tournament-end-to-end**: An 8-clan single-elim tournament can be created, seeded, brackets generated, matches materialised, played, results captured, advancements computed — without admin patching.
-- [ ] **REQ-success-public-browse**: All public surfaces (clans, players, calendar, bracket views, articles) are accessible without auth; SSR enabled in production for first paint on public pages.
+- [x] **REQ-success-public-browse**: All public surfaces (clans, players, calendar, bracket views, articles) are accessible without auth; SSR enabled in production for first paint on public pages.
 
 ## v2 Requirements
 
@@ -117,8 +117,8 @@ Mapping of v1 requirements to roadmap phases. Updated by `/gsd-roadmap`/`/gsd-pl
 | REQ-goal-match-workflows | Phase 4 | Complete |
 | REQ-goal-discord-ux | Phase 5 | Complete |
 | REQ-success-tournament-end-to-end | Phase 6 | Complete |
-| REQ-goal-cms | Phase 7 | Pending |
-| REQ-success-public-browse | Phase 7 | Pending |
+| REQ-goal-cms | Phase 7 | Complete |
+| REQ-success-public-browse | Phase 7 | Complete |
 | REQ-goal-rcon-history | Phase 8 | Pending |
 | REQ-constraint-league-owns-servers | Phase 8 | Pending |
 | REQ-success-end-to-end-scrim | Phase 8 | Pending |

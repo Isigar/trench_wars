@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
-last_updated: "2026-05-13T23:58:48.047Z"
-last_activity: 2026-05-13
+last_updated: "2026-05-14T00:11:22.233Z"
+last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 83
+  completed_plans: 84
   percent: 67
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 Phase: 06 (Tournaments & brackets) — COMPLETE (PENDING_MANUAL_SMOKE — 4-item operator walkthrough A-D per 06-PHASE-VERIFICATION.md)
 Plan: 14 of 14 complete (06-14 phase verification — 866/2719 Pest + 139 bot Vitest GREEN; all 7 gates GREEN; D-06-* bindings recorded)
 Status: Phase complete — ready for verification
-Last activity: 2026-05-13
+Last activity: 2026-05-14
 
 Progress: [███████░░░] 67% (6/9 phases; 82/82 plans complete through Phase 6)
 
@@ -122,6 +122,7 @@ Progress: [███████░░░] 67% (6/9 phases; 82/82 plans complete
 | Phase 06 P13 | ~7min | 2 tasks | 6 files |
 | Phase 06 P14 | 462s | 2 tasks | 5 files |
 | Phase 07 P01 | 8m 35s | 2 tasks | 32 files |
+| Phase 07 P02 | 7m 14s | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -372,6 +373,9 @@ Plan-level decisions logged during execution:
 - [Phase 06]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 6 (services, observers, DTOs, Filament resource, tests); zero alias-on-import; canonical binding for Phase 7+ CMS plans — Tournament events that polymorphically link back to GameMatch via tournament_brackets.match_id MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A
 - [Phase ?]: D-07-01-A — Tiptap 'default' profile pinned to safe-node allowlist in config/filament-tiptap-editor.php at install time (Pitfall 10 mitigation). Excluded: oembed/youtube/video/source/grid-builder/details/blocks. Plan 07-05 references this profile by name.
 - [Phase ?]: D-07-01-B — Open Question 8 LOCKED: markdown-it NOT installed in v1. Article body render path is tiptap_converter()->asHTML end-to-end via ueberdosis/tiptap-php.
+- [Phase 07]: D-07-02-A clans FTS trigger indexes name+tag+description+slug (Phase 2 schema: clans.name is text, not jsonb; tag included for league-directory UX)
+- [Phase 07]: D-07-02-B players FTS trigger indexes ONLY display_name+slug (D-018; users.username is on users table not players)
+- [Phase 07]: D-07-02-C discord_outbound CHECK baseline was 6 values not 7 per plan; up() extends 6→7 (adds article_announce); down() restores Phase 6 baseline verbatim
 
 ### Pending Todos
 
@@ -393,6 +397,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-13T23:58:48.043Z
+Last session: 2026-05-14T00:09:06.098Z
 Stopped at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
-Resume file: None — ready for plan 07-02
+Resume file: None
