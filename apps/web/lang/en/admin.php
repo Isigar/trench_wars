@@ -58,6 +58,19 @@ return [
             'GameRole' => 'Game role',
             'GameMatchType' => 'Match type',
             'GameMatchTypeRoleLimit' => 'Role capacity',
+            // Phase 8 additions (08-01-PLAN.md task 2; 08-CONTEXT.md § Specifics).
+            'MatchServer' => 'Match server',
+            'MatchServerBooking' => 'Server booking',
+            'MatchEvent' => 'Match event',
+            'MatchPlayerStat' => 'Player stat',
+        ],
+        // Phase 8 audit-line copy (08-01-PLAN.md task 2) — Filament activity_log
+        // descriptions for MatchServerResource actions. Consumed by plan 08-09.
+        'match_servers' => [
+            'test_queued' => 'Test connection queued',
+            'test_ok' => 'Test connection succeeded',
+            'test_error' => 'Test connection failed',
+            'rotated_password' => 'CRCON password rotated',
         ],
     ],
     'tab' => [
@@ -584,6 +597,53 @@ return [
             'name' => 'Name',
             'slug' => 'Slug',
             'description' => 'Description',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Phase 8 — RCON automation (08-01-PLAN.md task 2)
+    |--------------------------------------------------------------------------
+    | Consumed by MatchServerResource (plan 08-09) + booking RelationManager.
+    | Field keys mirror match_servers / match_server_bookings columns (plan 08-02
+    | migration). Action `test` drives the TestConnectionAction button.
+    */
+    'match_servers' => [
+        'label' => 'Match server',
+        'plural_label' => 'Match servers',
+        'nav' => 'Match servers',
+        'fields' => [
+            'name' => 'Name',
+            'host' => 'Host',
+            'port_rcon' => 'RCON port',
+            'port_query' => 'Query port',
+            'password_encrypted' => 'RCON password',
+            'region' => 'Region',
+            'is_active' => 'Active',
+            'last_test_status' => 'Last test status',
+            'last_test_at' => 'Last test at',
+            'notes' => 'Notes',
+        ],
+        'actions' => [
+            'test' => 'Test connection',
+        ],
+        'last_test_status' => [
+            'ok' => 'OK',
+            'error' => 'Error',
+            'none' => 'Not yet tested',
+        ],
+    ],
+
+    'match_server_bookings' => [
+        'label' => 'Server booking',
+        'plural_label' => 'Server bookings',
+        'nav' => 'Server bookings',
+        'fields' => [
+            'match_id' => 'Match',
+            'server_id' => 'Server',
+            'reserved_from' => 'Reserved from',
+            'reserved_to' => 'Reserved to',
+            'status' => 'Status',
         ],
     ],
 ];
