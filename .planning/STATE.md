@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 8 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 9 ready
-last_updated: "2026-05-14T07:14:41.217Z"
+stopped_at: Completed 09-02-PLAN.md (Wave 1 schema — 7 migrations)
+last_updated: "2026-05-14T07:21:38Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 109
-  percent: 89
+  completed_plans: 111
+  percent: 90
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — READY TO PLAN
-Plan: Phase 8 COMPLETE (13/13 plans; all 7 quality gates GREEN; PENDING_MANUAL_SMOKE)
-Status: Phase 9 ready to plan
+Phase: 09 (Polish) — IN FLIGHT (Wave 1)
+Plan: 09-02 COMPLETE (Wave 1 schema — 7 migrations); next 09-03 (notifications + prefs models)
+Status: Phase 9 in flight
 Last activity: 2026-05-14
 
-Progress: [█████████░] 89% (8/9 phases; 108/108 plans through Phase 8)
+Progress: [█████████░] 90% (8/9 phases; 110/120 plans incl. Phase 9 09-01 + 09-02)
 
 ## Performance Metrics
 
@@ -147,6 +147,7 @@ Progress: [█████████░] 89% (8/9 phases; 108/108 plans throug
 | Phase 08 P12 | 18min | - tasks | - files |
 | Phase 08 P13 | ~18min | 2 tasks | 4 files |
 | Phase 09 P01 | ~8min | 1 task tasks | 39 files files |
+| Phase 09 P02 | ~6min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -478,6 +479,12 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 08-12 (MatchResultAnnounceData lives in App\Data, not App\Data\Internal)
 - [Phase 08]: Plan 08-13 — Phase 8 COMPLETE PENDING_MANUAL_SMOKE; 1134 web Pest tests / 3783 assertions (+97 web / +312 assertions from Phase 7 close) + 139 bot Vitest tests (regressionless from Phase 7) + 40 rcon-worker Vitest tests across 7 files (brand new Node service); all 7 quality gates GREEN (Pest, Vitest×2, Pint 566 files clean, PHPStan L8 [OK], vue-tsc, shared-types tsc, rcon-worker typecheck+lint+test+build, migrate:fresh --seed); 08-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + REQ-goal-rcon-history + REQ-constraint-league-owns-servers + REQ-success-end-to-end-scrim + 12 Pitfalls + 5 Open Questions RESOLVED inline + ~60 D-08-* canonical bindings; ROADMAP Phase 8 13/13 Complete (2026-05-14); REQUIREMENTS REQ-goal-rcon-history + REQ-constraint-league-owns-servers + REQ-success-end-to-end-scrim confirmed Complete; STATE completed_phases 7 -> 8 + completed_plans 107 -> 108 + percent 78 -> 89; status PENDING_MANUAL_SMOKE pending operator 4-item walkthrough A-D (live CRCON probe / two-clan SC-5 happy path / mid-match log gap / HMAC key rotation)
 - [Phase 08]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 8 (MatchEventIngestService, MatchPlayerStatAggregator, MatchResultService::upsertFromRcon, MatchResultObserver match_result_announce branch, DiscordOutboundPayloadBuilder::buildMatchResultAnnounce, BookingsRelationManager, ScrimE2EHappyPathTest, all Feature + Unit tests); zero alias-on-import; canonical binding for Phase 9+ Polish plans — leaderboards/aggregates/MatchPlayerStat consumers MUST import App\\Models\\GameMatch directly; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A / D-07-* / D-08-* continuation
+- [Phase 09]: Plan 09-02 — D-09-02-A — plan referenced non-existent CHECK constraint name `discord_outbound_messages_message_type_check` (Laravel default); actual canonical name is `doutmsg_message_type_chk` (set by Phase 5 baseline). Aligned with on-disk reality; same Rule 1 deviation pattern as 07-02 and 08-02. Verified live via pg_get_constraintdef BEFORE authoring.
+- [Phase 09]: Plan 09-02 — D-09-02-B — ban_type, match_disputes.status, abuse_reports.reason_code/status, user_notification_preferences.event_type/channel intentionally NOT enforced via DB CHECK; varchar+app-validation (Pest+FormRequest) keeps schema portable as enum values evolve in 09-03/07/11.
+- [Phase 09]: Plan 09-02 — D-09-02-C — partial UNIQUE `one_open_dispute_per_user_per_match` via raw SQL `CREATE UNIQUE INDEX ... WHERE status='open'` (Pitfall 11); Blueprint cannot express WHERE clause; down() explicit DROP for self-documenting reversal.
+- [Phase 09]: Plan 09-02 — D-09-02-D — mps_player_kills_idx as plain ASC composite (player_id, kills); Postgres B-tree planner walks backwards for DESC; explicit DESC reserved for fallback if 09-05 LeaderboardService profiling proves Bitmap Heap Scan + Sort.
+- [Phase 09]: Plan 09-02 — D-09-02-E — abuse_reports.target_id as varchar (NOT uuid via uuidMorphs) to admit BOTH UUID PK and bigint PK targets; application code in 09-11 casts per target_type.
+- [Phase 09]: Plan 09-02 — Wave 1 schema landed: 7 migrations on 2026_05_18_100[0-6]00; migrate:fresh + rollback --step=7 + re-migrate all GREEN; Pest 1134 passed + 30 skipped preserved; Pint 7/7 PASS; PHPStan L8 OK. doutmsg_message_type_chk now 9 values incl. user_dm. Schema ready for Wave 2+ model/service plans (09-03..09-12).
 
 ### Pending Todos
 
@@ -499,6 +506,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T07:14:00.672Z
-Stopped at: Phase 8 COMPLETE (PENDING_MANUAL_SMOKE) — Phase 9 ready
+Last session: 2026-05-14T07:21:38Z
+Stopped at: Completed 09-02-PLAN.md (Wave 1 schema — 7 migrations)
 Resume file: None
