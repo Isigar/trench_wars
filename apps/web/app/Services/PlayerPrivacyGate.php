@@ -112,4 +112,40 @@ final class PlayerPrivacyGate
     {
         return $viewer !== null && $viewer->id === $player->user_id;
     }
+
+    /**
+     * Source: Phase 7 plan 07-08 must_haves — Rule 2 amendment.
+     *
+     * Returns true when the viewer may see this player as a row in FTS search
+     * results. Mirrors the tier semantics of passesTier() but is a separate
+     * entry point so SearchService doesn't have to know about controller-level
+     * abort(404) behavior — search just filters the row out silently.
+     *
+     * Tier semantics (D-018):
+     *   - public     → always visible
+     *   - community  → visible to any logged-in viewer
+     *   - clan       → visible only to viewers sharing an active ClanMembership
+     *                  with the player (defers to viewerInSameClan)
+     *   - private    → invisible even though the row exists in the tsvector index
+     *                  (the index leaks lexemes, not identity — the gate is the
+     *                  row-level filter; T-07-08-03 mitigation)
+     * Own-profile bypass: a viewer who owns this Player record always sees it
+     * (covers the "search for myself" UX even at private tier).
+     */
+    public function canShowInSearch(Player $player, ?User $viewer): bool
+    {
+        if ($this->isOwnProfile($viewer, $player)) {
+            return true;
+        }
+
+        $tier = $player->privacy !== null ? $player->privacy->show_to : 'community';
+
+        return match ($tier) {
+            'public' => true,
+            'community' => $viewer !== null,
+            'clan' => $viewer !== null && $this->viewerInSameClan($viewer, $player),
+            'private' => false,
+            default => false,
+        };
+    }
 }

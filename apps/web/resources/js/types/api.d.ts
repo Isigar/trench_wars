@@ -244,6 +244,23 @@ participants: App.Data.TournamentParticipantData[] | null,
 etag: string,
 last_modified_at: string,
 };
+export type SearchResultData = {
+type: string,
+id: string,
+slug: string,
+title: string,
+excerpt: string,
+url: string,
+thumbnailUrl: string | null,
+rank: number,
+};
+export type SearchResultsData = {
+articles: App.Data.SearchResultData[],
+clans: App.Data.SearchResultData[],
+players: App.Data.SearchResultData[],
+totalCount: number,
+query: string,
+};
 export type TournamentBracketData = {
 id: string,
 tournament_stage_id: string,
