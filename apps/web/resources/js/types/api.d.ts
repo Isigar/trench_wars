@@ -178,6 +178,20 @@ show_clan_history: boolean,
 show_match_history: boolean,
 show_stats: boolean,
 };
+export type PublicArticleData = {
+id: string,
+slug: string,
+title: string,
+excerpt: string | null,
+bodyHtml: string,
+categoryName: string,
+authorName: string | null,
+heroThumbUrl: string | null,
+heroOgImageUrl: string | null,
+publishedAt: string | null,
+allowDiscordAnnounce: boolean,
+url: string,
+};
 export type PublicMatchData = {
 id: string,
 game_match_type_id: string,

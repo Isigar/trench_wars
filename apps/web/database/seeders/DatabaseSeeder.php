@@ -21,6 +21,11 @@ class DatabaseSeeder extends Seeder
             // Phase 3 — game catalogue (D-007: HLL preset). MUST run AFTER ClanTagSeeder
             // because Phase 3 migrations land later than Phase 2 (Pitfall 9 — ordering).
             GameSeeder::class,
+            // Phase 7 — CMS editorial taxonomy (4 starter categories LOCKED via
+            // Open Question 3 of plan 07-03). MUST run AFTER all Phase 1-6 seeders
+            // because Phase 7 migrations land in Wave 1 (timestamp 2026_05_15_1200xx)
+            // after every prior phase (Pitfall 9 — ordering).
+            CategorySeeder::class,
         ]);
     }
 }
