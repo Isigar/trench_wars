@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 08-10-PLAN.md
-last_updated: "2026-05-14T05:34:23.047Z"
+last_updated: "2026-05-14T05:48:39.376Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 108
-  completed_plans: 105
+  completed_plans: 106
   percent: 78
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 10 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
+Plan: 11 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -143,6 +143,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 08 P07 | 9min | 2 tasks | 6 files |
 | Phase 08 P09 | 12min | 2 tasks | 14 files |
 | Phase 08-rcon-automation P10 | 9 | 2 tasks | 8 files |
+| Phase 08 P11 | 10min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -464,6 +465,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 08-10: HmacSigner timestamp typed as string (not number) for byte-for-byte cross-tier wire compat with apps/web HmacVerifier (PHP hash_hmac over $timestamp . $body).
 - [Phase ?]: Plan 08-10: CrconClient.heartbeatIntervalMs option (default 30s) for deterministic integration testing — fake timers compose poorly with real ws I/O.
 - [Phase ?]: Plan 08-10: WebIngestClient is retry-stateless; returns {status, body}; caller (08-11 BookingScheduler) owns Redis-backed 5xx drainer.
+- [Phase ?]: BookingScheduler.managerFactory injectable option — Rule 2 testability hook (08-11)
+- [Phase ?]: MatchLifecycleManager flushIntervalMs/batchSize/completeGraceMs override options — Rule 2 testability hooks (08-11)
+- [Phase ?]: fetchSignedJson<T>(path) throws on non-2xx — centralises transient failure handling (08-11)
+- [Phase ?]: ioredis named-import shape (import { Redis } from 'ioredis') for TS 5.6 NodeNext compatibility (08-11)
 
 ### Pending Todos
 
@@ -485,6 +490,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T05:34:10.112Z
+Last session: 2026-05-14T05:47:52.983Z
 Stopped at: Completed 08-10-PLAN.md
 Resume file: None
