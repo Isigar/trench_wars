@@ -199,7 +199,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 07-02-PLAN.md — Migrations (categories + articles + media uuidMorphs amendment + FTS triggers on 3 tables + discord_outbound CHECK extension for article_announce)
 - [x] 07-03-PLAN.md — Article + Category models + factories + CategorySeeder (4 starter categories — Open Question 3 LOCKED)
 - [x] 07-04-PLAN.md — cms-editor role permissions + ArticlePolicy + CategoryPolicy + trenchwars:make-cms-editor artisan
-- [ ] 07-05-PLAN.md — Filament ArticleResource + CategoryResource + 6 page classes + PublicArticleData tiptap_converter wiring (Pitfall 10 mitigation)
+- [x] 07-05-PLAN.md — Filament ArticleResource + CategoryResource + 6 page classes + PublicArticleData tiptap_converter wiring (Pitfall 10 mitigation)
 - [ ] 07-06-PLAN.md — ArticleObserver + ArticleStatusService + DiscordOutboundPayloadBuilder buildArticleAnnounce + config(discord.league_announce_channel_id)
 - [ ] 07-07-PLAN.md — ArticlesPublishScheduledCommand + ArticlePublishService + scheduler entry (Pitfall 12 dual-guard)
 - [ ] 07-08-PLAN.md — SearchService (Postgres FTS + PlayerPrivacyGate filter + Pitfall 2 plainto_tsquery) + SearchResultData DTOs

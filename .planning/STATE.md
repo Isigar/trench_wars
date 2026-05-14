@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
-last_updated: "2026-05-14T00:37:54.296Z"
+stopped_at: "Completed 07-05-PLAN.md (Wave 3: ArticleResource + CategoryResource + tiptap_converter)"
+last_updated: "2026-05-14T00:55:59.951Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 86
+  completed_plans: 87
   percent: 67
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 4 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Plan: 5 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -125,6 +125,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P02 | 7m 14s | 2 tasks | 6 files |
 | Phase 07 P03 | 11m 58s | 2 tasks | 12 files |
 | Phase 07 P04 | 3m 49s | 2 tasks | 7 files |
+| Phase 07 P05 | 13m 37s | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -387,6 +388,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-07-04-A: ArticlePolicy::before() admin-bypass excludes delete (super-admin-role double-gate)
 - [Phase ?]: D-07-04-B: Open Question 2 LOCKED via trenchwars:make-cms-editor artisan (mirrors Phase 1 make-admin idiom)
 - [Phase ?]: D-07-04-C: articles.delete is super-admin only (perm-omit + policy-role double-gate per T-07-04-01)
+- [Phase ?]: D-07-05-A: Installed filament/spatie-laravel-media-library-plugin ^3.3 (Rule 3 blocker — SpatieMediaLibraryFileUpload class absent from base install).
+- [Phase ?]: D-07-05-C: Article slug ->disabledOn('edit') + ->unique(ignoreRecord) form rule (Open Question 4 LOCKED — permalink integrity, no auto-suffix).
+- [Phase ?]: D-07-05-F: CreateArticle::mutateFormDataBeforeCreate force-sets author_user_id = auth()->id() (T-07-05-07 mitigation; form does not expose author_user_id field).
+- [Phase ?]: D-07-05-G: Filament tests use assertFormFieldIsHidden (NOT assertFormFieldHidden — that method does not exist in Filament v3.3).
 
 ### Pending Todos
 
@@ -408,6 +413,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T00:37:54.293Z
-Stopped at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
+Last session: 2026-05-14T00:55:59.946Z
+Stopped at: Completed 07-05-PLAN.md (Wave 3: ArticleResource + CategoryResource + tiptap_converter)
 Resume file: None
