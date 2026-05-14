@@ -197,7 +197,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 13 plans
 - [x] 07-01-PLAN.md — Wave 0 scaffolding (4 composer + 5 npm deps + Tiptap safe-node profile + 17 RED Pest stubs + 3 i18n namespaces)
 - [x] 07-02-PLAN.md — Migrations (categories + articles + media uuidMorphs amendment + FTS triggers on 3 tables + discord_outbound CHECK extension for article_announce)
-- [ ] 07-03-PLAN.md — Article + Category models + factories + CategorySeeder (4 starter categories — Open Question 3 LOCKED)
+- [x] 07-03-PLAN.md — Article + Category models + factories + CategorySeeder (4 starter categories — Open Question 3 LOCKED)
 - [ ] 07-04-PLAN.md — cms-editor role permissions + ArticlePolicy + CategoryPolicy + trenchwars:make-cms-editor artisan
 - [ ] 07-05-PLAN.md — Filament ArticleResource + CategoryResource + 6 page classes + PublicArticleData tiptap_converter wiring (Pitfall 10 mitigation)
 - [ ] 07-06-PLAN.md — ArticleObserver + ArticleStatusService + DiscordOutboundPayloadBuilder buildArticleAnnounce + config(discord.league_announce_channel_id)
@@ -276,6 +276,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Matches (manual) | 13/13 | Complete | 2026-05-13 |
 | 5. Discord bot v1 | 13/13 | Complete | 2026-05-13 |
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
-| 7. CMS | 0/13 | Planned | - |
+| 7. CMS | 3/13 | In Progress | - |
 | 8. RCON automation | 0/TBD | Not started | - |
 | 9. Polish | 0/TBD | Not started | - |

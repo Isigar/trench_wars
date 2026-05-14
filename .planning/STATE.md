@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Phase 7 plan 1 (Wave 0 — CMS scaffolding) COMPLETE; 4 composer + 5 npm deps + tiptap safe-node profile + 2 factory stubs + 17 RED Pest stubs + 3 i18n namespaces shipped
-last_updated: "2026-05-14T00:11:22.233Z"
+stopped_at: Phase 7 plan 3 (Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO) COMPLETE; 22 GREEN Pest tests / 0 regressions; Pint + PHPStan L8 clean
+last_updated: "2026-05-14T00:24:15.000Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 84
+  completed_plans: 85
   percent: 67
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 06 (Tournaments & brackets) — COMPLETE (PENDING_MANUAL_SMOKE — 4-item operator walkthrough A-D per 06-PHASE-VERIFICATION.md)
-Plan: 14 of 14 complete (06-14 phase verification — 866/2719 Pest + 139 bot Vitest GREEN; all 7 gates GREEN; D-06-* bindings recorded)
-Status: Phase complete — ready for verification
+Phase: 07 (CMS) — IN PROGRESS
+Plan: 03 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Status: Plan complete — ready for verifier
 Last activity: 2026-05-14
 
-Progress: [███████░░░] 67% (6/9 phases; 82/82 plans complete through Phase 6)
+Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans; 85/95 plans complete)
 
 ## Performance Metrics
 
@@ -123,6 +123,7 @@ Progress: [███████░░░] 67% (6/9 phases; 82/82 plans complete
 | Phase 06 P14 | 462s | 2 tasks | 5 files |
 | Phase 07 P01 | 8m 35s | 2 tasks | 32 files |
 | Phase 07 P02 | 7m 14s | 2 tasks | 6 files |
+| Phase 07 P03 | 11m 58s | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -376,6 +377,12 @@ Plan-level decisions logged during execution:
 - [Phase 07]: D-07-02-A clans FTS trigger indexes name+tag+description+slug (Phase 2 schema: clans.name is text, not jsonb; tag included for league-directory UX)
 - [Phase 07]: D-07-02-B players FTS trigger indexes ONLY display_name+slug (D-018; users.username is on users table not players)
 - [Phase 07]: D-07-02-C discord_outbound CHECK baseline was 6 values not 7 per plan; up() extends 6→7 (adds article_announce); down() restores Phase 6 baseline verbatim
+- [Phase 07]: D-07-03-A Use Spatie\\Image\\Enums\\Fit::Crop (not Fit::Cover — does not exist in spatie/image v3) for Article media conversions; cover-crop semantics preserved
+- [Phase 07]: D-07-03-B Conversion method-call order — Conversion-native methods (performOnCollections/nonQueued/withResponsiveImages) BEFORE ImageDriver-proxied ->fit() to satisfy PHPStan L8 (Conversion declares @mixin ImageDriver; ->fit() returns ImageDriver to PHPStan, hiding Conversion methods after). Project-wide rule for every HasMedia model.
+- [Phase 07]: D-07-03-C Canonical activitylog paths in this codebase: Spatie\\Activitylog\\Models\\Concerns\\LogsActivity + Spatie\\Activitylog\\Support\\LogOptions (Phase 4/6 idiom precedent — plan 07-03 <interfaces> referenced older Spatie\\Activitylog\\Traits\\LogsActivity + Spatie\\Activitylog\\LogOptions paths which exist on older library versions)
+- [Phase 07]: D-07-03-D Article::events() uses morphMany (collection-shaped return) even though events_one_per_owner UNIQUE makes it functionally one-to-one; Tournament + GameMatch use morphOne — Article diverges per plan must_haves to give plan 07-12 sitemap consumers flexibility for batched calendar projections
+- [Phase 07]: D-07-03-E PublicArticleData::fromModel() emits bodyHtml='' as documented partial-impl marker; plan 07-05 wires tiptap_converter()->asHTML; DTO shape stabilises here so 4 downstream plans (07-05, 07-09, 07-10, 07-12) can typehint without further class-modification churn
+- [Phase 07]: D-07-03-F Article media conversions ALL bound to 'hero' collection (the only collection articles use in v1); plan 07-05 SpatieMediaLibraryFileUpload field must use ->collection('hero') matching performOnCollections('hero') — zero re-configuration of disk / collection names downstream
 
 ### Pending Todos
 
