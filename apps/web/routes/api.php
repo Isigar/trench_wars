@@ -8,6 +8,9 @@ use App\Http\Controllers\BotApi\BotApiMatchController;
 use App\Http\Controllers\BotApi\BotApiMatchSignupController;
 use App\Http\Controllers\BotApi\BotApiOutboundController;
 use App\Http\Controllers\BotApi\BotApiUserController;
+use App\Http\Controllers\Internal\BookingScheduleController;
+use App\Http\Controllers\Internal\MatchEventsController;
+use App\Http\Controllers\Internal\MatchServerCredentialsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -64,3 +67,38 @@ Route::prefix('bot')->middleware(['auth:sanctum', 'abilities:bot:read'])->group(
             ->name('bot.discordEvents.roleChange');
     });
 });
+
+// ----- RCON Worker → Web (Phase 8) -----
+//
+// Source: .planning/phases/08-rcon-automation/08-06-PLAN.md <interfaces> Route block.
+//
+// Three HMAC-protected endpoints consumed by apps/rcon-worker (plans 08-10..08-11):
+//   POST match/{match}/events          — MatchEventsController::store (Wave 4 shim;
+//                                        plan 08-07 swaps the body for the real
+//                                        MatchEventIngestService).
+//   GET  bookings/due                  — BookingScheduleController::dueNow → fed to
+//                                        plan 08-11 BookingScheduler.
+//   GET  match-servers/{server}/...    — MatchServerCredentialsController::show →
+//                                        called by plan 08-10 CrconClient on session open.
+//
+// Middleware stack:
+//   - `rcon.signature` (alias registered in bootstrap/app.php by plan 08-05) — HMAC
+//     gate over (timestamp + raw body); rejects missing/stale/bad-sig/replayed requests.
+//   - `throttle:600,1` — DoS guard (T-08-06-01). 600 req/min is well above the worker's
+//     single-replica steady-state rate (≤ 1 batch/s on /events; one /bookings/due poll
+//     every 30s; one /credentials per session open).
+//
+// Namespace segregation: `/api/internal/*` is SEPARATE from `/api/*` (bot — Sanctum
+// abilities) and `/api/v1/*` (public). The rcon.signature middleware MUST NOT bleed
+// onto unrelated traffic — the route group prefix is the boundary.
+Route::middleware(['rcon.signature', 'throttle:600,1'])
+    ->prefix('internal')
+    ->name('internal.')
+    ->group(function (): void {
+        Route::post('match/{match}/events', [MatchEventsController::class, 'store'])
+            ->whereUuid('match')->name('match.events.store');
+        Route::get('bookings/due', [BookingScheduleController::class, 'dueNow'])
+            ->name('bookings.due');
+        Route::get('match-servers/{server}/credentials', [MatchServerCredentialsController::class, 'show'])
+            ->whereUuid('server')->name('match-servers.credentials');
+    });

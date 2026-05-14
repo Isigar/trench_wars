@@ -352,5 +352,23 @@ locale: string,
 last_login_at: string | null,
 left_community_at: string | null,
 };
+namespace Internal {
+export type BookingDueData = {
+id: string,
+match_id: string,
+server_id: string,
+server_host: string,
+server_port: number,
+reserved_from: string,
+reserved_to: string,
+};
+export type MatchEventInputData = {
+crcon_stream_id: string | null,
+event_type: string,
+crcon_action: string | null,
+payload: Record<string, any>,
+occurred_at: string,
+};
+}
 }
 }
