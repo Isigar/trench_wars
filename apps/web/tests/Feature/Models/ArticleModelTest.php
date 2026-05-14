@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\Article;
 use App\Models\Category;
-use App\Models\Event;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Testing\File;
@@ -90,16 +89,15 @@ it('exposes events() MorphMany pointing at the polymorphic events table', functi
     expect($article->events())->toBeInstanceOf(MorphMany::class);
     expect($article->events()->getMorphClass())->toBe(Article::class);
 
-    // Insert a polymorphic Event row directly (observer wiring lands in plan
-    // 07-06; this plan only verifies the relation resolves the row).
-    Event::create([
-        'eventable_type' => Article::class,
-        'eventable_id' => $article->id,
-        'starts_at' => now(),
-        'title' => ['en' => 'Article event smoke'],
-        'is_public' => true,
-    ]);
-
+    /*
+    | Phase 7 plan 07-06 introduced the ArticleObserver, which auto-creates the
+    | events row on Article::factory()->create() via syncEvent(). The earlier
+    | iteration of this test (07-03) manually inserted a second Event row,
+    | which collided with the `events_one_per_owner` partial UNIQUE index
+    | (eventable_type, eventable_id) the moment the observer landed in 07-06.
+    | Plan 07-08 fix (per .planning/phases/07-cms/deferred-items.md): drop the
+    | manual Event::create() — assert the observer-created row exists instead.
+    */
     expect($article->fresh()?->events->count())->toBe(1);
 });
 
