@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 08-04-PLAN.md (Wave 3 MatchEvent + MatchPlayerStat models)
-last_updated: "2026-05-14T04:23:27.616Z"
+stopped_at: Completed 08-06-PLAN.md
+last_updated: "2026-05-14T04:34:35.341Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 108
-  completed_plans: 100
+  completed_plans: 101
   percent: 78
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 5 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
+Plan: 6 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -139,6 +139,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 08 P03 | 8min | 2 tasks | 10 files |
 | Phase 08-rcon-automation P04 | 7min | 2 tasks | 7 files |
 | Phase 08 P05 | 13m05s | 2 tasks | 5 files |
+| Phase 08 P06 | 6min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -448,6 +449,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Distinct 401 labels per failure mode for ops debuggability; secret material never logged (08-05 D2)
 - [Phase ?]: Test uses call() + pre-converted HTTP_* server vars (not postJson) so raw body bytes match signed bytes byte-for-byte (08-05 D3)
 - [Phase ?]: Empty WEB_HMAC_SECRET fails LOUD via InvalidArgumentException in HmacVerifier::sign; mitigates T-08-05-06 fail-open misconfig (08-05 D4)
+- [Phase 08]: Plan 08-06 ships a labelled SHIM in MatchEventsController::store; plan 08-07 will replace the inline closure with MatchEventIngestService injection — the 8-case InternalApiRoutesPresentTest pins the wire contract that 08-07 must preserve
+- [Phase 08]: BookingDueData pre-resolves server_host + server_port so the rcon-worker BookingScheduler (plan 08-11) does not need a second hop to /api/internal/match-servers/{id}/credentials just for connectivity info — credentials endpoint stays reserved for the api_token
+- [Phase 08]: SignsRconRequests at tests/Support/ (Tests\Support namespace) as a reusable Pest trait — plans 08-07/08-08/08-12 will uses(SignsRconRequests::class) to inherit signedJsonPost / signedGet / rconServerVars ergonomics; trait reads secret from config('rcon.hmac_secret') so each test pins its scope-local secret via beforeEach
 
 ### Pending Todos
 
@@ -469,6 +473,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T04:23:17.678Z
-Stopped at: Completed 08-04-PLAN.md (Wave 3 MatchEvent + MatchPlayerStat models)
+Last session: 2026-05-14T04:34:35.337Z
+Stopped at: Completed 08-06-PLAN.md
 Resume file: None
