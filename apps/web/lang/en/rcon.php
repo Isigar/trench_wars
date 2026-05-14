@@ -66,6 +66,10 @@ return [
     'audit' => [
         'manual_override_wins' => 'Manual MatchResult overrides incoming RCON match_end event (locked).',
         'rcon_arrived_locked' => 'RCON match_end arrived after manual override — event recorded but result row left untouched.',
+        // Plan 08-08 — default notes value written into match_results.notes by
+        // MatchResultService::upsertFromRcon() when the caller does not supply one.
+        // Reads as a sentence in the Filament admin UI under "Notes".
+        'automated_from_crcon' => 'Automated result from CRCON — populated by the RCON worker.',
         'test_connection_queued' => 'TestConnection queued for :server — awaiting worker.',
         'test_connection_ok' => 'TestConnection succeeded — :server reachable + log stream open.',
         'test_connection_error' => 'TestConnection failed for :server — :reason.',
