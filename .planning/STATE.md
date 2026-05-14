@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 07-08-PLAN.md
-last_updated: "2026-05-14T01:52:46.737Z"
+last_updated: "2026-05-14T02:12:09.901Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 91
+  completed_plans: 92
   percent: 67
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 9 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Plan: 10 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -130,6 +130,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07-cms P07 | 11m 19s | 2 tasks | 5 files |
 | Phase 07 P08 | 9m 24s | 2 tasks | 9 files |
 | Phase 07 P09 | 11m 22s | 2 tasks | 13 files |
+| Phase 07 P10 | 18m 04s | 2 tasks | - files |
 
 ## Accumulated Context
 
@@ -413,6 +414,11 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-07-09-D: Open Question 6 LOCKED color palette inline in CalendarEventData::colourFor — match=#3B82F6, tournament=#8B5CF6, article=#10B981
 - [Phase ?]: D-07-09-E: Web routes return 302+session errors on validation failure (not JSON 422); /events/feed.json with getJson() returns 422
 - [Phase ?]: D-07-09-F: Inertia data-page attribute is htmlspecialchars(ENT_QUOTES) double-encoded — apostrophes become &#039; (T-07-09-06 XSS mitigation proof)
+- [Phase ?]: D-07-10-A Vue components in lowercase components/cms folder
+- [Phase ?]: D-07-10-B Boolean view helpers (hasCategories/hasArticles/hasMultiplePages) refactored from inline v-if attribute > expressions to keep NoHardcodedStringsTest scanner happy
+- [Phase ?]: D-07-10-C NODE_WIDTH/NODE_HEIGHT extracted to bracket-node-dimensions.ts (Rule 3 fix for pre-existing pnpm build failure — Vue 3.5+ refuses export const in script setup)
+- [Phase ?]: D-07-10-D FullCalendar options typed as Record<string,unknown> to avoid FC internal type collisions across the SSR boundary
+- [Phase ?]: D-07-10-E Header SearchBar in hidden md:flex wrapper alongside existing nav; mobile-search affordance deferred
 
 ### Pending Todos
 
@@ -434,6 +440,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T01:52:12.160Z
+Last session: 2026-05-14T02:11:37.221Z
 Stopped at: Completed 07-08-PLAN.md
 Resume file: None
