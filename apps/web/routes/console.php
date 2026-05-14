@@ -54,3 +54,42 @@ Schedule::command('articles:publish-scheduled')
 Schedule::command('sitemap:generate')
     ->dailyAt('03:00')
     ->onOneServer();          // Railway multi-replica safety — Pitfall 12
+
+/*
+| Source: .planning/phases/09-polish/09-04-PLAN.md task 1 +
+|         09-RESEARCH.md § Pattern 2 (NotificationDispatcher cron sweep).
+|
+| SC-1 timer-based dispatch surface — fires MatchStartingSoon to signed-up
+| players + active host-clan members at T-60min and T-15min before the match's
+| scheduled_at. The service's alreadyDispatched() guard makes the sweep
+| idempotent against the (type, data->match_id, data->minutes) tuple (Pitfall 5
+| LOCKED), so a slow tick that crosses minute boundaries does NOT re-fire the
+| same notification.
+|
+| Both guards required (Pitfall 12):
+|   ->withoutOverlapping() — single-host single-execution.
+|   ->onOneServer()        — multi-host single-execution via cache lock for
+|                            Railway multi-replica deploys (D-014).
+*/
+Schedule::command('notifications:dispatch-upcoming')
+    ->everyMinute()
+    ->withoutOverlapping()    // single-host single-execution
+    ->onOneServer();          // Railway multi-replica safety — Pitfall 12
+
+/*
+| Source: .planning/phases/09-polish/09-04-PLAN.md task 1 +
+|         09-RESEARCH.md Open Question 7 LOCKED (90-day retention).
+|
+| Daily 90-day prune of the notifications table. Notifications are NOT the
+| audit log (activity_log is — D-012); this prune is operational hygiene to
+| keep the bell list responsive + the table physically small. Threat-register
+| entry T-09-04-05 accepts the audit-trail trade-off.
+|
+| dailyAt('03:30') is chosen to interleave with sitemap:generate (03:00) —
+| both land in the low-traffic UTC window. onOneServer() prevents multi-replica
+| double-delete (the delete itself is idempotent but the activity_log audit row
+| would otherwise double).
+*/
+Schedule::command('notifications:prune')
+    ->dailyAt('03:30')
+    ->onOneServer();          // Railway multi-replica safety — Pitfall 12
