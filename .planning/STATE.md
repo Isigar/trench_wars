@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 07-08-PLAN.md
-last_updated: "2026-05-14T02:20:33.926Z"
+last_updated: "2026-05-14T02:36:34.122Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 95
-  completed_plans: 93
+  completed_plans: 94
   percent: 67
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 07 (CMS) — IN PROGRESS
-Plan: 11 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
+Plan: 12 of 13 complete (07-03 Wave 2 — Article + Category models + factories + CategorySeeder + PublicArticleData DTO + 22 GREEN Pest tests)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -132,6 +132,7 @@ Progress: [███████░░░] 73% (6/9 phases + 3/13 Phase 7 plans;
 | Phase 07 P09 | 11m 22s | 2 tasks | 13 files |
 | Phase 07 P10 | 18m 04s | 2 tasks | - files |
 | Phase 07-cms P11 | 5min | 2 tasks | 5 files |
+| Phase 07 P12 | 12min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -421,6 +422,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-07-10-D FullCalendar options typed as Record<string,unknown> to avoid FC internal type collisions across the SSR boundary
 - [Phase ?]: D-07-10-E Header SearchBar in hidden md:flex wrapper alongside existing nav; mobile-search affordance deferred
 - [Phase ?]: Plan 07-11: SSR ships as 6th docker-compose service (split-service over worker-co-host per RESEARCH Pattern 5 Option B + Open Question 7 LOCKED inline RESOLVED); ssr.url default retargeted to docker service-name DNS (http://ssr:13714); Pitfall 8 locale chain locked down by SsrLocaleHonouredTest
+- [Phase ?]: Pitfall 4 mitigation tested at SFC source level (head-key occurrence-count == 1) — runtime DOM verification deferred to v2
+- [Phase ?]: Category is NOT a Sitemapable in v1 (no public show route); deferred to v2 alongside CategoryShowController
+- [Phase ?]: Individual Player URLs NEVER per-row in sitemap (T-07-12-01 hard rule); only /players index URL exposed
+- [Phase ?]: Search/Results.vue ships head-key='robots' content='noindex' (T-07-12-08) — must not be indexed
 
 ### Pending Todos
 
@@ -442,6 +447,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T02:20:29.156Z
+Last session: 2026-05-14T02:36:14.331Z
 Stopped at: Completed 07-08-PLAN.md
 Resume file: None

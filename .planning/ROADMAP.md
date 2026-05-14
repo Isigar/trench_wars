@@ -206,7 +206,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 07-09-PLAN.md — 5 public controllers (BlogIndex/BlogShow/EventsCalendar/EventsFeedJson/Search) + 2 FormRequests + CalendarFeedService + 5 routes + throttle:60,1
 - [x] 07-10-PLAN.md — 4 Vue pages (Articles/Index, Articles/Show, Events/Index, Search/Results) + 4 Cms/* components + PublicLayout SearchBar + FullCalendar mount
 - [x] 07-11-PLAN.md — Inertia v2 SSR enable + 6th ssr docker-compose service (Open Question 7 LOCKED — split service)
-- [ ] 07-12-PLAN.md — sitemap:generate + Sitemapable on 3 models + Inertia <Head> meta tags + CmsI18nKeyCoverageTest + ArticleAuditLogTest
+- [x] 07-12-PLAN.md — sitemap:generate + Sitemapable on 3 models + Inertia <Head> meta tags + CmsI18nKeyCoverageTest + ArticleAuditLogTest
 - [ ] 07-13-PLAN.md — [BLOCKING] phase verification + ROADMAP update + REQUIREMENTS update + final quality gates
 **UI hint**: yes
 
