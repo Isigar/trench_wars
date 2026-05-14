@@ -4,33 +4,60 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/*
-| Wave 0 stub — replaced by plan 07-03 (Wave 2, Models — Article).
-| Source: .planning/phases/07-cms/07-01-PLAN.md task 2.
-| Analog (canonical Wave 0 idiom): apps/web/database/factories/TournamentFactory.php
-| from Phase 6 commit 0b75b8d (which itself follows Phase 3 commit 1d4d736).
-|
-| Deviation note (Rule 3, blocking issue): the canonical generic
-| `@extends Factory<\App\Models\Article>` fails PHPStan L8 against the
-| as-yet-uncreated `App\Models\Article` class, and CLAUDE.md §3 forbids
-| regenerating phpstan-baseline.neon here. We use per-line `@phpstan-ignore`
-| annotations instead — plan 07-03 must remove them when it lands the real
-| model + restores the generic docblock.
-|
-| @phpstan-ignore-next-line missingType.generics
-*/
-final class ArticleFactory extends Factory
+/**
+ * Source: .planning/phases/07-cms/07-03-PLAN.md task 1(c).
+ *
+ * Replaces the Wave 0 stub (07-01) — the per-line phpstan-ignore annotations
+ * from the stub are removed; canonical generic `@extends Factory<Article>` is
+ * restored now that App\Models\Article exists.
+ *
+ * Default scope: a fresh Category per row (via Category::factory()). Author
+ * is null by default to match the migration's nullable author_user_id; pass
+ * ->for($user, 'author') to attach. Status='draft', allow_discord_announce=true
+ * (Open Question 1 LOCKED inline — per-article opt-in flag defaults on).
+ *
+ * Body is a minimal Tiptap-shaped JSON doc (`{type: doc, content: [...]}`)
+ * — the public renderer (plan 07-05) consumes this shape via tiptap_converter.
+ *
+ * @extends Factory<Article>
+ */
+class ArticleFactory extends Factory
 {
-    /** @var string */
-    protected $model = 'App\\Models\\Article'; // @phpstan-ignore-line property.defaultValue
+    protected $model = Article::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        return [];
+        $title = fake()->sentence(4);
+
+        return [
+            'slug' => Str::slug($title) . '-' . Str::random(6),
+            'category_id' => Category::factory(),
+            'title' => ['en' => $title],
+            'excerpt' => ['en' => fake()->sentence(12)],
+            'body' => ['en' => [
+                'type' => 'doc',
+                'content' => [
+                    [
+                        'type' => 'paragraph',
+                        'content' => [
+                            ['type' => 'text', 'text' => fake()->paragraph()],
+                        ],
+                    ],
+                ],
+            ]],
+            'status' => 'draft',
+            'scheduled_at' => null,
+            'published_at' => null,
+            'author_user_id' => null,
+            'allow_discord_announce' => true,
+        ];
     }
 }

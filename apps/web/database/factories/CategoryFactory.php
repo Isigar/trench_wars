@@ -4,31 +4,35 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/*
-| Wave 0 stub — replaced by plan 07-03 (Wave 2, Models — Category).
-| Source: .planning/phases/07-cms/07-01-PLAN.md task 2.
-| Analog (canonical Wave 0 idiom): apps/web/database/factories/TournamentFactory.php
-| from Phase 6 commit 0b75b8d.
-|
-| Deviation note (Rule 3, blocking issue): the canonical generic
-| `@extends Factory<\App\Models\Category>` fails PHPStan L8 against the
-| as-yet-uncreated `App\Models\Category` class. plan 07-03 swaps in the
-| real generic + Category::class binding once the model lands.
-|
-| @phpstan-ignore-next-line missingType.generics
-*/
-final class CategoryFactory extends Factory
+/**
+ * Source: .planning/phases/07-cms/07-03-PLAN.md task 1(d).
+ *
+ * Replaces the Wave 0 stub (07-01). The per-line phpstan-ignore annotations
+ * from the stub are removed; canonical generic `@extends Factory<Category>` is
+ * restored now that App\Models\Category exists.
+ *
+ * Default scope: a unique slug (word + 4-char nonce) and an EN-only name.
+ *
+ * @extends Factory<Category>
+ */
+class CategoryFactory extends Factory
 {
-    /** @var string */
-    protected $model = 'App\\Models\\Category'; // @phpstan-ignore-line property.defaultValue
+    protected $model = Category::class;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        return [];
+        $word = fake()->unique()->word();
+
+        return [
+            'slug' => Str::slug($word) . '-' . Str::lower(Str::random(4)),
+            'name' => ['en' => Str::title($word)],
+        ];
     }
 }
