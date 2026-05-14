@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 08-04-PLAN.md (Wave 3 MatchEvent + MatchPlayerStat models)
-last_updated: "2026-05-14T04:06:27.484Z"
+last_updated: "2026-05-14T04:23:27.616Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 108
-  completed_plans: 99
+  completed_plans: 100
   percent: 78
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 08 (RCON automation) — IN PROGRESS
-Plan: 4 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
+Plan: 5 of 13 complete (08-01 Wave 0 scaffolding — 2 commits, all gates green)
 Status: Ready to execute
 Last activity: 2026-05-14
 
@@ -138,6 +138,7 @@ Progress: [█████████░] 89% (7/9 phases; 96/108 plans; Phase 
 | Phase 08-rcon-automation P02 | 10min | 2 tasks | 6 files |
 | Phase 08 P03 | 8min | 2 tasks | 10 files |
 | Phase 08-rcon-automation P04 | 7min | 2 tasks | 7 files |
+| Phase 08 P05 | 13m05s | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -442,6 +443,11 @@ Plan-level decisions logged during execution:
 - [Phase ?]: MatchEvent uses $timestamps=false (append-only stream — occurred_at + ingested_at handle timeline; migration deliberately omits created_at/updated_at)
 - [Phase ?]: Unit tests opt into RefreshDatabase explicitly — Pest.php global binding only attaches to Feature/, Phase 8 Unit tests use real DB factory fixtures
 - [Phase ?]: DB::transaction() savepoint pattern for UNIQUE-violation probes that need follow-on queries — outer RefreshDatabase transaction otherwise enters failed state on 23505
+- [Phase ?]: Test text
+- [Phase ?]: Carbon::now() instead of microtime(true) for freshness arithmetic so Carbon::setTestNow honoured in tests; production semantics identical (08-05 D1)
+- [Phase ?]: Distinct 401 labels per failure mode for ops debuggability; secret material never logged (08-05 D2)
+- [Phase ?]: Test uses call() + pre-converted HTTP_* server vars (not postJson) so raw body bytes match signed bytes byte-for-byte (08-05 D3)
+- [Phase ?]: Empty WEB_HMAC_SECRET fails LOUD via InvalidArgumentException in HmacVerifier::sign; mitigates T-08-05-06 fail-open misconfig (08-05 D4)
 
 ### Pending Todos
 
@@ -463,6 +469,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T04:06:27.480Z
+Last session: 2026-05-14T04:23:17.678Z
 Stopped at: Completed 08-04-PLAN.md (Wave 3 MatchEvent + MatchPlayerStat models)
 Resume file: None
