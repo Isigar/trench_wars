@@ -14,6 +14,10 @@ return [
         'your_profile_note' => 'Some sections of your profile are hidden from other visitors. Adjust privacy in your account settings.',
     ],
 
+    // Phase 9 plan 09-09 — PlayerAvatar.vue alt text (WebP avatar conversions).
+    // Parameter: :name (player display name).
+    'avatar_alt' => ':name avatar',
+
     'section' => [
         'clan_history' => 'Clan history',
         'match_history' => 'Match history',

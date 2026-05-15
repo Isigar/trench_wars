@@ -25,6 +25,11 @@ return [
         'tag_label' => 'Filter by tag',
     ],
 
+    // Phase 9 plan 09-09 — ClanLogo.vue alt text (WebP avatar conversions).
+    // Parameter: :name (clan display name). Pattern matches the alt-attribute
+    // accessibility contract from 02-UI-SPEC.md (avatar surfaces).
+    'logo_alt' => ':name clan logo',
+
     'members' => [
         'count_one' => '1 member',
         'count_other' => ':count members',
