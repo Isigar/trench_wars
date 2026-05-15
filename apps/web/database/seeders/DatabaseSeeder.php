@@ -12,6 +12,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PermissionSeeder::class,
+            // Phase 9 plan 09-07 task 1 — moderator role + 5 permissions (Wave 5).
+            // Runs AFTER PermissionSeeder so super-admin (created there) is in place;
+            // ModeratorRoleSeeder is independent of super-admin (Open Question 10
+            // LOCKED — moderator does NOT inherit admin permissions).
+            ModeratorRoleSeeder::class,
             DiscordGuildSeeder::class,
             // Phase 5 plan 05-07 task 2 — bot service user singleton. Must run BEFORE any
             // seeders that reference role-sync attribution (none currently; reserved for

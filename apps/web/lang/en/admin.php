@@ -94,6 +94,10 @@ return [
             'locale' => 'Locale',
             'last_login_at' => 'Last login',
         ],
+        'relations' => [
+            // Phase 9 plan 09-07 (Wave 5) — BansRelationManager tab title.
+            'bans' => 'Bans',
+        ],
     ],
     'player' => [
         'label' => 'Player',
