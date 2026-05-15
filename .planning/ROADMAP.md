@@ -256,7 +256,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 09-05-PLAN.md — LeaderboardService (Cache::tags + flexible SWR) + 2 spatie/laravel-data DTOs + MatchResultObserver + MatchPlayerStatObserver cache-flush hooks + 4 GREEN tests
 - [x] 09-06-PLAN.md — NotificationsController + NotificationPreferencesController + LeaderboardsController + Inertia shared.unread_notifications_count + 3 Vue pages + NotificationsBell + LeaderboardTable + 2 GREEN tests
 - [x] 09-07-PLAN.md — BanService + DisputeService + ModeratorRoleSeeder (5 perms + role) + UserResource/MatchResource BulkActions + MatchDisputeResource + BansRelationManager + 5 GREEN tests
-- [ ] 09-08-PLAN.md — Model::shouldBeStrict(! production) + N+1 sweep across Phase 1-8 controllers + LeaderboardsQueryBudgetTest (<=4) + ClansQueryBudgetTest (<=8) + 3 GREEN tests
+- [x] 09-08-PLAN.md — Model::shouldBeStrict(! production) + N+1 sweep (6 app-side fixes + 12 test-side patches) + AppServiceProviderStrictModeTest (3) + LeaderboardsQueryBudgetTest (5; cold ≤6 deviation, warm/empty ≤4) + ClansQueryBudgetTest (4; ≤8) + CACHE-STRATEGY.md authored
 - [ ] 09-09-PLAN.md — WebP conversions on Clan/Player/Article models + MediaRegenerateWebpCommand + 3 Vue components (ClanLogo, PlayerAvatar, ArticleCover) + 2 GREEN tests
 - [ ] 09-10-PLAN.md — :focus-visible CSS site-wide + axe-core CI workflow (public routes only) + PublicPagesHtmlLangTest + VueFormLabelsTest + manual keyboard nav checkpoint
 - [ ] 09-11-PLAN.md — 4 RateLimiters (public-api 30/min, auth 10/min, notifications-read 120/min, report-abuse 5/hr) + ReportsController + StoreAbuseReportRequest + AbuseReportResource + ReportButton + 5 GREEN tests + rate-limit boundary checkpoint
@@ -278,4 +278,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
 | 7. CMS | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | 13/13 | Complete | 2026-05-14 |
-| 9. Polish | 7/12 | In Progress|  |
+| 9. Polish | 8/12 | In Progress|  |

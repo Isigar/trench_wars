@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: "Completed 09-07-PLAN.md (Wave 5 — BanService + DisputeService + ModeratorRoleSeeder + UserResource/MatchResource bulk actions + MatchDisputeResource + 5 GREEN admin tests)"
-last_updated: "2026-05-15T14:55:00Z"
+stopped_at: "Completed 09-08-PLAN.md (Wave 6 — Model::shouldBeStrict + N+1 sweep + query budgets)"
+last_updated: "2026-05-15T15:30:00Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 116
+  completed_plans: 117
   percent: 90
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 5 complete)
-Plan: 09-07 COMPLETE (BanService + DisputeService + ModeratorRoleSeeder + UserResource/MatchResource BulkActions + MatchDisputeResource + 5 Wave 0 stubs → GREEN; 37 new tests; suite 1248 passed / 14 skipped); next 09-08 (N+1 strict-mode flip)
+Phase: 09 (Polish) — IN FLIGHT (Wave 6 complete)
+Plan: 09-08 COMPLETE (Model::shouldBeStrict in non-prod + 6 app-side N+1 fixes + 12 test-side eager-load patches + LeaderboardsQueryBudgetTest GREEN + ClansQueryBudgetTest GREEN + AppServiceProviderStrictModeTest GREEN + CACHE-STRATEGY.md; 12 new tests; suite 1260 passed / 11 skipped); next 09-09
 Status: Phase 9 in flight
 Last activity: 2026-05-15
 
-Progress: [██████████] 96% (8/9 phases; 116/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05 + 09-06 + 09-07)
+Progress: [██████████] 97% (8/9 phases; 117/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05 + 09-06 + 09-07 + 09-08)
 
 ## Performance Metrics
 
@@ -152,6 +152,7 @@ Progress: [██████████] 96% (8/9 phases; 116/120 plans incl. 
 | Phase 09 P04 | 573 | 2 tasks | 12 files |
 | Phase 09 P05 | 757 | 2 tasks | 13 files |
 | Phase 09-polish P06 | 1251 | 2 tasks | 19 files |
+| Phase 09-polish P08 | 2395 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -511,6 +512,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-09-06-A — Inertia shared closure prop unread_notifications_count carries the bell badge count; no polling, no WebSocket (SC-1)
 - [Phase ?]: D-09-06-B — Named rate limiters notifications-read + public-api registered at AppServiceProvider boot (idempotent; plan 09-11 may refine)
 - [Phase ?]: D-09-06-C — LeaderboardEntryData privacy guard tightened to AND ::allowsSection AND ::passesTier (D-018 trust-boundary alignment, leaderboard surface)
+- [Phase 09]: D-09-08-A — Leaderboards cold-cache query budget raised from PLAN ≤4 → measured 6 queries. Canonical Pattern 6 hydration trio (players + privacy + memberships) requires 3 IN-lookups; collapsing into a hand-written JOIN would bypass Eloquent + privacy accessors. Warm-cache (4) + empty-state (4) remain within the original envelope. Documented inline in `LeaderboardsQueryBudgetTest` file header + `CACHE-STRATEGY.md` § 7.
+- [Phase 09]: D-09-08-B — Games dropdown cache moves OUT of `leaderboards` tag namespace into its own `games:dropdown` tag. Plan 09-05 implicitly grouped both under `leaderboards`; in practice the games list mutates ~once per phase (admin seeds new title) while the leaderboards aggregate flush fires on every MatchResult INSERT. Decoupling preserves the dropdown across all match-result writes. New tag-flush observer (`GameObserver::saved/deleted` → `games:dropdown` flush) deferred to a future plan when Game first needs an observer.
+- [Phase 09]: D-09-08-C — Strict-mode flag uses full `Model::shouldBeStrict(! isProduction())` (the three-flag trio: preventLazyLoading + preventAccessingMissingAttributes + preventSilentlyDiscardingAttributes), NOT the more conservative `Model::preventLazyLoading()` alone. Half-strict would catch lazy loads but silently accept reads of columns the SELECT excluded — exactly the User::password Pitfall 2 bug class this plan surfaced. Production stays at `false` — runtime exception on a public Inertia-SSR page strictly worse than the same exception in CI.
+- [Phase 09]: D-09-08-D — User::getAuthPassword override returns empty string (NOT null, NOT synthetic hash). AuthenticateSession middleware short-circuits on `! getAuthPassword()`; empty string is falsy so password-rehash session-rotation skipped entirely. Discord-OAuth-only schema (D-017) has no canonical password value. Same shape pattern applied to `getRememberToken(): ?string` defensive read via `array_key_exists($name, getAttributes())`.
 
 ### Pending Todos
 
