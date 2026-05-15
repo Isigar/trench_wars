@@ -257,7 +257,7 @@ class AbuseReportResource extends Resource
                         // /  09-02 D-09-02-E). The abuse_report_id is captured
                         // in properties so the audit trail still resolves back
                         // to the report row.
-                        /** @var class-string<\Illuminate\Database\Eloquent\Model> $modelClass */
+                        /** @var class-string<Model> $modelClass */
                         $modelClass = $record->target_type;
                         $target = $modelClass::query()->find($record->target_id);
 

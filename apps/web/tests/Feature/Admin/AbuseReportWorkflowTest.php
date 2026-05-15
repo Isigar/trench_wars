@@ -21,6 +21,7 @@ declare(strict_types=1);
 | the form payload that the Filament Action's ->form([...]) collects.
 */
 
+use App\Filament\Resources\AbuseReportResource;
 use App\Filament\Resources\AbuseReportResource\Pages\ListAbuseReports;
 use App\Models\AbuseReport;
 use App\Models\Ban;
@@ -136,7 +137,7 @@ it('non-moderator user cannot see the abuse-reports list (canViewAny returns fal
     $stranger->givePermissionTo('admin-access');
     $this->actingAs($stranger);
 
-    expect(\App\Filament\Resources\AbuseReportResource::canViewAny())->toBeFalse();
+    expect(AbuseReportResource::canViewAny())->toBeFalse();
 });
 
 it('non-moderator without view-reports cannot reach the abuse-reports list page', function (): void {
@@ -147,7 +148,7 @@ it('non-moderator without view-reports cannot reach the abuse-reports list page'
     // canViewAny() is the resource-level gate that hides the navigation slot
     // AND blocks the page mount. With only admin-access (no view-reports),
     // canViewAny MUST return false (T-09-11-04 mitigation).
-    expect(\App\Filament\Resources\AbuseReportResource::canViewAny())->toBeFalse();
+    expect(AbuseReportResource::canViewAny())->toBeFalse();
 });
 
 it('view-reports without manage-reports allows list but hides dismiss/action transitions', function (): void {
@@ -167,7 +168,7 @@ it('view-reports without manage-reports allows list but hides dismiss/action tra
     ]);
 
     // canViewAny() must return true (view-reports granted).
-    expect(\App\Filament\Resources\AbuseReportResource::canViewAny())->toBeTrue();
+    expect(AbuseReportResource::canViewAny())->toBeTrue();
 
     // Dismiss + action_with_ban actions are hidden (manage-reports missing).
     Livewire::test(ListAbuseReports::class)

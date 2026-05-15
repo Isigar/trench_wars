@@ -32,7 +32,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 
 it('registers public-api limiter at 30/min by IP', function (): void {
-    /** @var \Closure(Request): Limit $resolver */
+    /** @var Closure(Request): Limit $resolver */
     $resolver = RateLimiter::limiter('public-api');
 
     expect($resolver)->toBeCallable();
@@ -50,7 +50,7 @@ it('registers public-api limiter at 30/min by IP', function (): void {
 });
 
 it('registers auth limiter at 10/min by IP', function (): void {
-    /** @var \Closure(Request): Limit $resolver */
+    /** @var Closure(Request): Limit $resolver */
     $resolver = RateLimiter::limiter('auth');
 
     expect($resolver)->toBeCallable();
@@ -68,7 +68,7 @@ it('registers auth limiter at 10/min by IP', function (): void {
 });
 
 it('registers notifications-read limiter at 120/min keyed by authenticated user id', function (): void {
-    /** @var \Closure(Request): Limit $resolver */
+    /** @var Closure(Request): Limit $resolver */
     $resolver = RateLimiter::limiter('notifications-read');
 
     expect($resolver)->toBeCallable();
@@ -94,7 +94,7 @@ it('registers notifications-read limiter at 120/min keyed by authenticated user 
 });
 
 it('registers report-abuse limiter at 5/hour keyed by authenticated user id', function (): void {
-    /** @var \Closure(Request): Limit $resolver */
+    /** @var Closure(Request): Limit $resolver */
     $resolver = RateLimiter::limiter('report-abuse');
 
     expect($resolver)->toBeCallable();
