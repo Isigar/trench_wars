@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 9 COMPLETE PENDING_MANUAL_SMOKE — v1.0 milestone shippable pending 4-item operator walkthrough
-stopped_at: "Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored + ROADMAP/REQUIREMENTS/STATE updated; round-1 ship sign-off pending 4-item operator smoke A-D)"
-last_updated: "2026-05-15T16:55:00.000Z"
+status: completed
+stopped_at: "Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED + ~40 D-09-* canonical bindings; ROADMAP/REQUIREMENTS/STATE updated; round-1 v1.0 milestone SHIPPABLE pending 4-item operator manual smoke A-D)"
+last_updated: "2026-05-15T16:37:59.279Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 9
@@ -157,6 +157,7 @@ Progress: [██████████] 100% (9/9 phases; 120/120 plans — r
 | Phase 09-polish P10 | 780 | 1 task (Task 2 PENDING_MANUAL_SMOKE) | 4 files |
 | Phase 09 P11 | 1093 | 2 tasks | 22 files |
 | Phase 09 P12 | ~30min | 2 tasks | 7 files |
+| Phase 09-polish P12 | ~11min | 2 tasks tasks | 7 files files |
 
 ## Accumulated Context
 
@@ -535,6 +536,8 @@ Plan-level decisions logged during execution:
 - [Phase 09]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 9 (LeaderboardService, DisputeService, BanService, MatchObserver/MatchResultObserver/MatchPlayerStatObserver extensions, MatchDisputeResource, all Phase 9 Feature + Unit tests); zero alias-on-import; canonical binding preserved across the full 9-phase round-1 surface; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A / D-07-* / D-08-* / D-09-* continuation. v2 plans MUST preserve this binding.
 - [Phase 09]: Plan 09-12 D-09-12-A — Phase9I18nKeyCoverageTest mirrors the canonical CmsI18nKeyCoverageTest two-it() idiom — (1) expected-key resolution + (2) source-grep round-trip on Vue/Filament/controller/service/notification surface; both GREEN; CI-gated for v2 drift detection on notifications.* / leaderboards.* / moderation.* / a11y.* / reports.* namespaces.
 - [Phase 09]: Plan 09-12 D-09-12-B — Pint auto-fix in 09-12 commit narrowed scope to 4 Phase-9 source files (Rule 1 deviation — AbuseReportResource.php fully_qualified_strict_types, routes/web.php ordered_imports, AbuseReportWorkflowTest.php fully_qualified_strict_types, RateLimiterDefinitionsTest.php class_definition + fully_qualified_strict_types); zero pre-Phase-9 file touched; preserves the audit boundary that Phase 9 commits only touch Phase 9 code paths.
+- [Phase ?]: D-09-12-A: Phase9I18nKeyCoverageTest mirrors canonical CmsI18nKeyCoverageTest two-it() idiom (expected-key resolution + source-grep round-trip); CI-gated for v2 drift detection on notifications/leaderboards/moderation/a11y/reports namespaces
+- [Phase ?]: D-09-12-B: Pint auto-fix in 09-12 commit narrowed scope to 4 Phase-9 source files (Rule 1 deviation); zero pre-Phase-9 file touched
 
 ### Pending Todos
 
@@ -556,6 +559,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T16:55:00.000Z
+Last session: 2026-05-15T16:37:54.428Z
 Stopped at: Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED + ~40 D-09-* canonical bindings; ROADMAP/REQUIREMENTS/STATE updated; round-1 v1.0 milestone SHIPPABLE pending 4-item operator manual smoke A-D)
 Resume file: None
