@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: "Completed 09-06-PLAN.md (Wave 4 — NotificationsController + LeaderboardsController + bell + 3 Vue pages)"
-last_updated: "2026-05-14T08:37:30.339Z"
-last_activity: 2026-05-14
+stopped_at: "Completed 09-07-PLAN.md (Wave 5 — BanService + DisputeService + ModeratorRoleSeeder + UserResource/MatchResource bulk actions + MatchDisputeResource + 5 GREEN admin tests)"
+last_updated: "2026-05-15T14:55:00Z"
+last_activity: 2026-05-15
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 115
-  percent: 95
+  completed_plans: 116
+  percent: 90
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 4 complete)
-Plan: 09-06 COMPLETE (NotificationsController + LeaderboardsController + bell + 3 Vue pages + Inertia shared prop + 24 GREEN tests); next 09-07 (search-mode + private indices)
+Phase: 09 (Polish) — IN FLIGHT (Wave 5 complete)
+Plan: 09-07 COMPLETE (BanService + DisputeService + ModeratorRoleSeeder + UserResource/MatchResource BulkActions + MatchDisputeResource + 5 Wave 0 stubs → GREEN; 37 new tests; suite 1248 passed / 14 skipped); next 09-08 (N+1 strict-mode flip)
 Status: Phase 9 in flight
-Last activity: 2026-05-14
+Last activity: 2026-05-15
 
-Progress: [██████████] 95% (8/9 phases; 115/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05 + 09-06)
+Progress: [██████████] 96% (8/9 phases; 116/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05 + 09-06 + 09-07)
 
 ## Performance Metrics
 

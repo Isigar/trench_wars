@@ -255,7 +255,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 09-04-PLAN.md — NotificationDispatcher service + dispatch-upcoming + prune commands + 4 observer extensions/creations (MatchObserver, MatchResultObserver, ClanApplicationObserver, ClanInviteObserver) + 2 GREEN tests
 - [x] 09-05-PLAN.md — LeaderboardService (Cache::tags + flexible SWR) + 2 spatie/laravel-data DTOs + MatchResultObserver + MatchPlayerStatObserver cache-flush hooks + 4 GREEN tests
 - [x] 09-06-PLAN.md — NotificationsController + NotificationPreferencesController + LeaderboardsController + Inertia shared.unread_notifications_count + 3 Vue pages + NotificationsBell + LeaderboardTable + 2 GREEN tests
-- [ ] 09-07-PLAN.md — BanService + DisputeService + ModeratorRoleSeeder (5 perms + role) + UserResource/MatchResource BulkActions + MatchDisputeResource + BansRelationManager + 5 GREEN tests
+- [x] 09-07-PLAN.md — BanService + DisputeService + ModeratorRoleSeeder (5 perms + role) + UserResource/MatchResource BulkActions + MatchDisputeResource + BansRelationManager + 5 GREEN tests
 - [ ] 09-08-PLAN.md — Model::shouldBeStrict(! production) + N+1 sweep across Phase 1-8 controllers + LeaderboardsQueryBudgetTest (<=4) + ClansQueryBudgetTest (<=8) + 3 GREEN tests
 - [ ] 09-09-PLAN.md — WebP conversions on Clan/Player/Article models + MediaRegenerateWebpCommand + 3 Vue components (ClanLogo, PlayerAvatar, ArticleCover) + 2 GREEN tests
 - [ ] 09-10-PLAN.md — :focus-visible CSS site-wide + axe-core CI workflow (public routes only) + PublicPagesHtmlLangTest + VueFormLabelsTest + manual keyboard nav checkpoint
@@ -278,4 +278,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Tournaments & brackets | 14/14 | Complete | 2026-05-14 |
 | 7. CMS | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | 13/13 | Complete | 2026-05-14 |
-| 9. Polish | 4/12 | In Progress|  |
+| 9. Polish | 7/12 | In Progress|  |
