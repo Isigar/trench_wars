@@ -61,16 +61,30 @@ class AppServiceProvider extends ServiceProvider
 
         Authenticate::redirectUsing(fn () => route('auth.discord.redirect'));
 
-        // Plan 09-06 — named rate limiters required by routes attached to the
-        // notifications hub + public leaderboards endpoint. Plan 09-11 will
-        // extend / refine these definitions; RateLimiter::for is idempotent
-        // (last registration wins).
+        // Plan 09-06 / 09-11 — named rate limiters required by SC-5 layered
+        // defenses (public JSON endpoints, auth flow, notifications hub,
+        // report-abuse flow). Plan 09-11 extends the 09-06 set with `auth`
+        // and `report-abuse`; the existing `public-api` + `notifications-read`
+        // definitions are preserved verbatim (their semantics are still
+        // correct — IP keyed at 30/min and user keyed at 120/min respectively).
+        // RateLimiter::for is idempotent (last registration wins).
         //
-        // T-09-06-04 mitigation: notifications-read — 120/min per user for
-        //   the mark-read endpoints (per-user limiter to absorb tab-storms
-        //   without leaking cross-user counters).
-        // T-09-06-05 mitigation: public-api — 30/min by IP for the public
-        //   /leaderboards endpoint (and any future JSON polling routes).
+        // Threat mitigations:
+        //   - T-09-06-04 / T-09-11-* notifications-read — 120/min per user for
+        //       the mark-read endpoints (absorb tab-storms; per-user key so
+        //       one tab-storm does not leak cross-user counters).
+        //   - T-09-06-05 / T-09-11-01 public-api — 30/min by IP for the public
+        //       JSON polling endpoints (/leaderboards, /clans.json, /players.json,
+        //       /events/feed.json, /search). T-09-11-02 mitigation: Laravel's
+        //       TrustProxies middleware sets $request->ip() from the trusted
+        //       upstream (Railway terminates TLS), so X-Forwarded-For spoofing
+        //       does not bypass the limiter.
+        //   - T-09-11-07 auth — 10/min by IP on /auth/discord/callback to slow
+        //       OAuth-state-replay storms. Generous enough that a typo-retry
+        //       does not lock a legitimate user out.
+        //   - T-09-11-03 report-abuse — 5/hour per authenticated user on
+        //       POST /reports. Stops report-storms against a single victim
+        //       while leaving a generous budget for genuine bad-actor flagging.
         RateLimiter::for('notifications-read', static function (Request $request): Limit {
             $userId = $request->user()?->getAuthIdentifier();
 
@@ -81,6 +95,27 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('public-api', static function (Request $request): Limit {
             return Limit::perMinute(30)->by('ip:' . (string) ($request->ip() ?? 'unknown'));
+        });
+
+        // Plan 09-11 — auth limiter (T-09-11-07 mitigation). IP-keyed because
+        // the relevant routes are guest-only (/auth/discord/redirect +
+        // /auth/discord/callback): there is no authenticated user to key by
+        // until AFTER the callback succeeds.
+        RateLimiter::for('auth', static function (Request $request): Limit {
+            return Limit::perMinute(10)->by('ip:' . (string) ($request->ip() ?? 'unknown'));
+        });
+
+        // Plan 09-11 — report-abuse limiter (T-09-11-03 mitigation). Per-user
+        // because the routes sit under the `auth` middleware group — every
+        // request has a resolvable User::id. Defence-in-depth: if a future
+        // refactor surfaces the endpoint to anonymous users, fall back to an
+        // IP key so the limiter still applies.
+        RateLimiter::for('report-abuse', static function (Request $request): Limit {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return $userId !== null
+                ? Limit::perHour(5)->by('user:' . (string) $userId)
+                : Limit::perHour(5)->by('ip:' . (string) ($request->ip() ?? 'unknown'));
         });
     }
 }

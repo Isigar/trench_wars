@@ -21,7 +21,11 @@ use Illuminate\Support\Facades\RateLimiter;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function (): void {
+    // Plan 09-11 — replaced throttle:60,1 with the named throttle:public-api
+    // (30/min by IP). Clear BOTH bucket keys so this file remains robust to
+    // future re-tunes of either limiter.
     RateLimiter::clear(sha1('throttle:60,1'));
+    RateLimiter::clear('ip:127.0.0.1');
 });
 
 it('returns 422 with missing q param', function (): void {
@@ -108,12 +112,14 @@ it('integrates PlayerPrivacyGate from SearchService (private-tier player hidden 
         );
 });
 
-it('rate-limits at 60 req/min/IP via throttle:60,1 (T-07-09-01)', function (): void {
-    // 60 valid requests succeed.
-    for ($i = 0; $i < 60; $i++) {
+it('rate-limits at 30 req/min/IP via throttle:public-api (plan 09-11 — replaces throttle:60,1)', function (): void {
+    // Plan 09-11 replaced the inline throttle:60,1 with the named SC-5 throttle:public-api
+    // (30/min by IP) to harmonise the public-JSON throttle matrix across phases.
+    // T-09-11-01 mitigation; T-07-09-01 carries forward through the new named limiter.
+    for ($i = 0; $i < 30; $i++) {
         $this->get('/search?q=phantom')->assertStatus(200);
     }
 
-    // 61st request hits the throttle cap.
+    // 31st request hits the throttle cap.
     $this->get('/search?q=phantom')->assertStatus(429);
 });

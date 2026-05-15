@@ -9,6 +9,7 @@ use App\Http\Controllers\BlogIndexController;
 use App\Http\Controllers\BlogShowController;
 use App\Http\Controllers\ClanDirectoryController;
 use App\Http\Controllers\Clans\ClanCreateController;
+use App\Http\Controllers\ClansJsonController;
 use App\Http\Controllers\ClanShowController;
 use App\Http\Controllers\EventsCalendarController;
 use App\Http\Controllers\EventsFeedJsonController;
@@ -23,6 +24,8 @@ use App\Http\Controllers\MyClan\MyClanMemberController;
 use App\Http\Controllers\MyClan\MyClanProfileController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\PlayerProfileController;
+use App\Http\Controllers\PlayersJsonController;
+use App\Http\Controllers\Reports\ReportsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TournamentIndexController;
 use App\Http\Controllers\TournamentPublicJsonController;
@@ -34,6 +37,18 @@ Route::get('/', fn () => Inertia::render('Home'))->name('home');
 
 // Public routes — no auth required (REQ-tenancy-multi-clan, REQ-goal-public-profiles)
 Route::get('/clans', ClanDirectoryController::class)->name('clans.index');
+
+// Plan 09-11 — public JSON list endpoints under SC-5 public-api throttle (30/min by IP,
+// T-09-11-01 mitigation). MUST be declared BEFORE /clans/{clan:slug} so Laravel's
+// first-match-wins router does NOT bind `clans.json` to a slug. Same precedent as
+// Phase 6 /tournaments/{slug}.json (D-06-12-C) and Phase 7 /events/feed.json.
+Route::get('/clans.json', ClansJsonController::class)
+    ->middleware('throttle:public-api')
+    ->name('clans.json');
+Route::get('/players.json', PlayersJsonController::class)
+    ->middleware('throttle:public-api')
+    ->name('players.json');
+
 Route::get('/clans/{clan:slug}', ClanShowController::class)->name('clans.show');
 Route::get('/players/{player:slug}', PlayerProfileController::class)->name('players.show');
 
@@ -65,9 +80,10 @@ Route::get('/tournaments/{tournament:slug}', TournamentShowController::class)
 // Phase 7 — Public CMS + Events + Search (SC-2 + SC-3 + SC-4).
 // Routes ordered per Phase 6 D-06-12-C precedent: /events/feed.json BEFORE /events
 // so Laravel's first-match-wins router does not capture `.json` as part of a slug.
-// /events/feed.json + /search routed under throttle:60,1 — Phase 6 D-06-12-A precedent
-// (T-07-09-01 + T-07-09-03 mitigation chain for DoS-shaped public endpoints).
-Route::middleware(['throttle:60,1'])->group(function (): void {
+// Plan 09-11 — replaces the prior throttle:60,1 with the named SC-5 throttle:public-api
+// (30/min by IP, T-09-11-01 mitigation; harmonises the public-JSON throttle matrix
+// across Phase 7 + Phase 9 endpoints).
+Route::middleware(['throttle:public-api'])->group(function (): void {
     Route::get('/events/feed.json', EventsFeedJsonController::class)->name('events.feed');
     Route::get('/search', SearchController::class)->name('search.index');
 });
@@ -86,7 +102,9 @@ Route::get('/leaderboards', [LeaderboardsController::class, 'index'])
 // Source: 01-RESEARCH.md Pattern 1 + 01-09-PLAN.md Task 1.
 // Discord OAuth flow — guests only (an authenticated visitor revisiting /redirect
 // would otherwise loop through OAuth needlessly). Logout requires an active session.
-Route::middleware('guest')->group(function (): void {
+// Plan 09-11 — throttle:auth (10/min by IP, T-09-11-07 mitigation) layered onto both
+// /redirect and /callback so OAuth-state-replay storms are bounded at the network edge.
+Route::middleware(['guest', 'throttle:auth'])->group(function (): void {
     Route::get('/auth/discord/redirect', [DiscordController::class, 'redirect'])
         ->name('auth.discord.redirect');
 
@@ -142,4 +160,13 @@ Route::middleware('auth')->group(function (): void {
         ->name('account.notification-preferences.edit');
     Route::post('/account/notification-preferences', [NotificationPreferencesController::class, 'update'])
         ->name('account.notification-preferences.update');
+});
+
+// Plan 09-11 — Report Abuse flow (SC-5). Auth-required + per-user throttle
+// (5/hour, T-09-11-03 mitigation). FormRequest validation lives in
+// StoreAbuseReportRequest; activity_log write + abuse_reports row insert
+// inside ReportsController::store under a DB transaction.
+Route::middleware(['auth', 'throttle:report-abuse'])->group(function (): void {
+    Route::get('/reports/create', [ReportsController::class, 'create'])->name('reports.create');
+    Route::post('/reports', [ReportsController::class, 'store'])->name('reports.store');
 });

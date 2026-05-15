@@ -23,9 +23,11 @@ use App\Models\Tournament;
 use Illuminate\Support\Facades\RateLimiter;
 
 beforeEach(function (): void {
-    // Clear the throttle bucket so prior tests can't push us over the 60/min cap.
-    // Phase 6 D-06-12-A precedent (TournamentPublicJsonControllerTest).
+    // Plan 09-11 — replaced throttle:60,1 with the named throttle:public-api
+    // (30/min by IP). Clear BOTH bucket keys so this file remains robust to
+    // future re-tunes of either limiter; clearing a non-existent key is a no-op.
     RateLimiter::clear(sha1('throttle:60,1'));
+    RateLimiter::clear('ip:127.0.0.1');
 });
 
 it('returns 422 with missing start param', function (): void {
@@ -145,12 +147,14 @@ it('emits ISO-8601 start timestamps with explicit UTC offset (Pitfall 11)', func
     expect($row['start'])->toMatch('/T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}$/');
 });
 
-it('rate-limits at 60 req/min/IP via throttle:60,1 (T-07-09-01)', function (): void {
-    // 60 successful requests inside the same minute.
-    for ($i = 0; $i < 60; $i++) {
+it('rate-limits at 30 req/min/IP via throttle:public-api (plan 09-11 — replaces throttle:60,1)', function (): void {
+    // Plan 09-11 replaced the inline throttle:60,1 with the named SC-5 throttle:public-api
+    // (30/min by IP) to harmonise the public-JSON throttle matrix across phases.
+    // T-09-11-01 mitigation; T-07-09-01 carries forward through the new named limiter.
+    for ($i = 0; $i < 30; $i++) {
         $this->getJson('/events/feed.json?start=2026-06-01&end=2026-06-30')->assertStatus(200);
     }
 
-    // 61st request hits the throttle cap.
+    // 31st request hits the throttle cap.
     $this->getJson('/events/feed.json?start=2026-06-01&end=2026-06-30')->assertStatus(429);
 });
