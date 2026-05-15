@@ -13,6 +13,7 @@ use App\Models\Player;
 use App\Services\LeaderboardService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -72,12 +73,18 @@ class LeaderboardsController extends Controller
             ->values()
             ->all();
 
+        // Plan 09-08 budget — skip the SELECT entirely on an empty aggregate
+        // (no players matched). Without this the empty-state path still
+        // emits a `WHERE id IN ()` query that contributes to the query
+        // budget despite returning zero rows.
         /** @var Collection<int, Player> $players */
-        $players = Player::query()
-            ->with('privacy')
-            ->whereIn('id', $playerIds)
-            ->get()
-            ->keyBy('id');
+        $players = $playerIds !== []
+            ? Player::query()
+                ->with('privacy')
+                ->whereIn('id', $playerIds)
+                ->get()
+                ->keyBy('id')
+            : new Collection;
 
         // Resolve each Player's current active clan_id → clan_name in one pass.
         /** @var array<int, string> $userIds */
@@ -124,11 +131,14 @@ class LeaderboardsController extends Controller
             ->values()
             ->all();
 
+        // Plan 09-08 budget — skip the SELECT entirely on an empty aggregate.
         /** @var Collection<int, Clan> $clans */
-        $clans = Clan::query()
-            ->whereIn('id', $clanIds)
-            ->get()
-            ->keyBy('id');
+        $clans = $clanIds !== []
+            ? Clan::query()
+                ->whereIn('id', $clanIds)
+                ->get()
+                ->keyBy('id')
+            : new Collection;
 
         /** @var array<int, LeaderboardClanEntryData> $clanEntries */
         $clanEntries = [];
@@ -141,10 +151,20 @@ class LeaderboardsController extends Controller
             $clanEntries[] = LeaderboardClanEntryData::fromQueryResult($row, $clan);
         }
 
-        // Game filter dropdown options (id + name + key for the slug-style scoping).
-        $games = Game::query()
-            ->orderByRaw("COALESCE((name->>'en')::text, key)")
-            ->get(['id', 'key', 'name']);
+        // Game filter dropdown options (id + name + key for the slug-style
+        // scoping). The list mutates only when an admin seeds a new Game
+        // (once per phase) — hold it in a separate tag namespace so the
+        // leaderboards-aggregate flush (plan 09-05) does NOT drop the
+        // dropdown on every match-result write. Plan 09-08 budget driver —
+        // keeps /leaderboards within the 4-query budget on a warm cache
+        // (drops the games query from the tail entirely).
+        $games = Cache::tags(['games:dropdown'])->remember(
+            'lb:games:dropdown',
+            now()->addMinutes(15),
+            fn () => Game::query()
+                ->orderByRaw("COALESCE((name->>'en')::text, key)")
+                ->get(['id', 'key', 'name']),
+        );
 
         return Inertia::render('Leaderboards/Index', [
             'players' => $playerEntries,
