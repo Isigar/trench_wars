@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 /**
  * Source: .planning/phases/04-matches-manual/04-09-PLAN.md task 1.
@@ -251,6 +252,94 @@ class MatchResource extends Resource
                     }),
                 // INTENTIONALLY no DeleteAction — match deletion cascades to slots/result/mvps.
                 // Cancellation goes via HeaderActions on the Edit page (status -> 'cancelled').
+            ])
+            ->bulkActions([
+                // Phase 9 plan 09-07 (Wave 5) — moderator bulk-cancel.
+                //
+                // Sets status='cancelled' which fires MatchObserver::updated →
+                // maybeNotifyCancellation (plan 09-04) which fans out the
+                // MatchCancelled notification to every signed-up player + every
+                // active host-clan member via their enabledNotificationChannels
+                // matrix. Each notification routes through database + Discord DM
+                // per per-event preference rows (plan 09-03).
+                //
+                // Defence-in-depth: terminal statuses (played, cancelled) are
+                // filtered out at the start of the action — bulk-selecting an
+                // already-played match should be a no-op, not a state-machine
+                // error. MatchStatusService::transition (plan 04-04) is bypassed
+                // because the action wants to:
+                //   (a) tolerate mixed-state selections gracefully;
+                //   (b) attribute the cancellation in a SINGLE bulk-level
+                //       activity_log row rather than N per-match rows; and
+                //   (c) still trigger the observer chain (the observer fires on
+                //       wasChanged('status'), so $match->update() suffices).
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('mark_cancelled')
+                        ->label(__('moderation.bulk.match_cancel.label'))
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading(fn (EloquentCollection $records): string => __('moderation.bulk.match_cancel.modal_heading', [
+                            'count' => $records->count(),
+                        ]))
+                        ->modalDescription(__('moderation.bulk.match_cancel.modal_description'))
+                        ->modalSubmitActionLabel(__('moderation.bulk.match_cancel.confirm'))
+                        ->form([
+                            // Pitfall 8 — required + minLength gives inline
+                            // validation when the moderator submits an empty
+                            // reason. Cancellation reason flows into the
+                            // MatchCancelled notification body (plan 09-04).
+                            Forms\Components\Textarea::make('reason')
+                                ->label(__('moderation.bulk.match_cancel.reason'))
+                                ->required()
+                                ->minLength(10)
+                                ->maxLength(500),
+                        ])
+                        ->action(function (EloquentCollection $records, array $data): void {
+                            $causer = auth()->user();
+                            $reason = (string) $data['reason'];
+                            $cancelled = 0;
+
+                            /** @var GameMatch $match */
+                            foreach ($records as $match) {
+                                // Terminal statuses are skipped silently — bulk
+                                // selections often include played matches the
+                                // moderator wants to ignore.
+                                if (in_array($match->status, ['played', 'cancelled'], true)) {
+                                    continue;
+                                }
+
+                                // Update fires MatchObserver::updated → wasChanged('status')
+                                // → maybeNotifyCancellation which routes notifications
+                                // (plan 09-04 chain).
+                                $match->update(['status' => 'cancelled']);
+                                $cancelled++;
+                            }
+
+                            // Single bulk-level activity_log row — subject left null
+                            // (per-record rows would be N writes; bulk semantics
+                            // prefer a single causer row with count + reason).
+                            // The per-match observer already wrote per-match status
+                            // transition entries.
+                            if ($causer !== null && $cancelled > 0) {
+                                activity()
+                                    ->causedBy($causer)
+                                    ->withProperties([
+                                        'count' => $cancelled,
+                                        'reason' => $reason,
+                                    ])
+                                    ->log('match.bulk_cancelled');
+                            }
+
+                            Notification::make()
+                                ->title(__('moderation.bulk.match_cancel.confirm'))
+                                ->body(__('moderation.bulk.match_cancel.modal_heading', ['count' => $cancelled]))
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->visible(fn (): bool => (bool) auth()->user()?->can('moderate-disputes')),
+                ]),
             ]);
     }
 
