@@ -259,7 +259,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 09-08-PLAN.md — Model::shouldBeStrict(! production) + N+1 sweep (6 app-side fixes + 12 test-side patches) + AppServiceProviderStrictModeTest (3) + LeaderboardsQueryBudgetTest (5; cold ≤6 deviation, warm/empty ≤4) + ClansQueryBudgetTest (4; ≤8) + CACHE-STRATEGY.md authored
 - [x] 09-09-PLAN.md — WebP conversions on Clan/Player/Article models (9 conversions total) + MediaRegenerateWebpCommand + 3 Vue components (ClanLogo, PlayerAvatar, ArticleCover) + ClanLogoWebpConversionTest (4) + ArticleCoverWebpConversionTest (5)
 - [x] 09-10-PLAN.md — :focus-visible CSS site-wide + axe-core CI workflow (public routes only) + PublicPagesHtmlLangTest + VueFormLabelsTest + manual keyboard nav checkpoint (Task 2 PENDING_MANUAL_SMOKE — operator out-of-band)
-- [ ] 09-11-PLAN.md — 4 RateLimiters (public-api 30/min, auth 10/min, notifications-read 120/min, report-abuse 5/hr) + ReportsController + StoreAbuseReportRequest + AbuseReportResource + ReportButton + 5 GREEN tests + rate-limit boundary checkpoint
+- [x] 09-11-PLAN.md — 4 RateLimiters (public-api 30/min, auth 10/min, notifications-read 120/min, report-abuse 5/hr) + ReportsController + StoreAbuseReportRequest + AbuseReportResource + ReportButton + 5 GREEN tests + rate-limit boundary checkpoint
 - [ ] 09-12-PLAN.md — [BLOCKING] Phase9I18nKeyCoverageTest GREEN + 7 quality gates + 09-PHASE-VERIFICATION.md (SC-1..SC-5 + 12 Pitfalls + 8 OQs + D-09-* bindings) + ROADMAP/REQUIREMENTS/STATE updates
 **UI hint**: yes
 

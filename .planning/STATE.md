@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE)
-last_updated: "2026-05-15T15:57:00Z"
+stopped_at: "Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE keyboard-nav handoff to operator)"
+last_updated: "2026-05-15T16:23:36.843Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
   completed_plans: 119
-  percent: 91
+  percent: 89
 ---
 
 # Project State
@@ -155,6 +155,7 @@ Progress: [██████████] 99% (8/9 phases; 119/120 plans incl. 
 | Phase 09-polish P08 | 2395 | 2 tasks | 14 files |
 | Phase 09-polish P09 | 1066 | 2 tasks | 12 files |
 | Phase 09-polish P10 | 780 | 1 task (Task 2 PENDING_MANUAL_SMOKE) | 4 files |
+| Phase 09 P11 | 1093 | 2 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -525,6 +526,10 @@ Plan-level decisions logged during execution:
 - [Phase 09]: Plan 09-10 — D-09-10-E — axe per-URL loop uses `set +e` + EXIT accumulator (NOT fail-fast). Collects every report on single CI run for triage UX.
 - [Phase 09]: Plan 09-10 — D-09-10-F — Task 2 (checkpoint:human-verify — 10-step manual keyboard nav smoke) DEFERRED to PENDING_MANUAL_SMOKE operator handoff per autonomous workflow convention. Same close pattern as Phase 1/2/3/4/5/6/7/8. Checklist recorded in 09-10-SUMMARY.md "Operator Handoff" section verbatim; operator walks out-of-band and reports via standard Phase 9 channel. Task 1 (CSS + axe-core CI + 2 Pest tests GREEN) committed in 01abd1e.
 - [Phase 09]: Plan 09-10 landed: SC-5 accessibility round-1 deliverable. Site-wide `*:focus-visible` rule + button/a/[role=button] color-mix outer ring on `var(--color-focus-ring)`; `.github/workflows/a11y.yml` axe-core@^4.11.3 CI workflow with 7-URL Pitfall-11-compliant public route matrix (/, /clans, /matches, /tournaments, /blog, /events, /leaderboards) — admin/auth routes explicitly excluded. PublicPagesHtmlLangTest Wave 0 → 7 GREEN; VueFormLabelsTest Wave 0 → 1 GREEN static-scan (0 violations). SkipToContent + main#main verified intact (no edits). Filter run: 8 passed / 15 assertions / 2.08 s. Pint 0 dirty / PHPStan L8 OK. Task 2 PENDING_MANUAL_SMOKE.
+- [Phase ?]: Plan 09-11 D-09-11-A — activity_log.subject_id is uuid-typed but AbuseReport.id is bigint; resource transitions emit audit row against report's underlying TARGET morph entity with abuse_report_id in withProperties (Rule 1 deviation; preserves SC-5 audit-trail invariant without schema churn)
+- [Phase ?]: Plan 09-11 D-09-11-B — created /clans.json + /players.json public JSON list endpoints (plan listed them as 'existing' but they didn't exist; Rule 2 deviation; 500-row cap; both wired under throttle:public-api)
+- [Phase ?]: Plan 09-11 D-09-11-D — migrated EventsFeedJsonControllerTest + SearchControllerTest from throttle:60,1 to throttle:public-api 30/min cap (Rule 3 — auto-fix tests now blocking due to plan-driven throttle rename)
+- [Phase ?]: Plan 09-11 D-09-11-F — Task 3 manual rate-limit + abuse-flow boundary smoke DEFERRED to PENDING_MANUAL_SMOKE per autonomous workflow convention (same close pattern as Phase 1/2/3/4/5/6/7/8 + 09-10)
 
 ### Pending Todos
 
@@ -546,6 +551,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T15:57:00Z
+Last session: 2026-05-15T16:23:00.196Z
 Stopped at: Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE keyboard-nav handoff to operator)
 Resume file: None
