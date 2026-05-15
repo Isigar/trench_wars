@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: "Completed 09-08-PLAN.md (Wave 6 — Model::shouldBeStrict + N+1 sweep + query budgets)"
-last_updated: "2026-05-15T15:30:00Z"
+stopped_at: "Completed 09-09-PLAN.md (Wave 6 — WebP image variants via spatie/laravel-medialibrary)"
+last_updated: "2026-05-15T15:42:00Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 117
+  completed_plans: 118
   percent: 90
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 ## Current Position
 
 Phase: 09 (Polish) — IN FLIGHT (Wave 6 complete)
-Plan: 09-08 COMPLETE (Model::shouldBeStrict in non-prod + 6 app-side N+1 fixes + 12 test-side eager-load patches + LeaderboardsQueryBudgetTest GREEN + ClansQueryBudgetTest GREEN + AppServiceProviderStrictModeTest GREEN + CACHE-STRATEGY.md; 12 new tests; suite 1260 passed / 11 skipped); next 09-09
+Plan: 09-09 COMPLETE (9 WebP media conversions across Clan/Player/Article + trenchwars:media:regenerate-webp artisan + 3 Vue components ClanLogo/PlayerAvatar/ArticleCover + 2 Wave 0 stubs → GREEN; 9 new tests; suite 1269 passed / 9 skipped); next 09-10
 Status: Phase 9 in flight
 Last activity: 2026-05-15
 
-Progress: [██████████] 97% (8/9 phases; 117/120 plans incl. Phase 9 09-01 + 09-02 + 09-03 + 09-04 + 09-05 + 09-06 + 09-07 + 09-08)
+Progress: [██████████] 98% (8/9 phases; 118/120 plans incl. Phase 9 09-01..09-09)
 
 ## Performance Metrics
 
@@ -153,6 +153,7 @@ Progress: [██████████] 97% (8/9 phases; 117/120 plans incl. 
 | Phase 09 P05 | 757 | 2 tasks | 13 files |
 | Phase 09-polish P06 | 1251 | 2 tasks | 19 files |
 | Phase 09-polish P08 | 2395 | 2 tasks | 14 files |
+| Phase 09-polish P09 | 1066 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -537,6 +538,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T08:37:12.216Z
-Stopped at: Completed 09-05-PLAN.md (Wave 3 — LeaderboardService + Cache::flexible SWR + 3 tag-flush observers)
+Last session: 2026-05-15T15:42:00Z
+Stopped at: Completed 09-09-PLAN.md (Wave 6 — WebP image variants via spatie/laravel-medialibrary)
 Resume file: None
