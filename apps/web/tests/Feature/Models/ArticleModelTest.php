@@ -149,7 +149,7 @@ it('casts allow_discord_announce to bool and scheduled_at / published_at to date
     expect($reloaded?->published_at)->toBeInstanceOf(Carbon::class);
 });
 
-it('registers 3 media conversions all on the hero collection', function (): void {
+it('registers media conversions for the hero collection (Phase 7 trio + Phase 9 cover-* trio)', function (): void {
     $article = Article::factory()->create();
 
     // Drive the InteractsWithMedia trait's collector: registerAllMediaConversions
@@ -163,9 +163,14 @@ it('registers 3 media conversions all on the hero collection', function (): void
     $conversions = $article->mediaConversions;
 
     $names = collect($conversions)->map(fn ($c): string => $c->getName())->all();
+    // Phase 7 trio (compat-preserved).
     expect($names)->toContain('thumb');
     expect($names)->toContain('hero');
     expect($names)->toContain('og-image');
+    // Phase 9 plan 09-09 trio — WebP-only banner-shaped variants.
+    expect($names)->toContain('cover-thumb');
+    expect($names)->toContain('cover-card');
+    expect($names)->toContain('cover-hero');
 
     // Every conversion is bound to the 'hero' collection.
     foreach ($conversions as $conversion) {

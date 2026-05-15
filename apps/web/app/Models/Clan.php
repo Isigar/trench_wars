@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Sitemap\Contracts\Sitemapable;
 use Spatie\Sitemap\Tags\Url;
 use Spatie\Translatable\HasTranslations;
@@ -23,14 +26,22 @@ use Spatie\Translatable\HasTranslations;
  *
  * `description` is a JSONB locale-keyed column managed by spatie/laravel-translatable.
  * `discord_role_id` is NOT in $fillable for any My-Clan-facing route (T-02-02-01 mitigation).
+ *
+ * Phase 9 plan 09-09 (Wave 6 — WebP image variants): InteractsWithMedia trait
+ * registers three avatar conversions via Spatie medialibrary (avatar-thumb 48x48,
+ * avatar-card 200x200, avatar-hero 800x800). All conversions emit WebP per SC-4
+ * (image weight reduction 25-35%) and are queued via Horizon. Open Question 1
+ * LOCKED — WebP only, no JPEG fallback in v1 (browser support >99%; revisit if
+ * monitoring shows >0.5% failure rate post-launch).
  */
-class Clan extends Model implements Sitemapable
+class Clan extends Model implements HasMedia, Sitemapable
 {
     /** @use HasFactory<ClanFactory> */
     use HasFactory;
 
     use HasTranslations;
     use HasUuidPrimaryKey;
+    use InteractsWithMedia;
     use LogsActivity;
     use SoftDeletes;
 
@@ -100,6 +111,44 @@ class Clan extends Model implements Sitemapable
     public function applications(): HasMany
     {
         return $this->hasMany(ClanApplication::class);
+    }
+
+    /**
+     * Phase 9 plan 09-09 task 1 — WebP avatar conversion trio.
+     *
+     * `avatar-thumb` 48x48  — micro avatar (mention rows, search dropdown).
+     * `avatar-card`  200x200 — clan card / directory index (most common surface).
+     * `avatar-hero`  800x800 — clan show-page hero block.
+     *
+     * Each conversion is ->queued() so Horizon does the work async (upload returns
+     * immediately). spatie/image-optimizer runs by default — we do NOT call
+     * ->nonOptimized() (RESEARCH Pattern 5 + Pitfall 6 verified).
+     *
+     * Open Question 1 LOCKED — WebP only, no <picture> + JPEG fallback in v1.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // Chain order: Conversion-specific methods (->queued, ->format) FIRST,
+        // then ImageDriver-proxied dimension methods (->width / ->height). Same
+        // idiom as Article::registerMediaConversions — keeps the receiver chain
+        // on the Conversion class for PHPStan/Larastan (the @mixin ImageDriver
+        // proxy returns ImageDriver, not Conversion, after ->width() — so
+        // ->queued() called AFTER ->width() resolves against ImageDriver and
+        // raises method.notFound).
+        $this->addMediaConversion('avatar-thumb')
+            ->queued()
+            ->format('webp')
+            ->width(48)->height(48);
+
+        $this->addMediaConversion('avatar-card')
+            ->queued()
+            ->format('webp')
+            ->width(200)->height(200);
+
+        $this->addMediaConversion('avatar-hero')
+            ->queued()
+            ->format('webp')
+            ->width(800)->height(800);
     }
 
     /**

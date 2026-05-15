@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -21,14 +24,20 @@ use Spatie\Translatable\HasTranslations;
  * `bio` jsonb is translatable in Phase 2+ via spatie/laravel-translatable's
  * HasTranslations trait. P1 ships the column + array cast; the trait wraps it
  * later without breaking changes. Plan 14 adds LogsActivity (D-012).
+ *
+ * Phase 9 plan 09-09 (Wave 6 — WebP image variants): InteractsWithMedia trait
+ * registers avatar conversions matching Clan's shape (avatar-thumb 48x48,
+ * avatar-card 200x200, avatar-hero 800x800) so player + clan avatars render
+ * with the same sizing budget across surfaces. All ->format('webp')->queued().
  */
-class Player extends Model
+class Player extends Model implements HasMedia
 {
     /** @use HasFactory<PlayerFactory> */
     use HasFactory;
 
     use HasTranslations;
     use HasUuidPrimaryKey;
+    use InteractsWithMedia;
     use LogsActivity;
     use SoftDeletes;
 
@@ -83,5 +92,35 @@ class Player extends Model
     public function privacy(): HasOne
     {
         return $this->hasOne(PlayerPrivacy::class);
+    }
+
+    /**
+     * Phase 9 plan 09-09 task 1 — WebP avatar conversion trio (matches Clan shape).
+     *
+     * Player avatars use the SAME conversion names + dimensions as Clan logos so
+     * a single Vue component (PlayerAvatar / ClanLogo) can be authored against
+     * a consistent variant set without per-model branching in the markup.
+     *
+     * Open Question 1 LOCKED — WebP only, no JPEG fallback in v1.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // Chain order: ->queued / ->format FIRST (Conversion receiver), ->width /
+        // ->height SECOND (ImageDriver-proxied) — see Clan::registerMediaConversions
+        // docblock for the PHPStan @mixin ImageDriver rationale.
+        $this->addMediaConversion('avatar-thumb')
+            ->queued()
+            ->format('webp')
+            ->width(48)->height(48);
+
+        $this->addMediaConversion('avatar-card')
+            ->queued()
+            ->format('webp')
+            ->width(200)->height(200);
+
+        $this->addMediaConversion('avatar-hero')
+            ->queued()
+            ->format('webp')
+            ->width(800)->height(800);
     }
 }

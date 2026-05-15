@@ -128,34 +128,90 @@ class Article extends Model implements HasMedia, Sitemapable
     }
 
     /**
-     * 3 conversions, all bound to the 'hero' collection (the only collection
-     * articles use in v1). Pattern 2 verbatim.
+     * Phase 7 Pattern 2 (thumb/hero/og-image) + Phase 9 plan 09-09 Pattern 5
+     * (cover-thumb/cover-card/cover-hero WebP trio for SC-4 image perf).
      *
-     * Method-call order is deliberate: Conversion-specific methods
-     * (performOnCollections, withResponsiveImages, nonQueued) run BEFORE the
-     * ImageDriver-proxied ->fit() call. Conversion::__call() proxies to
-     * Manipulations and returns self, but the class declares `@mixin ImageDriver`
-     * for IDE/Larastan convenience — so PHPStan sees ->fit() returning
-     * ImageDriver (not Conversion). Calling performOnCollections / nonQueued /
-     * withResponsiveImages FIRST keeps the chain on the actual Conversion
-     * receiver where those methods are real.
+     * The two trios coexist intentionally:
+     *
+     *  Phase 7 (compat-preserved, ->format('webp') applied to keep
+     *  ArticleSummaryData::heroThumbUrl + PublicArticleData::heroOgImageUrl
+     *  emitters working without DTO churn):
+     *    - thumb     600x400 — used by ArticleCard.vue (heroThumbUrl) + SearchResultData.
+     *    - hero      1600x900 — extended responsive set, full-width banner.
+     *    - og-image  1200x630 NONQUEUED — kept as PNG/JPEG (no ->format) so social
+     *                media scrapers (Discord/Twitter/Facebook) get a universally
+     *                supported MIME — Open Question 1 LOCKED is WebP-only for the
+     *                public web rendering surface, but social scrapers operate
+     *                outside that browser-WebP-support window (T-09-09-04 accept).
+     *
+     *  Phase 9 plan 09-09 (NEW — WebP only, queued, no responsive variants):
+     *    - cover-thumb 200x120 — minimal banner-style row item.
+     *    - cover-card  600x400 — equivalent to phase-7 thumb but WebP-only.
+     *    - cover-hero  1200x630 — OpenGraph optimal dimensions; consumed by the
+     *                  WebP-aware <ArticleCover variant="hero"> renderer.
+     *
+     * Method-call order is deliberate (per phase-7 docblock): Conversion-specific
+     * methods (performOnCollections, withResponsiveImages, nonQueued, format) run
+     * BEFORE the ImageDriver-proxied ->fit() / ->width()/->height() calls so the
+     * chain stays on the Conversion receiver.
+     *
+     * Open Question 1 LOCKED — WebP only for the cover-* trio (no JPEG fallback v1).
+     * Open Question 6 LOCKED — existing Phase 7 article media is regenerated via
+     * trenchwars:media:regenerate-webp (one-time deploy-step).
      */
     public function registerMediaConversions(?Media $media = null): void
     {
+        // Phase 7 trio — extended with ->format('webp') on thumb + hero (Open
+        // Question 1 LOCKED for public web rendering). og-image stays original
+        // format for social scraper compatibility.
+        //
+        // Chain order: performOnCollections / withResponsiveImages / format /
+        // nonQueued are Conversion-receiver methods and must come BEFORE the
+        // ImageDriver-proxied ->fit() — `format` returns Conversion via
+        // __call/__invoke proxy, but Larastan/PHPStan sees the @mixin ImageDriver
+        // type after ->format, which then refuses ->withResponsiveImages. Calling
+        // withResponsiveImages BEFORE format keeps the chain on the Conversion
+        // receiver where withResponsiveImages is a real method.
         $this->addMediaConversion('thumb')
             ->performOnCollections('hero')
             ->withResponsiveImages()
+            ->format('webp')
             ->fit(Fit::Crop, 600, 400);
 
         $this->addMediaConversion('hero')
             ->performOnCollections('hero')
             ->withResponsiveImages()
+            ->format('webp')
             ->fit(Fit::Crop, 1600, 900);
 
         $this->addMediaConversion('og-image')
             ->performOnCollections('hero')
             ->nonQueued()
             ->fit(Fit::Crop, 1200, 630);
+
+        // Phase 9 plan 09-09 trio — WebP-only, queued, no responsive variants.
+        // Naming matches plan must_haves.truths verbatim (cover-thumb / cover-card
+        // / cover-hero) so the WebP-aware ArticleCover.vue consumes them by name.
+        // Chain order: performOnCollections / queued / format FIRST (Conversion
+        // receiver), width / height SECOND (ImageDriver-proxied) — same idiom
+        // as the Phase 7 trio above.
+        $this->addMediaConversion('cover-thumb')
+            ->performOnCollections('hero')
+            ->queued()
+            ->format('webp')
+            ->width(200)->height(120);
+
+        $this->addMediaConversion('cover-card')
+            ->performOnCollections('hero')
+            ->queued()
+            ->format('webp')
+            ->width(600)->height(400);
+
+        $this->addMediaConversion('cover-hero')
+            ->performOnCollections('hero')
+            ->queued()
+            ->format('webp')
+            ->width(1200)->height(630);
     }
 
     /**
