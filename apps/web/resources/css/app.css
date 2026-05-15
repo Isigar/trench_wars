@@ -107,6 +107,26 @@ body {
     outline-offset: 2px;
 }
 
+/* SC-5 a11y global focus-visible — Phase 9 plan 09-10.
+   Catches anything not covered by the :where(...) list above (e.g. SVG <g role="button">,
+   custom Vue elements with tabindex emitted via templates that bypass the static selector).
+   Uses --color-focus-ring (Phase 1 canonical token; plan 09-10 deviation: plan literal said
+   --color-focus but Phase 1 standardised on --color-focus-ring across 50+ Vue references). */
+*:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Enhanced focus shadow for interactive primitives (buttons + links + role="button"
+   custom widgets). 4px outer ring at 30 % alpha — improves perceptibility over the
+   bare 2px outline on dense layouts without overwhelming non-interactive focus. */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-focus-ring) 30%, transparent);
+}
+
 /* Skip link — UI-SPEC § Accessibility Contract (visually hidden until focused) */
 .skip-link {
     position: absolute;

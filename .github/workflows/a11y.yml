@@ -1,0 +1,106 @@
+# Source: .planning/phases/09-polish/09-10-PLAN.md task 1 +
+#         .planning/phases/09-polish/09-RESEARCH.md § "Accessibility (WCAG 2.1 AA)".
+#
+# Runs @axe-core/cli@^4.11.3 against the public surface of the local docker
+# compose stack. WCAG 2.1 AA tags (wcag2aa + wcag21aa) are the SC-5 deliverable.
+#
+# Pitfall 11 compliance — admin / auth-gated routes are NOT scanned:
+#   axe is unauthenticated; scanning /admin, /login, /auth/* would either
+#   scan the login redirect (useless) OR (worse) silently scan a page that
+#   axe cannot resolve and return a false GREEN. The route allowlist below
+#   enumerates ONLY public routes that this CI job is authorised to scan.
+#
+# T-09-10-02 mitigation: the `--exit` flag returns a non-zero status from
+# axe on the first violation found, so the workflow surfaces failures
+# immediately. Per-step `timeout-minutes` caps each scan to bound runtime.
+#
+# T-09-10-01 mitigation: axe report artifacts are uploaded ONLY on failure
+# (`if: failure()`) so passing runs do not retain DOM snapshots.
+
+name: a11y
+
+on:
+  push:
+    branches: [main, develop, master]
+    paths:
+      - 'apps/web/**'
+      - 'docker/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/a11y.yml'
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'docker/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/a11y.yml'
+  workflow_dispatch:
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install @axe-core/cli
+        run: npm install -g @axe-core/cli@^4.11.3
+
+      - name: Build + start docker compose stack
+        run: |
+          docker compose up -d --build
+          # Wait for nginx (port 8000 per docker-compose.yml) to serve the homepage.
+          # Bound the wait at ~120 s — Phase 9 plan 09-09 SUMMARY records ~38 h
+          # warm-stack uptime; a cold-boot CI runner needs migrations + seeders.
+          for i in $(seq 1 60); do
+            if curl -sfo /dev/null http://localhost:8000/; then
+              echo "Web stack reachable after ${i} retries"
+              break
+            fi
+            sleep 2
+          done
+          curl -sfI http://localhost:8000/ || (docker compose logs web web-nginx; exit 1)
+
+      - name: Run axe scans against public routes (Pitfall 11 — public only)
+        id: axe
+        timeout-minutes: 10
+        run: |
+          set +e  # do NOT abort on first axe failure — collect every report.
+          EXIT=0
+          # Public route matrix — MUST stay in sync with
+          # apps/web/tests/Feature/A11y/PublicPagesHtmlLangTest.php.
+          for url in / /clans /matches /tournaments /blog /events /leaderboards; do
+            slug=$(echo "${url}" | sed 's#/#_#g; s#^_##; s#^$#root#')
+            slug=${slug:-root}
+            echo "::group::axe scan ${url}"
+            axe "http://localhost:8000${url}" \
+              --tags wcag2aa,wcag21aa \
+              --exit \
+              --reporter v2 \
+              > "axe-${slug}.json"
+            STATUS=$?
+            if [ "${STATUS}" -ne 0 ]; then
+              echo "Violations found on ${url} (exit ${STATUS})"
+              EXIT=${STATUS}
+            fi
+            echo "::endgroup::"
+          done
+          exit ${EXIT}
+
+      - name: Upload axe reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-reports
+          path: 'axe-*.json'
+          retention-days: 14
+
+      - name: Dump web/nginx logs on failure
+        if: failure()
+        run: docker compose logs web web-nginx --tail=200
