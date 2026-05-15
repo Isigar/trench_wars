@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 9 in flight
-stopped_at: "Completed 09-09-PLAN.md (Wave 6 — WebP image variants via spatie/laravel-medialibrary)"
-last_updated: "2026-05-15T15:42:00Z"
+stopped_at: Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE)
+last_updated: "2026-05-15T15:57:00Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 120
-  completed_plans: 118
-  percent: 90
+  completed_plans: 119
+  percent: 91
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 6 complete)
-Plan: 09-09 COMPLETE (9 WebP media conversions across Clan/Player/Article + trenchwars:media:regenerate-webp artisan + 3 Vue components ClanLogo/PlayerAvatar/ArticleCover + 2 Wave 0 stubs → GREEN; 9 new tests; suite 1269 passed / 9 skipped); next 09-10
+Phase: 09 (Polish) — IN FLIGHT (Wave 8 — SC-5 accessibility delivery underway)
+Plan: 09-10 COMPLETE (Task 1 GREEN: global *:focus-visible CSS + button/a/[role=button] color-mix outer ring; .github/workflows/a11y.yml axe-core CI workflow @^4.11.3 with 7-URL public route matrix + Pitfall 11 admin-route exclusion + T-09-10-01 upgraded to mitigate via if:failure() artifact upload; PublicPagesHtmlLangTest Wave 0 → 7 GREEN tests; VueFormLabelsTest Wave 0 → 1 GREEN static-scan test, 0 violations; SkipToContent + main#main verified intact. Task 2 PENDING_MANUAL_SMOKE — 10-step keyboard-nav checklist deferred to operator out-of-band per autonomous workflow convention. Filter run 8 passed / 15 assertions / 2.08 s; Pint 0 dirty files; PHPStan L8 OK); next 09-11
 Status: Phase 9 in flight
 Last activity: 2026-05-15
 
-Progress: [██████████] 98% (8/9 phases; 118/120 plans incl. Phase 9 09-01..09-09)
+Progress: [██████████] 99% (8/9 phases; 119/120 plans incl. Phase 9 09-01..09-10)
 
 ## Performance Metrics
 
@@ -154,6 +154,7 @@ Progress: [██████████] 98% (8/9 phases; 118/120 plans incl. 
 | Phase 09-polish P06 | 1251 | 2 tasks | 19 files |
 | Phase 09-polish P08 | 2395 | 2 tasks | 14 files |
 | Phase 09-polish P09 | 1066 | 2 tasks | 12 files |
+| Phase 09-polish P10 | 780 | 1 task (Task 2 PENDING_MANUAL_SMOKE) | 4 files |
 
 ## Accumulated Context
 
@@ -517,6 +518,13 @@ Plan-level decisions logged during execution:
 - [Phase 09]: D-09-08-B — Games dropdown cache moves OUT of `leaderboards` tag namespace into its own `games:dropdown` tag. Plan 09-05 implicitly grouped both under `leaderboards`; in practice the games list mutates ~once per phase (admin seeds new title) while the leaderboards aggregate flush fires on every MatchResult INSERT. Decoupling preserves the dropdown across all match-result writes. New tag-flush observer (`GameObserver::saved/deleted` → `games:dropdown` flush) deferred to a future plan when Game first needs an observer.
 - [Phase 09]: D-09-08-C — Strict-mode flag uses full `Model::shouldBeStrict(! isProduction())` (the three-flag trio: preventLazyLoading + preventAccessingMissingAttributes + preventSilentlyDiscardingAttributes), NOT the more conservative `Model::preventLazyLoading()` alone. Half-strict would catch lazy loads but silently accept reads of columns the SELECT excluded — exactly the User::password Pitfall 2 bug class this plan surfaced. Production stays at `false` — runtime exception on a public Inertia-SSR page strictly worse than the same exception in CI.
 - [Phase 09]: D-09-08-D — User::getAuthPassword override returns empty string (NOT null, NOT synthetic hash). AuthenticateSession middleware short-circuits on `! getAuthPassword()`; empty string is falsy so password-rehash session-rotation skipped entirely. Discord-OAuth-only schema (D-017) has no canonical password value. Same shape pattern applied to `getRememberToken(): ?string` defensive read via `array_key_exists($name, getAttributes())`.
+- [Phase 09]: Plan 09-10 — D-09-10-A — plan literal `--color-focus` token corrected to `--color-focus-ring` (Phase 1 plan 01-07 LOCKED canonical Tailwind v4 @theme token name, 50+ Vue references across codebase). Rule 1 deviation aligned with on-disk reality. Global *:focus-visible rule + button/a/[role=button] color-mix shadow both bind `var(--color-focus-ring)`.
+- [Phase 09]: Plan 09-10 — D-09-10-B — plan literal `/articles` corrected to `/blog` in BOTH axe-core URL matrix (.github/workflows/a11y.yml) AND Pest route matrix (PublicPagesHtmlLangTest). Phase 7 plan 07-09 LOCKED `/blog` as public-facing slug (Inertia component name is `Articles/Index` but route is `/blog`).
+- [Phase 09]: Plan 09-10 — D-09-10-C — VueFormLabelsTest scans ONLY lowercase native <input>/<textarea>/<select>. PascalCase Vue wrappers (Select/TextInput/Textarea under components/ui/) audited at wrapper definition (emit native <label :for="id"> internally). Case-sensitive regex enforces scope.
+- [Phase 09]: Plan 09-10 — D-09-10-D — axe artifact upload gated on `if: failure()` ONLY (T-09-10-01 upgraded from accept→mitigate). Passing CI runs retain no DOM snapshots. 14-day retention cap on failure artifacts.
+- [Phase 09]: Plan 09-10 — D-09-10-E — axe per-URL loop uses `set +e` + EXIT accumulator (NOT fail-fast). Collects every report on single CI run for triage UX.
+- [Phase 09]: Plan 09-10 — D-09-10-F — Task 2 (checkpoint:human-verify — 10-step manual keyboard nav smoke) DEFERRED to PENDING_MANUAL_SMOKE operator handoff per autonomous workflow convention. Same close pattern as Phase 1/2/3/4/5/6/7/8. Checklist recorded in 09-10-SUMMARY.md "Operator Handoff" section verbatim; operator walks out-of-band and reports via standard Phase 9 channel. Task 1 (CSS + axe-core CI + 2 Pest tests GREEN) committed in 01abd1e.
+- [Phase 09]: Plan 09-10 landed: SC-5 accessibility round-1 deliverable. Site-wide `*:focus-visible` rule + button/a/[role=button] color-mix outer ring on `var(--color-focus-ring)`; `.github/workflows/a11y.yml` axe-core@^4.11.3 CI workflow with 7-URL Pitfall-11-compliant public route matrix (/, /clans, /matches, /tournaments, /blog, /events, /leaderboards) — admin/auth routes explicitly excluded. PublicPagesHtmlLangTest Wave 0 → 7 GREEN; VueFormLabelsTest Wave 0 → 1 GREEN static-scan (0 violations). SkipToContent + main#main verified intact (no edits). Filter run: 8 passed / 15 assertions / 2.08 s. Pint 0 dirty / PHPStan L8 OK. Task 2 PENDING_MANUAL_SMOKE.
 
 ### Pending Todos
 
@@ -538,6 +546,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T15:42:00Z
-Stopped at: Completed 09-09-PLAN.md (Wave 6 — WebP image variants via spatie/laravel-medialibrary)
+Last session: 2026-05-15T15:57:00Z
+Stopped at: Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE keyboard-nav handoff to operator)
 Resume file: None
