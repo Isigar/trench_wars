@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 9 in flight
-stopped_at: "Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE keyboard-nav handoff to operator)"
-last_updated: "2026-05-15T16:23:36.843Z"
+status: Phase 9 COMPLETE PENDING_MANUAL_SMOKE — v1.0 milestone shippable pending 4-item operator walkthrough
+stopped_at: "Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored + ROADMAP/REQUIREMENTS/STATE updated; round-1 ship sign-off pending 4-item operator smoke A-D)"
+last_updated: "2026-05-15T16:55:00.000Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 9
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 120
-  completed_plans: 119
-  percent: 89
+  completed_plans: 120
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 09 — Polish (next; Phase 8 closed PENDING_MANUAL_SMOKE for 4-item operator walkthrough A-D per 08-PHASE-VERIFICATION.md)
+**Current focus:** v1.0 milestone — round-1 SHIPPABLE pending 4-item operator manual smoke (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Discord DM live receipt) per 09-PHASE-VERIFICATION.md.
 
 ## Current Position
 
-Phase: 09 (Polish) — IN FLIGHT (Wave 8 — SC-5 accessibility delivery underway)
-Plan: 09-10 COMPLETE (Task 1 GREEN: global *:focus-visible CSS + button/a/[role=button] color-mix outer ring; .github/workflows/a11y.yml axe-core CI workflow @^4.11.3 with 7-URL public route matrix + Pitfall 11 admin-route exclusion + T-09-10-01 upgraded to mitigate via if:failure() artifact upload; PublicPagesHtmlLangTest Wave 0 → 7 GREEN tests; VueFormLabelsTest Wave 0 → 1 GREEN static-scan test, 0 violations; SkipToContent + main#main verified intact. Task 2 PENDING_MANUAL_SMOKE — 10-step keyboard-nav checklist deferred to operator out-of-band per autonomous workflow convention. Filter run 8 passed / 15 assertions / 2.08 s; Pint 0 dirty files; PHPStan L8 OK); next 09-11
-Status: Phase 9 in flight
+Phase: 09 (Polish) — COMPLETE PENDING_MANUAL_SMOKE
+Plan: 12/12 — 09-12 closed (Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED inline + ~40 D-09-* canonical bindings; ROADMAP Phase 9 12/12 Complete 2026-05-15; STATE completed_phases 8 -> 9 + percent 89 -> 100)
+Status: Phase 9 COMPLETE PENDING_MANUAL_SMOKE — v1.0 milestone ready to ship pending operator smoke
 Last activity: 2026-05-15
 
-Progress: [██████████] 99% (8/9 phases; 119/120 plans incl. Phase 9 09-01..09-10)
+Progress: [██████████] 100% (9/9 phases; 120/120 plans — round 1 COMPLETE)
 
 ## Performance Metrics
 
@@ -156,6 +156,7 @@ Progress: [██████████] 99% (8/9 phases; 119/120 plans incl. 
 | Phase 09-polish P09 | 1066 | 2 tasks | 12 files |
 | Phase 09-polish P10 | 780 | 1 task (Task 2 PENDING_MANUAL_SMOKE) | 4 files |
 | Phase 09 P11 | 1093 | 2 tasks | 22 files |
+| Phase 09 P12 | ~30min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -530,6 +531,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 09-11 D-09-11-B — created /clans.json + /players.json public JSON list endpoints (plan listed them as 'existing' but they didn't exist; Rule 2 deviation; 500-row cap; both wired under throttle:public-api)
 - [Phase ?]: Plan 09-11 D-09-11-D — migrated EventsFeedJsonControllerTest + SearchControllerTest from throttle:60,1 to throttle:public-api 30/min cap (Rule 3 — auto-fix tests now blocking due to plan-driven throttle rename)
 - [Phase ?]: Plan 09-11 D-09-11-F — Task 3 manual rate-limit + abuse-flow boundary smoke DEFERRED to PENDING_MANUAL_SMOKE per autonomous workflow convention (same close pattern as Phase 1/2/3/4/5/6/7/8 + 09-10)
+- [Phase 09]: Plan 09-12 — Phase 9 COMPLETE PENDING_MANUAL_SMOKE; 1303 web Pest tests / 4546 assertions (+169 web / +763 assertions from Phase 8 close) + 139 bot Vitest tests (regressionless from Phase 8) + 40 rcon-worker Vitest tests (regressionless from Phase 8); all 7 quality gates GREEN (Pest, Pint 651 files clean, PHPStan L8 [OK], pnpm web build, pnpm bot build, pnpm rcon-worker build, axe-core CI workflow present at .github/workflows/a11y.yml); 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 Open Questions LOCKED inline + ~40 D-09-* canonical bindings; ROADMAP Phase 9 12/12 Complete (2026-05-15); REQUIREMENTS no v1 flips (Phase 9 is buffer/polish — all 15 mappable v1 reqs already flipped across Phases 1-8); STATE completed_phases 8 -> 9 + completed_plans 119 -> 120 + percent 89 -> 100; status PENDING_MANUAL_SMOKE pending operator 4-item walkthrough A-D (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Discord DM live receipt). v1.0 milestone ROUND-1 SHIPPABLE pending operator smoke.
+- [Phase 09]: D-04-03-A LOCKED continued — App\\Models\\GameMatch direct import everywhere in Phase 9 (LeaderboardService, DisputeService, BanService, MatchObserver/MatchResultObserver/MatchPlayerStatObserver extensions, MatchDisputeResource, all Phase 9 Feature + Unit tests); zero alias-on-import; canonical binding preserved across the full 9-phase round-1 surface; BelongsTo<GameMatch, $this> passes match_id as explicit FK arg per D-04-03-B / D-06-03-A / D-07-* / D-08-* / D-09-* continuation. v2 plans MUST preserve this binding.
+- [Phase 09]: Plan 09-12 D-09-12-A — Phase9I18nKeyCoverageTest mirrors the canonical CmsI18nKeyCoverageTest two-it() idiom — (1) expected-key resolution + (2) source-grep round-trip on Vue/Filament/controller/service/notification surface; both GREEN; CI-gated for v2 drift detection on notifications.* / leaderboards.* / moderation.* / a11y.* / reports.* namespaces.
+- [Phase 09]: Plan 09-12 D-09-12-B — Pint auto-fix in 09-12 commit narrowed scope to 4 Phase-9 source files (Rule 1 deviation — AbuseReportResource.php fully_qualified_strict_types, routes/web.php ordered_imports, AbuseReportWorkflowTest.php fully_qualified_strict_types, RateLimiterDefinitionsTest.php class_definition + fully_qualified_strict_types); zero pre-Phase-9 file touched; preserves the audit boundary that Phase 9 commits only touch Phase 9 code paths.
 
 ### Pending Todos
 
@@ -551,6 +556,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T16:23:00.196Z
-Stopped at: Completed 09-10-PLAN.md (Wave 8 — SC-5 a11y: focus-visible + axe-core CI + 2 Pest tests GREEN; Task 2 PENDING_MANUAL_SMOKE keyboard-nav handoff to operator)
+Last session: 2026-05-15T16:55:00.000Z
+Stopped at: Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED + ~40 D-09-* canonical bindings; ROADMAP/REQUIREMENTS/STATE updated; round-1 v1.0 milestone SHIPPABLE pending 4-item operator manual smoke A-D)
 Resume file: None
