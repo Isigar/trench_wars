@@ -109,7 +109,7 @@ it('single-elim assigns rank 1 to tournament winner and rank 2 to runner-up', fu
 
     /** @var TournamentStage $stage */
     $stage = $tournament->stages()->first();
-    $round1 = $stage->brackets()->where('round_number', 1)->orderBy('position')->get();
+    $round1 = $stage->brackets()->with(['participantA', 'participantB'])->where('round_number', 1)->orderBy('position')->get();
 
     // Round 1: top-seeded participantA wins each semi.
     foreach ($round1 as $bracket) {
@@ -122,7 +122,7 @@ it('single-elim assigns rank 1 to tournament winner and rank 2 to runner-up', fu
     /** @var TournamentBracket $final */
     $final = $stage->brackets()->where('round_number', 2)->where('position', 1)->firstOrFail();
     app(BracketMatchMaterialiserService::class)->materialiseFor($final->fresh(), $tournament);
-    $finalFresh = $final->fresh();
+    $finalFresh = $final->fresh()?->load(['participantA', 'participantB']);
     /** @var TournamentParticipant $finalWinner */
     $finalWinner = $finalFresh->participantA;
     recordBracketResult($finalFresh, $finalWinner);
@@ -163,7 +163,7 @@ it('single-elim 8-clan assigns ranks 1, 2, 3-tie, 5-tie by elimination round', f
     $stage = $tournament->stages()->first();
 
     // Round 1: participantA wins each.
-    foreach ($stage->brackets()->where('round_number', 1)->get() as $bracket) {
+    foreach ($stage->brackets()->with(['participantA', 'participantB'])->where('round_number', 1)->get() as $bracket) {
         /** @var TournamentBracket $bracket */
         recordBracketResult($bracket, $bracket->participantA);
     }
@@ -173,14 +173,15 @@ it('single-elim 8-clan assigns ranks 1, 2, 3-tie, 5-tie by elimination round', f
         /** @var TournamentBracket $bracket */
         $fresh = $bracket->fresh();
         app(BracketMatchMaterialiserService::class)->materialiseFor($fresh, $tournament);
-        recordBracketResult($fresh->fresh(), $fresh->fresh()->participantA);
+        $freshLoaded = $fresh->fresh()?->load(['participantA', 'participantB']);
+        recordBracketResult($freshLoaded, $freshLoaded->participantA);
     }
 
     // Round 3 (final): materialise + record.
     /** @var TournamentBracket $final */
     $final = $stage->brackets()->where('round_number', 3)->where('position', 1)->firstOrFail();
     app(BracketMatchMaterialiserService::class)->materialiseFor($final->fresh(), $tournament);
-    $finalFresh = $final->fresh();
+    $finalFresh = $final->fresh()?->load(['participantA', 'participantB']);
     recordBracketResult($finalFresh, $finalFresh->participantA);
 
     $standings = TournamentStanding::query()

@@ -67,7 +67,7 @@ it('generates 8-participant swiss round 1 with top-half vs bottom-half pairings'
     expect($stage->brackets()->count())->toBe(4);
 
     // Pairings: 1v5, 2v6, 3v7, 4v8 (top half vs bottom half by seed).
-    $brackets = $stage->brackets()->orderBy('position')->get();
+    $brackets = $stage->brackets()->with(['participantA', 'participantB'])->orderBy('position')->get();
     expect($brackets[0]->participantA->seed)->toBe(1);
     expect($brackets[0]->participantB->seed)->toBe(5);
     expect($brackets[1]->participantA->seed)->toBe(2);
@@ -196,7 +196,7 @@ it('generateNextRound pairs by score group (winners-vs-winners, losers-vs-losers
 
     // All round-2 matchups are winners-vs-winners or losers-vs-losers
     // (within-score-group pairing).
-    $r2Brackets = $r2Stage->brackets()->get();
+    $r2Brackets = $r2Stage->brackets()->with(['participantA', 'participantB'])->get();
     foreach ($r2Brackets as $b) {
         $aSeed = $b->participantA->seed;
         $bSeed = $b->participantB->seed;

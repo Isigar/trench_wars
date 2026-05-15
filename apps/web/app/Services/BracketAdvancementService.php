@@ -230,6 +230,7 @@ final class BracketAdvancementService
 
         /** @var TournamentBracket|null $finalBracket */
         $finalBracket = $stage->brackets()
+            ->with('winnerParticipant')
             ->orderByDesc('round_number')
             ->orderBy('position')
             ->first();
@@ -278,7 +279,11 @@ final class BracketAdvancementService
     {
         $tournament->participants()->update(['placement' => null]);
 
+        // Eager-load the participant relation so plan 09-08's
+        // Model::shouldBeStrict() does not raise LazyLoadingViolationException
+        // when we read `$standing->participant` in the loop below.
         $standings = $tournament->standings()
+            ->with('participant')
             ->whereNotNull('rank')
             ->orderBy('rank')
             ->get();

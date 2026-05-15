@@ -8,6 +8,7 @@ use App\Listeners\ProvisionFirstLogin;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
@@ -42,6 +43,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Plan 09-08 (SC-4) — flip Eloquent strict mode in non-production so
+        // lazy loads, accessing non-existent attributes, and missing-attribute
+        // access throw at test/dev time. Production stays relaxed: a runtime
+        // surprise on a public page is worse than the same surprise in CI.
+        //
+        // References:
+        //   - 09-RESEARCH.md Pattern 6 — Model::shouldBeStrict in non-prod.
+        //   - 09-08-PLAN.md (T-09-08-01 mitigation).
+        Model::shouldBeStrict(! $this->app->isProduction());
+
         Event::listen(function (SocialiteWasCalled $event): void {
             $event->extendSocialite('discord', Provider::class);
         });

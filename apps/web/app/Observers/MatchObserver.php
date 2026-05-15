@@ -211,6 +211,11 @@ class MatchObserver
             return;
         }
 
+        // Observer fires from create/update boundaries where the caller may not
+        // have eager-loaded hostClan; loadMissing is a no-op when already loaded
+        // and keeps plan 09-08's Model::shouldBeStrict() happy.
+        $match->loadMissing('hostClan');
+
         $channelId = $match->hostClan?->discord_announce_channel_id;
         if ($channelId === null) {
             return;

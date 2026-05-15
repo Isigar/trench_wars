@@ -9,7 +9,6 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -117,6 +116,46 @@ class User extends Authenticatable implements FilamentUser, HasName
     }
 
     /**
+     * Discord-OAuth-only schema (D-002, D-017) — no `password` column exists on
+     * the users table. Laravel's AuthenticateSession middleware nevertheless
+     * calls `getAuthPassword()` on the authenticated user before short-circuiting
+     * on the falsy-password guard (vendor/.../AuthenticateSession.php L47).
+     *
+     * Default Authenticatable::getAuthPassword() reads `$this->{password}`,
+     * which under Model::shouldBeStrict() (plan 09-08) raises
+     * MissingAttributeException at runtime.
+     *
+     * Override to return an empty string so the middleware's
+     * `! $request->user()->getAuthPassword()` guard short-circuits the
+     * password-rotation rehash path entirely, without touching strict-mode.
+     */
+    public function getAuthPassword(): string
+    {
+        return '';
+    }
+
+    /**
+     * Resilient to strict-mode (plan 09-08, Model::shouldBeStrict). The framework
+     * calls `getRememberToken()` from session middleware + auth logout/cycle
+     * flows; if the model was retrieved without the remember_token column in
+     * its $attributes (defensive selects, JSON resource projections, manual
+     * `select()` chains in test helpers), default Authenticatable accessor
+     * would raise MissingAttributeException. Return null instead — the auth
+     * stack treats null + empty string identically (no "remember me" cookie).
+     */
+    public function getRememberToken(): ?string
+    {
+        $name = $this->getRememberTokenName();
+        if ($name === '' || ! array_key_exists($name, $this->getAttributes())) {
+            return null;
+        }
+
+        $value = $this->getAttributes()[$name] ?? null;
+
+        return $value !== null ? (string) $value : null;
+    }
+
+    /**
      * 1:1 relation — every User has exactly one Player (created at first login).
      *
      * @return HasOne<Player, $this>
@@ -211,9 +250,16 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function enabledNotificationChannels(string $eventType): array
     {
-        /** @var Collection<int, UserNotificationPreference> $rows */
-        $rows = $this->notificationPreferences
-            ->where('event_type', $eventType);
+        // Use a fresh query rather than the relation accessor — Notification
+        // dispatch paths (App\Notifications\*) typically receive a User that
+        // was NOT eager-loaded with `notificationPreferences`. Under
+        // Model::shouldBeStrict() (plan 09-08) the accessor would raise
+        // LazyLoadingViolationException. If the caller pre-loaded the relation
+        // we still defer to the in-memory collection (no extra query).
+        /** @var iterable<UserNotificationPreference> $rows */
+        $rows = $this->relationLoaded('notificationPreferences')
+            ? $this->notificationPreferences->where('event_type', $eventType)
+            : $this->notificationPreferences()->where('event_type', $eventType)->get();
 
         /** @var array<string, bool> $prefs */
         $prefs = [];

@@ -132,15 +132,24 @@ final class PublicTournamentData extends Data
 
         $stages = $tournament->relationLoaded('stages')
             ? $tournament->stages
-            : $tournament->stages()->with(['brackets.participantA.clan', 'brackets.participantB.clan', 'brackets.match'])->get();
+            : $tournament->stages()->with(['brackets.participantA.clan', 'brackets.participantB.clan', 'brackets.match', 'brackets.stage'])->get();
 
         foreach ($stages as $stage) {
             /** @var iterable<TournamentBracket> $brackets */
             $brackets = $stage->relationLoaded('brackets')
                 ? $stage->brackets
-                : $stage->brackets()->with(['participantA.clan', 'participantB.clan', 'match'])->get();
+                : $stage->brackets()->with(['participantA.clan', 'participantB.clan', 'match', 'stage'])->get();
 
             foreach ($brackets as $bracket) {
+                // Inject the iteration-owning stage as a pre-loaded relation so
+                // BracketNodeData::fromModel can read $bracket->stage without
+                // tripping plan 09-08's Model::shouldBeStrict() (callers
+                // typically pre-load `stages.brackets.*` but not the inverse
+                // `brackets.stage` BelongsTo).
+                if (! $bracket->relationLoaded('stage')) {
+                    $bracket->setRelation('stage', $stage);
+                }
+
                 $nodes[] = BracketNodeData::fromModel($bracket);
 
                 // Odd position → 'a' slot; even position → 'b' slot. This is the
