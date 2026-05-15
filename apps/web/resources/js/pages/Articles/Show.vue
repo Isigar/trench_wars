@@ -16,6 +16,7 @@
      appends. ArticleHeadMetaTest asserts occurrence-count of og:title is
      exactly 1 after two visits. -->
 <script setup lang="ts">
+import ReportButton from '@/components/ReportButton.vue';
 import { useT } from '@/composables/useT';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Head } from '@inertiajs/vue3';
@@ -78,6 +79,15 @@ const ogImage = computed<string>(() => props.article.heroOgImageUrl ?? '');
                 data-test="article-body"
                 v-html="article.bodyHtml"
             ></div>
+
+            <!-- Plan 09-11 — inline report CTA for authenticated visitors. -->
+            <div class="pt-4 border-t border-[var(--color-border)]">
+                <ReportButton
+                    target-type="App\Models\Article"
+                    :target-id="article.id"
+                    :target-name="article.title"
+                />
+            </div>
         </article>
     </PublicLayout>
 </template>

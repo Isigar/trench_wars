@@ -1,6 +1,7 @@
 <!-- Source: 02-UI-SPEC.md § Page: /players/{slug} (Public player profile). -->
 <script setup lang="ts">
 import PlayerCard from '@/components/players/PlayerCard.vue';
+import ReportButton from '@/components/ReportButton.vue';
 import { useT } from '@/composables/useT';
 import { Head } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
@@ -96,6 +97,19 @@ defineProps<{
                     </div>
                 </div>
             </template>
+
+            <!-- Plan 09-11 — inline report CTA for authenticated visitors.
+                 Hidden on the viewer's own profile (no self-reports). -->
+            <div
+                v-if="!player.isOwnProfile"
+                class="pt-4 border-t border-[var(--color-border)]"
+            >
+                <ReportButton
+                    target-type="App\Models\Player"
+                    :target-id="player.id"
+                    :target-name="player.displayName"
+                />
+            </div>
 
         </section>
     </PublicLayout>

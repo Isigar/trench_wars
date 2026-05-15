@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import MatchStatusBadge from '@/components/matches/MatchStatusBadge.vue';
 import RoleSlotGroup, { type RoleGroup } from '@/components/matches/RoleSlotGroup.vue';
+import ReportButton from '@/components/ReportButton.vue';
 import Button from '@/components/ui/Button.vue';
 import { useT } from '@/composables/useT';
 import { Head, router } from '@inertiajs/vue3';
@@ -129,6 +130,16 @@ function cancelSignup(): void {
                 <p class="text-base text-[var(--color-text-muted)]">
                     {{ t('matches.show.no_roles_yet') }}
                 </p>
+            </div>
+
+            <!-- Plan 09-11 — inline report CTA for authenticated visitors.
+                 D-04-03-A LOCKED: target_type is the FQN `App\Models\GameMatch`
+                 (Match is a PHP 8 reserved keyword). -->
+            <div class="pt-4 border-t border-[var(--color-border)]">
+                <ReportButton
+                    target-type="App\Models\GameMatch"
+                    :target-id="match.id"
+                />
             </div>
 
         </section>

@@ -28,9 +28,17 @@ return [
             'modal_heading' => 'Ban :count user(s)',
             'modal_description' => 'Issues a Ban record + writes activity_log entry. Bans take effect immediately.',
             'ban_type' => 'Ban type',
+            // Plan 09-11 — AbuseReportResource action_with_ban form reuses these
+            // labels for the ban_type Select. Mirrors BanService::BAN_TYPES.
+            'ban_type_temporary' => 'Temporary',
+            'ban_type_permanent' => 'Permanent',
             'reason' => 'Reason',
             'expires_at' => 'Expires at (optional)',
             'confirm' => 'Ban users',
+            // Plan 09-11 — surfaced by AbuseReportResource::action_with_ban when
+            // the target Player row exists but the linked User has been hard-
+            // deleted (FK integrity edge case).
+            'error_no_target' => 'Could not resolve the report target to a user — Player row is missing or the linked User has been deleted.',
         ],
         'unban' => [
             'label' => 'Unban selected users',

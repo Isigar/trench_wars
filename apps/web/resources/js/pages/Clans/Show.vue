@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import ClanTagBadge from '@/components/clans/ClanTagBadge.vue';
 import MemberRow from '@/components/clans/MemberRow.vue';
+import ReportButton from '@/components/ReportButton.vue';
 import StatusBadge from '@/components/ui/StatusBadge.vue';
 import { useT } from '@/composables/useT';
 import { Head } from '@inertiajs/vue3';
@@ -155,6 +156,15 @@ const showAllHiddenPrivacyNotice = computed(
                             {{ t('clans.activity.placeholder') }}
                         </p>
                     </div>
+                </div>
+
+                <!-- Plan 09-11 — inline report CTA for authenticated visitors. -->
+                <div class="pt-4 border-t border-[var(--color-border)]">
+                    <ReportButton
+                        target-type="App\Models\Clan"
+                        :target-id="clan.id"
+                        :target-name="clan.name"
+                    />
                 </div>
 
             </section>
