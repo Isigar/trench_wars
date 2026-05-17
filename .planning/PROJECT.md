@@ -4,6 +4,35 @@
 
 Trenchwars is a web platform where multiple clans organise competitive matches and tournaments — primarily for Hell Let Loose, designed so additional games can be added without code changes. Discord is the primary social layer; the website is the source of truth for clans, players, matches, results, and editorial content. It is built as a multi-clan league platform with one shared league Discord guild, public clan directory, public player profiles, public match calendar, and public bracket viewer.
 
+v1.0 (Round-1) shipped 2026-05-17 — 9 phases, 120 plans, 1303 Pest web tests + 176 bot Vitest + 40 rcon-worker Vitest GREEN. See `milestones/v1.0-ROADMAP.md`.
+
+## Current State
+
+**v1.0 Round-1 Trenchwars HLL league platform — SHIPPED 2026-05-17.**
+
+All 9 phases complete (Foundations → Polish), 120/120 plans, 1303 web Pest + 176 bot Vitest + 40 rcon-worker Vitest GREEN. All 15 mappable v1 requirements Complete. 21 ADR decisions LOCKED (D-001..D-021). Cross-phase milestone audit (`milestones/v1.0-MILESTONE-AUDIT.md`) resolved by audit-hotfix `cdfbfa5` bridging web→bot dispatcher for Phase 7-9 outbound kinds (`article_announce`, `match_result_announce`, `user_dm`).
+
+**Tech state at v1.0 ship:** Laravel 12 + PHP 8.4 + Inertia v2 + Vue 3 + Filament v3 + Tailwind v4 (dual-Tailwind workaround for Filament v3) + Postgres 16 + Redis 7. Bot: Node 22 + discord.js v14 + TypeScript. rcon-worker: Node 22 + TypeScript + ws + undici + ioredis. Monorepo: pnpm-workspaces (`apps/web`, `apps/bot`, `apps/rcon-worker`, `packages/shared-types`). Hosting: Railway (5 services + Postgres + Redis plugins). Local dev: docker-compose at repo root (D-021).
+
+**v1.0 status:** SHIPPABLE pending 4-item operator manual smoke per `milestones/v1.0-ROADMAP.md` Phase 9 section (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Notifications bell + Discord DM live receipt). All other phases also have a `PENDING_MANUAL_SMOKE` checklist recorded in their individual `*-PHASE-VERIFICATION.md` files.
+
+## Next Milestone Goals
+
+_v1.1 not yet planned._ Candidate deferred work (from v1.0 archive, `milestones/v1.0-REQUIREMENTS.md` v2 section):
+
+- **NOTF-01**: User-configurable notification preferences full UX (v1.0 ships default sensible rules wired only)
+- **NOTF-02**: Email transactional mail provider (currently no email need beyond OAuth)
+- **SRCH-01**: Meilisearch over Postgres FTS
+- **TOUR-V2-01**: WebSocket live tournament updates (replace 30s polling)
+- **I18N-V2-01**: Ship CS / SK / PL / DE / RU / FR locale packs
+- **DISC-V2-01**: Bot-managed per-clan voice channels
+- **DISC-V2-02**: Discord-thread links on articles
+- **OPS-V2-01**: GDPR right-to-erasure flow (anonymise vs delete)
+- **OPS-V2-02**: Activity log partitioning + 12-month archive
+- **OPS-V2-03**: Monitoring stack (Sentry / Logtail) beyond Railway logs
+
+Start the next milestone with `/gsd-new-milestone` after operator smoke clears all 4 PENDING_MANUAL_SMOKE items.
+
 ## Core Value
 
 Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically — without manual data entry on the happy path.
@@ -176,4 +205,4 @@ Unresolved at planning time (from `.docs/16-open-questions.md`). Advisory, not b
 - Reserved words list for clan slugs (`admin`, `me`, `api`, etc.).
 
 ---
-*Last updated: 2026-05-03 after roadmap initialization from intel ingest*
+*Last updated: 2026-05-17 after v1.0 milestone close (round-1 Trenchwars HLL league platform — 9 phases / 120 plans / 1303+ tests / 15/15 v1 requirements Complete)*
