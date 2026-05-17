@@ -3,8 +3,8 @@
 Multi-clan league platform for Hell Let Loose (game-agnostic data model).
 Two clans schedule a scrim from Discord, slot up by role, play it on a registered match server, and watch results write themselves.
 
-> **Round 1 status:** Phase 1 (Foundations) — building the deployable Laravel skeleton.
-> See `.planning/ROADMAP.md` for the 9-phase plan.
+> **v1.0 status:** ✅ SHIPPED — milestone tag `v1.0` (2026-05-17). Nine phases (foundations → clans → games → matches → bot → tournaments → CMS → RCON automation → polish) delivered across 442 commits / 14 calendar days; 1303 Pest web + 176 bot Vitest + 40 rcon-worker Vitest tests passing; 21 ADRs LOCKED (D-001..D-021).
+> Milestone archive: [`.planning/milestones/v1.0-ROADMAP.md`](./.planning/milestones/v1.0-ROADMAP.md) · audit: [`.planning/milestones/v1.0-MILESTONE-AUDIT.md`](./.planning/milestones/v1.0-MILESTONE-AUDIT.md).
 
 ---
 
@@ -109,6 +109,16 @@ Click **Log in with Discord** on the landing page to complete OAuth. The first l
 
 ---
 
+## Production
+
+Trenchwars v1.0 deploys to Railway as 5 services + Postgres 16 + Redis 7 plugins (D-014). The Dockerfiles under `docker/` and the per-service `nixpacks.toml` files in `apps/*/` carry the build contract; production uses the same images as local dev (D-021).
+
+- [`DEPLOYMENT.md`](./DEPLOYMENT.md) — Railway deploy walkthrough (per-service plumbing, first deploy, first-boot data, rollback).
+- [`CONFIGURATION.md`](./CONFIGURATION.md) — authoritative env-var matrix across web / bot / rcon-worker / ssr / worker.
+- [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md) — sequential go-live checklist consolidating the 9-phase manual smoke from `.planning/milestones/v1.0-phases/`.
+
+---
+
 ## Project layout
 
 ```
@@ -124,6 +134,9 @@ trenchwars/
 ├── Makefile                  # short aliases for compose exec
 ├── .env.example              # env shape (copy to .env, fill in secrets)
 ├── CLAUDE.md                 # AI/developer conventions (READ THIS FIRST)
+├── DEPLOYMENT.md             # Railway production deploy guide
+├── CONFIGURATION.md          # env-var matrix
+├── LAUNCH-CHECKLIST.md       # go-live checklist
 ├── .planning/                # GSD planning artifacts
 └── .docs/                    # frozen design docs
 ```
@@ -132,13 +145,28 @@ trenchwars/
 
 ## Documentation
 
-- **AI/developer conventions:** `CLAUDE.md`
-- **Locked decisions (D-001..D-021):** `.planning/PROJECT.md`
-- **Roadmap (9 phases):** `.planning/ROADMAP.md`
-- **Phase 1 plans:** `.planning/phases/01-foundations/`
-- **Architecture (frozen):** `.docs/02-architecture.md`
-- **Database schema (frozen):** `.docs/05-database-schema.md`
-- **UI design contract:** `.planning/phases/01-foundations/01-UI-SPEC.md`
+**Launch + ops:**
+
+- [`DEPLOYMENT.md`](./DEPLOYMENT.md) — production Railway deploy guide.
+- [`CONFIGURATION.md`](./CONFIGURATION.md) — env-var matrix + rotation cadence.
+- [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md) — sequential first-deploy → live checklist.
+
+**Project conventions + architecture:**
+
+- [`CLAUDE.md`](./CLAUDE.md) — AI/developer conventions, container-only rule (D-021), code style + test conventions, security checklist.
+- [`.planning/PROJECT.md`](./.planning/PROJECT.md) — locked decisions (D-001..D-021), Current State, Next Milestone Goals.
+
+**Milestone archive (v1.0):**
+
+- [`.planning/milestones/v1.0-ROADMAP.md`](./.planning/milestones/v1.0-ROADMAP.md) — 9-phase roadmap with every plan + per-phase deliverables.
+- [`.planning/milestones/v1.0-REQUIREMENTS.md`](./.planning/milestones/v1.0-REQUIREMENTS.md) — mappable v1 requirements + v2 deferrals.
+- [`.planning/milestones/v1.0-MILESTONE-AUDIT.md`](./.planning/milestones/v1.0-MILESTONE-AUDIT.md) — cross-phase integration audit + hotfix log.
+
+**Frozen design docs:**
+
+- `.docs/02-architecture.md` — system architecture.
+- `.docs/05-database-schema.md` — database schema.
+- `.docs/14-roadmap.md` — original M1-M9 plan.
 
 ## License
 
