@@ -30,4 +30,12 @@ export const env = {
     WEB_API_URL: required('WEB_API_URL'),
     WEB_API_TOKEN: required('WEB_API_TOKEN'),
     OUTBOUND_POLL_INTERVAL_MS: Number.parseInt(optional('OUTBOUND_POLL_INTERVAL_MS', '5000'), 10),
+    // v1.0 audit hotfix — fallback announce channel used when the web side
+    // writes `channel_id=''` on an outbound row. ArticleObserver writes empty
+    // channel_id (resolved at dispatch via config('discord.league_announce_channel_id')
+    // on web; the bot reads the analogous env var here). Optional: empty
+    // string means "no fallback configured" — render.ts will surface that as
+    // a render-time error so the row is marked `failed` with a clear message
+    // instead of silently throwing on `client.channels.fetch('')`.
+    DISCORD_LEAGUE_ANNOUNCE_CHANNEL_ID: optional('DISCORD_LEAGUE_ANNOUNCE_CHANNEL_ID', ''),
 } as const;

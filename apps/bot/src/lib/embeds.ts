@@ -397,6 +397,306 @@ export function buildBracketResultEmbed(
     return embed;
 }
 
+// ---------------------------------------------------------------------------
+// v1.0 milestone-audit hotfix — Phase 7 (article_announce), Phase 8
+// (match_result_announce), Phase 9 (user_dm) embed builders.
+//
+// Source: .planning/v1.0-MILESTONE-AUDIT.md BLOCKER 1 +
+//         apps/web/app/Support/DiscordOutboundPayloadBuilder.php:
+//           - buildArticleAnnounce      (Phase 7 plan 07-06)
+//           - buildMatchResultAnnounce  (Phase 8 plan 08-12)
+//         apps/web/app/Notifications/Channels/DiscordChannel.php (Phase 9
+//         plan 09-03 — user_dm outbox shape).
+//
+// Web side ships these payloads to the outbox in production; without these
+// renderers the bot worker throws "Unknown message_type" and marks the row
+// failed. The audit found the gap in the v1.0 cross-phase integration check
+// (Q5/Q6 + Requirements REQ-goal-discord-ux PARTIAL).
+//
+// Color conventions match the web-side analog colors:
+//   - article_announce:      #10B981 (CMS green — Phase 7 OQ6 LOCKED)
+//   - match_result_announce: #9B2C3D (trench red — Phase 8 plan 08-12)
+//   - user_dm:               token-resolved (info / success / warning /
+//                            danger → 24-bit RGB, defaults to neutral grey)
+// ---------------------------------------------------------------------------
+
+/**
+ * Payload shape emitted by DiscordOutboundPayloadBuilder::buildArticleAnnounce
+ * (Phase 7 plan 07-06). The web side already pre-shapes the Discord embed in
+ * `embeds[0]` — the bot just normalises it into discord.js EmbedBuilder and
+ * truncates / colour-converts where Discord rejects the literal form.
+ *
+ * The hex color string `#10B981` is converted to a 24-bit integer at render
+ * time (Discord's API accepts both, but discord.js EmbedBuilder typings
+ * prefer the integer form).
+ */
+export interface ArticleAnnouncePayload {
+    kind: 'article_announce';
+    article_id: string;
+    article_slug: string;
+    embeds: Array<{
+        title?: string | null;
+        description?: string | null;
+        url?: string | null;
+        color?: string | number | null;
+        thumbnail?: { url?: string | null } | null;
+        fields?: Array<{
+            name: string;
+            value: string;
+            inline?: boolean;
+        }> | null;
+    }>;
+}
+
+/**
+ * Payload shape emitted by DiscordOutboundPayloadBuilder::buildMatchResultAnnounce
+ * (Phase 8 plan 08-12). The embed shape is pre-built server-side with score /
+ * winner / MVP fields already populated; this renderer just reads embed[0]
+ * and constructs an EmbedBuilder with safety clamps.
+ *
+ * Top-level `winner_clan_name` and `mvps` are duplicated outside `embeds` for
+ * audit/debug purposes (Filament resource surfaces them) but the rendered
+ * embed reads from `embeds[0]`.
+ */
+export interface MatchResultAnnouncePayload {
+    kind: 'match_result_announce';
+    match_id: string;
+    allies_score: number | null;
+    axis_score: number | null;
+    winner_clan_name: string | null;
+    mvps: Array<{ username: string; kills: number; deaths: number }>;
+    embeds: Array<{
+        title?: string | null;
+        color?: string | number | null;
+        fields?: Array<{
+            name: string;
+            value: string;
+            inline?: boolean;
+        }> | null;
+    }>;
+}
+
+/**
+ * Payload shape emitted by App\Notifications\Channels\DiscordChannel (Phase 9
+ * plan 09-03). The web side packs the recipient snowflake INSIDE payload
+ * (D-09-03-B note — no dedicated recipient_user_discord_id column on
+ * discord_outbound_messages.channel_id, by Phase 5 contract).
+ *
+ * recipient_id is the user's Discord snowflake. The dispatcher resolves the
+ * User via client.users.fetch(recipient_id) and posts via user.send()
+ * (discord.js v14 auto-creates the DM channel on first send).
+ *
+ * color_token is a string discriminator mapped to a 24-bit RGB color at
+ * render time. Unknown tokens fall back to neutral grey (0x666666).
+ */
+export interface UserDmPayload {
+    recipient_id: string;
+    embed_title?: string | null;
+    embed_description?: string | null;
+    cta_url?: string | null;
+    color_token?: string | null;
+}
+
+// 24-bit RGB constants for the 3 new kinds — match web side analog colours.
+const COLOR_ARTICLE_ANNOUNCE = 0x10b981; // CMS green (Phase 7 OQ6 LOCKED)
+const COLOR_MATCH_RESULT_ANNOUNCE = 0x9b2c3d; // trench red (Phase 8 plan 08-12)
+
+// user_dm color_token map. Keep deterministic + small — undefined token
+// falls back to neutral grey so an unknown token never throws.
+const USER_DM_COLOR_BY_TOKEN: Readonly<Record<string, number>> = Object.freeze({
+    info: 0x3b82f6, // blue-500
+    success: 0x10b981, // emerald-500
+    warning: 0xf59e0b, // amber-500
+    danger: 0xef4444, // red-500
+    neutral: 0x666666,
+});
+const USER_DM_COLOR_FALLBACK = 0x666666;
+
+/**
+ * Convert a payload color (hex string like '#10B981', integer, or null) into
+ * a 24-bit integer for EmbedBuilder.setColor. Returns null when the input
+ * cannot be parsed — caller should fall back to the kind's default color.
+ */
+function parseColor(color: string | number | null | undefined): number | null {
+    if (typeof color === 'number') {
+        return Number.isFinite(color) ? color : null;
+    }
+    if (typeof color === 'string' && color !== '') {
+        const cleaned = color.startsWith('#') ? color.slice(1) : color;
+        const parsed = Number.parseInt(cleaned, 16);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+}
+
+/**
+ * buildArticleAnnounceEmbed — Phase 7 article_announce renderer.
+ *
+ * Reads payload.embeds[0] (pre-shaped by the web side) and normalises it to
+ * a discord.js EmbedBuilder. Missing / null fields are skipped (Discord
+ * rejects empty embeds — a fully empty payload yields a single field-less
+ * embed with the article slug as a fallback title).
+ *
+ * The web side emits title=null when the article has no English locale
+ * (D-013 fallback chain) — we surface the slug instead so the embed is never
+ * truly empty.
+ */
+export function buildArticleAnnounceEmbed(
+    payload: ArticleAnnouncePayload,
+): EmbedBuilder {
+    const e = payload.embeds[0] ?? {};
+
+    const rawTitle = typeof e.title === 'string' ? e.title : '';
+    const title = (rawTitle !== '' ? rawTitle : payload.article_slug).slice(
+        0,
+        TITLE_MAX,
+    );
+    const description =
+        typeof e.description === 'string' ? e.description.slice(0, DESC_MAX) : '';
+    const color = parseColor(e.color) ?? COLOR_ARTICLE_ANNOUNCE;
+
+    const embed = new EmbedBuilder().setColor(color).setTitle(title);
+
+    if (description !== '') {
+        embed.setDescription(description);
+    }
+    if (typeof e.url === 'string' && e.url !== '') {
+        embed.setURL(e.url);
+    }
+    if (
+        e.thumbnail !== null &&
+        e.thumbnail !== undefined &&
+        typeof e.thumbnail.url === 'string' &&
+        e.thumbnail.url !== ''
+    ) {
+        embed.setThumbnail(e.thumbnail.url);
+    }
+    if (Array.isArray(e.fields) && e.fields.length > 0) {
+        const fields = e.fields
+            // T-05-10-02 — clamp value lengths so an oversize translatable
+            // category name never produces a Discord 400.
+            .filter(
+                (f) =>
+                    typeof f.name === 'string' &&
+                    f.name !== '' &&
+                    typeof f.value === 'string' &&
+                    f.value !== '',
+            )
+            .map((f) => ({
+                name: f.name.slice(0, 256),
+                value: f.value.slice(0, FIELD_VALUE_MAX),
+                inline: f.inline === true,
+            }));
+        if (fields.length > 0) {
+            embed.addFields(...fields);
+        }
+    }
+
+    embed.setFooter({ text: `Article id: ${payload.article_id}` });
+
+    return embed;
+}
+
+/**
+ * buildMatchResultAnnounceEmbed — Phase 8 match_result_announce renderer.
+ *
+ * Reads payload.embeds[0] (pre-shaped by the web side with i18n-resolved
+ * field names + Score / Winner / MVPs values) and normalises to a discord.js
+ * EmbedBuilder. The MVP list is multi-line (one player per line — web side
+ * built that string already so we don't reflow here).
+ *
+ * Footer carries the parent match_id for operator debugging (matches the
+ * idiom of the Phase 5 matchCard).
+ *
+ * T-08-12-01 (Steam ID leak): the web side already strips steam_id_64 from
+ * the MVP shape; this renderer never touches mvps[i].steam_id (the field
+ * doesn't exist in the payload).
+ */
+export function buildMatchResultAnnounceEmbed(
+    payload: MatchResultAnnouncePayload,
+): EmbedBuilder {
+    const e = payload.embeds[0] ?? {};
+
+    const rawTitle = typeof e.title === 'string' ? e.title : '';
+    const title = (rawTitle !== '' ? rawTitle : 'Match result').slice(
+        0,
+        TITLE_MAX,
+    );
+    const color = parseColor(e.color) ?? COLOR_MATCH_RESULT_ANNOUNCE;
+
+    const embed = new EmbedBuilder().setColor(color).setTitle(title);
+
+    if (Array.isArray(e.fields) && e.fields.length > 0) {
+        const fields = e.fields
+            .filter(
+                (f) =>
+                    typeof f.name === 'string' &&
+                    f.name !== '' &&
+                    typeof f.value === 'string' &&
+                    f.value !== '',
+            )
+            .map((f) => ({
+                name: f.name.slice(0, 256),
+                value: f.value.slice(0, FIELD_VALUE_MAX),
+                inline: f.inline === true,
+            }));
+        if (fields.length > 0) {
+            embed.addFields(...fields);
+        }
+    }
+
+    embed.setFooter({ text: `Match id: ${payload.match_id}` });
+
+    return embed;
+}
+
+/**
+ * buildUserDmEmbed — Phase 9 user_dm renderer.
+ *
+ * Reads the flat payload shape emitted by `DiscordChannel::send()` —
+ * embed_title + embed_description + cta_url + color_token — and produces a
+ * single EmbedBuilder. The dispatcher (renderUserDm) is responsible for
+ * resolving the recipient via client.users.fetch(payload.recipient_id) and
+ * calling user.send({ embeds: [embed] }).
+ *
+ * color_token semantics (Phase 9 plan 09-03):
+ *   - info     blue   — informational pings (match starting soon)
+ *   - success  green  — affirmative outcomes (clan invite accepted)
+ *   - warning  amber  — operator-level alerts (match cancelled)
+ *   - danger   red    — destructive / required-action (ban applied)
+ *   - neutral  grey   — default / unset
+ *
+ * Empty payloads yield an embed with title='Notification' so the DM is
+ * still deliverable (Discord rejects truly empty embeds).
+ */
+export function buildUserDmEmbed(payload: UserDmPayload): EmbedBuilder {
+    const rawTitle =
+        typeof payload.embed_title === 'string' ? payload.embed_title : '';
+    const title = (rawTitle !== '' ? rawTitle : 'Notification').slice(
+        0,
+        TITLE_MAX,
+    );
+    const description =
+        typeof payload.embed_description === 'string'
+            ? payload.embed_description.slice(0, DESC_MAX)
+            : '';
+
+    const token =
+        typeof payload.color_token === 'string' ? payload.color_token : '';
+    const color = USER_DM_COLOR_BY_TOKEN[token] ?? USER_DM_COLOR_FALLBACK;
+
+    const embed = new EmbedBuilder().setColor(color).setTitle(title);
+
+    if (description !== '') {
+        embed.setDescription(description);
+    }
+    if (typeof payload.cta_url === 'string' && payload.cta_url !== '') {
+        embed.setURL(payload.cta_url);
+    }
+
+    return embed;
+}
+
 /**
  * profileCard - SC-1 informational embed for /profile and /me.
  *

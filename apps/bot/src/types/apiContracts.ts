@@ -59,6 +59,16 @@ export interface OutboundRow {
         | 'tournament_announce'
         | 'tournament_announce_update'
         | 'bracket_result_announce'
+        // v1.0 milestone-audit hotfix — Phases 7/8/9 outbound kinds. The web
+        // observers (ArticleObserver, MatchResultObserver, DiscordChannel
+        // notification channel) enqueue these row kinds in production; the
+        // bot dispatcher MUST recognise them to avoid the "Unknown
+        // message_type" throw that the audit caught. See
+        // .planning/v1.0-MILESTONE-AUDIT.md BLOCKER 1 and
+        // .planning/audit-hotfix-bot-dispatcher-SUMMARY.md.
+        | 'article_announce'
+        | 'match_result_announce'
+        | 'user_dm'
         | 'generic';
     status: 'pending' | 'dispatching' | 'sent' | 'failed';
     payload: unknown;
