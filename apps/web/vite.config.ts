@@ -32,6 +32,12 @@ export default defineConfig({
     css: {
         postcss: { plugins: [] },
     },
+    // Bundle all deps into the SSR output so `node bootstrap/ssr/ssr.js` runs
+    // standalone (the Railway web image drops node_modules; the ssr role needs
+    // a self-contained bundle). See docker/web.railway.Dockerfile.
+    ssr: {
+        noExternal: true,
+    },
     resolve: {
         alias: {
             '@': '/resources/js',
