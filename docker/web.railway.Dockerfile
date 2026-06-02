@@ -17,7 +17,7 @@ FROM php:8.4-fpm-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
       git curl unzip ca-certificates nginx gettext-base \
       libicu-dev libpq-dev libzip-dev libonig-dev \
-      libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev libxml2-dev libmagickwand-dev \
+      libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev libxml2-dev \
   && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y --no-install-recommends nodejs \
   && rm -rf /var/lib/apt/lists/* \
@@ -28,7 +28,9 @@ RUN docker-php-ext-configure intl \
   && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
   && docker-php-ext-install -j"$(nproc)" intl pdo_pgsql pgsql gd bcmath zip mbstring pcntl exif opcache
 RUN pecl install redis-6.1.0 && docker-php-ext-enable redis
-RUN pecl install imagick-3.7.0 && docker-php-ext-enable imagick
+# Image processing uses GD (built --with-webp above); media-library defaults to
+# image_driver=gd. Imagick is intentionally omitted — imagick 3.7.0 fails to
+# compile on PHP 8.4 and GD covers the WebP conversions Phase 9 needs.
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
