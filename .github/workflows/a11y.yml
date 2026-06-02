@@ -99,8 +99,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: '9'
 
       - name: Install @axe-core/cli
         run: npm install -g @axe-core/cli@^4.11.3
