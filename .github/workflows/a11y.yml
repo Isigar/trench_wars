@@ -100,10 +100,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Setup Chrome (match @axe-core/cli's bundled ChromeDriver)
+      - name: Setup Chrome + matching ChromeDriver
+        id: chrome
         uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: stable
+          install-chromedriver: true
 
       - name: Install @axe-core/cli
         run: npm install -g @axe-core/cli@^4.11.3
@@ -169,6 +171,7 @@ jobs:
             echo "::group::axe scan ${url}"
             axe "http://localhost:8000${url}" \
               --tags wcag2aa,wcag21aa \
+              --chromedriver-path "${{ steps.chrome.outputs.chromedriver-path }}" \
               --exit \
               --save "axe-${slug}.json"
             STATUS=$?
