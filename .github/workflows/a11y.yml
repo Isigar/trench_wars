@@ -165,8 +165,7 @@ jobs:
             axe "http://localhost:8000${url}" \
               --tags wcag2aa,wcag21aa \
               --exit \
-              --reporter v2 \
-              > "axe-${slug}.json"
+              --save "axe-${slug}.json"
             STATUS=$?
             if [ "${STATUS}" -ne 0 ]; then
               echo "Violations found on ${url} (exit ${STATUS})"
