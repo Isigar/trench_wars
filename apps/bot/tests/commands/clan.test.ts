@@ -76,15 +76,21 @@ describe('/clan SlashCommandBuilder', () => {
 });
 
 describe('/clan info subcommand', () => {
+    // BotApiClanController::show() wraps the DTO in a { data } envelope, so the
+    // mock MUST mirror that shape. A bare DTO here would let a regression to
+    // `api.get<ClanData>` (no .data unwrap) pass silently — exactly the bug that
+    // rendered "Clan undefined [undefined]".
+    const CLAN_DATA = {
+        id: 'c-uuid',
+        slug: 'redwave',
+        tag: 'RW',
+        name: 'Red Wave',
+        status: 'active',
+        active_member_count: 12,
+    };
+
     it('defers reply ephemeral first', async () => {
-        vi.mocked(api.get).mockResolvedValue({
-            id: 'c-uuid',
-            slug: 'redwave',
-            tag: 'RW',
-            name: 'Red Wave',
-            status: 'active',
-            active_member_count: 12,
-        });
+        vi.mocked(api.get).mockResolvedValue({ data: CLAN_DATA });
         const interaction = makeInteraction('info', { slug: 'redwave' });
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(interaction.deferReply).toHaveBeenCalledWith({
@@ -93,19 +99,22 @@ describe('/clan info subcommand', () => {
     });
 
     it('calls api.get(/clans/{slug}) with actsAsDiscordId', async () => {
-        vi.mocked(api.get).mockResolvedValue({
-            id: 'c-uuid',
-            slug: 'redwave',
-            tag: 'RW',
-            name: 'Red Wave',
-            status: 'active',
-            active_member_count: 12,
-        });
+        vi.mocked(api.get).mockResolvedValue({ data: CLAN_DATA });
         const interaction = makeInteraction('info', { slug: 'redwave' });
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(api.get).toHaveBeenCalledWith('/clans/redwave', {
             actsAsDiscordId: INVOKER_DISCORD_ID,
         });
+    });
+
+    it('renders clan fields from the unwrapped { data } envelope (regression: bare read → "Clan undefined")', async () => {
+        vi.mocked(api.get).mockResolvedValue({ data: CLAN_DATA });
+        const interaction = makeInteraction('info', { slug: 'redwave' });
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const reply = interaction.editReply.mock.calls[0]?.[0] as string;
+        expect(reply).toContain('Red Wave');
+        expect(reply).toContain('[RW]');
+        expect(reply).not.toContain('undefined');
     });
 });
 

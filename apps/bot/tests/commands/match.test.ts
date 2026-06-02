@@ -112,12 +112,18 @@ describe('/match list subcommand', () => {
 });
 
 describe('/match info subcommand', () => {
+    // BotApiMatchController::show() wraps the DTO in a { data } envelope, so the
+    // mock MUST mirror that shape. A bare DTO here would let a regression to
+    // `api.get<PublicMatchData>` (no .data unwrap) pass silently — exactly the
+    // bug that posted a "Match undefined" card in production.
     it('calls api.get(/matches/{id}) with actsAsDiscordId', async () => {
         vi.mocked(api.get).mockResolvedValue({
-            id: MATCH_UUID,
-            status: 'open',
-            scheduled_at: '2026-01-01T00:00:00Z',
-            host_clan_id: null,
+            data: {
+                id: MATCH_UUID,
+                status: 'open',
+                scheduled_at: '2026-01-01T00:00:00Z',
+                host_clan_id: null,
+            },
         });
         const interaction = makeInteraction('info', { id: MATCH_UUID });
         await execute(interaction as unknown as ChatInputCommandInteraction);
@@ -128,10 +134,12 @@ describe('/match info subcommand', () => {
 
     it('defers reply before calling the API', async () => {
         vi.mocked(api.get).mockResolvedValue({
-            id: MATCH_UUID,
-            status: 'open',
-            scheduled_at: null,
-            host_clan_id: null,
+            data: {
+                id: MATCH_UUID,
+                status: 'open',
+                scheduled_at: null,
+                host_clan_id: null,
+            },
         });
         const interaction = makeInteraction('info', { id: MATCH_UUID });
         await execute(interaction as unknown as ChatInputCommandInteraction);
@@ -139,6 +147,32 @@ describe('/match info subcommand', () => {
         expect(interaction.deferReply).toHaveBeenCalledWith({
             flags: MessageFlags.Ephemeral,
         });
+    });
+
+    it('renders the card from the unwrapped { data } envelope (regression: bare read → "Match undefined")', async () => {
+        vi.mocked(api.get).mockResolvedValue({
+            data: {
+                id: MATCH_UUID,
+                status: 'open',
+                scheduled_at: null,
+                host_clan_id: null,
+                title: null,
+                description: null,
+                game_match_type_id: null,
+            },
+        });
+        const interaction = makeInteraction('info', { id: MATCH_UUID });
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+
+        const arg = interaction.editReply.mock.calls[0]?.[0] as {
+            embeds: { data: { title?: string; footer?: { text: string } } }[];
+        };
+        const embed = arg.embeds[0].data;
+        // Footer is `Match id: <uuid>` and title falls back to `Match <uuid>`.
+        // If the envelope is read bare, m.id is undefined → both say "undefined".
+        expect(embed.footer?.text).toBe(`Match id: ${MATCH_UUID}`);
+        expect(embed.title).toBe(`Match ${MATCH_UUID}`);
+        expect(JSON.stringify(embed)).not.toContain('undefined');
     });
 });
 

@@ -113,9 +113,13 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     if (sub === 'info') {
         const matchId = interaction.options.getString('id', true);
-        const match = await api.get<PublicMatchData>(`/matches/${matchId}`, {
-            actsAsDiscordId: interaction.user.id,
-        });
+        // /matches/{id} returns a { data } envelope (BotApiMatchController::show);
+        // api.get() does not unwrap, so destructure .data — reading it bare
+        // hands matchCard the envelope → a "Match undefined" card.
+        const { data: match } = await api.get<{ data: PublicMatchData }>(
+            `/matches/${matchId}`,
+            { actsAsDiscordId: interaction.user.id },
+        );
         const reply = matchCard(match);
         await interaction.editReply(reply);
         return;

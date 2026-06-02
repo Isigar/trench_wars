@@ -164,7 +164,14 @@ async function renderMatchAnnounce(
     // state (status, scheduled_at, title.en) at dispatch time rather than at
     // observer-fire time. The web side serves /api/bot/matches/{id} unauthed-
     // as-user (no actsAsDiscordId) for the bot's service-level dispatch.
-    const match = await api.get<PublicMatchData>(`/matches/${matchId}`);
+    //
+    // BotApiMatchController::show() wraps the DTO in a { data } envelope (same
+    // convention as the /matches list and the outbound poll); api.get() does
+    // NOT unwrap, so we destructure .data here. Reading it bare hands matchCard
+    // the envelope object → every field undefined → a "Match undefined" card.
+    const { data: match } = await api.get<{ data: PublicMatchData }>(
+        `/matches/${matchId}`,
+    );
 
     const channelId = resolveChannelId(row);
 

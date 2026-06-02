@@ -59,7 +59,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     if (sub === 'info') {
         const slug = interaction.options.getString('slug', true);
-        const clan = await api.get<ClanData>(`/clans/${slug}`, {
+        // /clans/{slug} returns a { data } envelope (BotApiClanController::show);
+        // api.get() does not unwrap, so destructure .data — reading it bare
+        // yields "Clan undefined [undefined]".
+        const { data: clan } = await api.get<{ data: ClanData }>(`/clans/${slug}`, {
             actsAsDiscordId: interaction.user.id,
         });
         // Plan 05-10 will replace this with a clanCard EmbedBuilder.
