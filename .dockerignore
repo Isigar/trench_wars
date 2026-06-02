@@ -1,0 +1,19 @@
+# Keep the Docker build context small + avoid copying stale host artifacts into images.
+.git
+.github
+.planning
+.docs
+.claude
+.idea
+.pnpm-store
+**/node_modules
+**/vendor
+**/dist
+apps/web/public/build
+apps/web/public/hot
+apps/web/bootstrap/ssr
+apps/web/storage/logs
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
