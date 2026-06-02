@@ -4,6 +4,11 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
+@import "tw-animate-css";
+
+/* Tailwind v4 CSS-first plugin registration (no tailwind.config.js). */
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
 
 /* Tell Tailwind v4 where to look for utility class usage. */
 @source "../views/**/*.blade.php";

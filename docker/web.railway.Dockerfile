@@ -103,6 +103,7 @@ case "${role}" in
   web)
     php artisan migrate --force || echo "[railway-entrypoint] migrate failed (continuing to serve)"
     php artisan storage:link 2>/dev/null || true
+    php artisan filament:assets 2>/dev/null || true
     php-fpm -D
     export PORT="${PORT:-8080}"
     envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
@@ -124,6 +125,9 @@ COPY packages ./packages
 COPY apps/web ./apps/web
 # Composer first → apps/web/vendor (Filament Tailwind preset lives here).
 RUN cd apps/web && composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
+# Publish Filament core + awcodes plugin static assets to public/{css,js} — composer --no-scripts
+# skips the filament:upgrade hook, so do it explicitly. Dummy APP_KEY: filament:assets only copies files.
+RUN cd apps/web && APP_KEY="base64:$(head -c 32 /dev/urandom | base64)" php artisan filament:assets
 # Then the front-end build (Vite client + Filament theme; vendor preset now resolvable).
 RUN pnpm install --no-frozen-lockfile --filter @trenchwars/web... \
   && pnpm --filter @trenchwars/web run build

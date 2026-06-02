@@ -41,7 +41,7 @@ const errorId = computed(() => `${props.id}-error`);
             :rows="rows"
             :aria-describedby="hasError ? errorId : undefined"
             :aria-invalid="hasError ? 'true' : undefined"
-            class="px-3 py-2 w-full rounded-md text-sm text-[var(--color-text)] bg-[var(--color-surface)] border border-[var(--color-border)] placeholder:text-[var(--color-text-muted)] focus:outline-2 focus:outline-[var(--color-focus-ring)] resize-vertical transition-[border-color] duration-[var(--motion-duration-fast)] ease-[var(--ease-default)]"
+            class="px-3 py-2 w-full rounded-md text-sm text-[var(--color-text)] bg-[var(--color-surface)] border border-[var(--color-border)] placeholder:text-[var(--color-text-muted)] focus:outline-2 focus:outline-[var(--color-focus-ring)] resize-y transition-[border-color] duration-[var(--motion-duration-fast)] ease-[var(--ease-default)]"
         />
 
         <p v-if="hasError" :id="errorId" role="alert" class="text-sm text-[var(--color-danger)]">{{ errors![0] }}</p>
