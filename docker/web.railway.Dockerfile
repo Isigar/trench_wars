@@ -5,32 +5,25 @@
 #   web        → nginx (on $PORT) + php-fpm   (runs migrations first)
 #   worker     → php artisan horizon
 #   scheduler  → php artisan schedule:work
-#   ssr        → php artisan inertia:start-ssr  (needs Node in the image — disabled for now)
+#   ssr        → php artisan inertia:start-ssr  (Node is present; enable later)
 #
-# Selected per Railway service via RAILWAY_DOCKERFILE_PATH (also forces the Docker
-# builder). Build context = repo root (service Root Directory empty) so the pnpm
-# workspace is available. Runtime config (php.ini / nginx / entrypoint) is inlined
-# via heredocs to avoid Railway build-context COPY quirks.
+# Selected per Railway service via RAILWAY_DOCKERFILE_PATH (forces the Docker builder).
+# Build context = repo root (service Root Directory empty) so the pnpm workspace AND
+# Composer vendor/ are available — the Filament theme build needs vendor/filament/support.
 
-# ---- Stage 1: front-end assets (pnpm workspace + Vite) ----
-FROM node:22-bookworm-slim AS assets
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-WORKDIR /repo
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml tsconfig.base.json ./
-COPY packages ./packages
-COPY apps/web ./apps/web
-RUN pnpm install --no-frozen-lockfile --filter @trenchwars/web...
-RUN pnpm --filter @trenchwars/web run build
-
-# ---- Stage 2: PHP runtime (php-fpm 8.4 + nginx) ----
 FROM php:8.4-fpm-bookworm
 
+# System deps + nginx + Node 22 (Node needed: Vite build + future SSR role).
 RUN apt-get update && apt-get install -y --no-install-recommends \
       git curl unzip ca-certificates nginx gettext-base \
       libicu-dev libpq-dev libzip-dev libonig-dev \
       libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev libxml2-dev libmagickwand-dev \
-  && rm -rf /var/lib/apt/lists/*
+  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs \
+  && rm -rf /var/lib/apt/lists/* \
+  && corepack enable && corepack prepare pnpm@9.15.0 --activate
 
+# PHP extensions Laravel 12 + Filament v3 + media-library require.
 RUN docker-php-ext-configure intl \
   && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
   && docker-php-ext-install -j"$(nproc)" intl pdo_pgsql pgsql gd bcmath zip mbstring pcntl exif opcache
@@ -39,7 +32,7 @@ RUN pecl install imagick-3.7.0 && docker-php-ext-enable imagick
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# php.ini overrides (inlined)
+# --- Runtime config (inlined to avoid Railway build-context COPY quirks) ---
 COPY <<'INI' /usr/local/etc/php/conf.d/zz-trenchwars.ini
 memory_limit = 512M
 upload_max_filesize = 20M
@@ -52,7 +45,6 @@ log_errors = On
 error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
 INI
 
-# nginx config template — ${PORT} substituted at boot; other $-vars stay literal.
 COPY <<'NGINX' /etc/nginx/nginx.conf.template
 worker_processes auto;
 events { worker_connections 1024; }
@@ -92,7 +84,6 @@ http {
 }
 NGINX
 
-# Runtime entrypoint — role chosen by SERVICE_ROLE (inlined).
 COPY <<'SH' /usr/local/bin/railway-entrypoint.sh
 #!/usr/bin/env bash
 set -e
@@ -124,12 +115,21 @@ esac
 SH
 RUN chmod +x /usr/local/bin/railway-entrypoint.sh
 
-WORKDIR /app
-# App source (Laravel lives in apps/web). vendor installed with extensions present.
-COPY apps/web /app
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
-# Built front-end assets from stage 1.
-COPY --from=assets /repo/apps/web/public /app/public
+# --- Build: workspace at /build so Composer vendor + pnpm assets coexist ---
+WORKDIR /build
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml tsconfig.base.json ./
+COPY packages ./packages
+COPY apps/web ./apps/web
+# Composer first → apps/web/vendor (Filament Tailwind preset lives here).
+RUN cd apps/web && composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
+# Then the front-end build (Vite client + Filament theme; vendor preset now resolvable).
+RUN pnpm install --no-frozen-lockfile --filter @trenchwars/web... \
+  && pnpm --filter @trenchwars/web run build
+# Relocate the built app to /app and drop node_modules (not needed by web/worker/scheduler).
+RUN rm -rf apps/web/node_modules node_modules \
+  && mkdir -p /app && cp -a apps/web/. /app/ \
+  && rm -rf /build
 
+WORKDIR /app
 ENV SERVICE_ROLE=web
 ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
