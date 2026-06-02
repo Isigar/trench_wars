@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED + ~40 D-09-* canonical bindings; ROADMAP/REQUIREMENTS/STATE updated; round-1 v1.0 milestone SHIPPABLE pending 4-item operator manual smoke A-D)"
-last_updated: "2026-05-15T16:37:59.279Z"
-last_activity: 2026-05-15
+stopped_at: "v1.0 milestone re-verification (2026-06-03): independent 7-dimension audit re-check confirmed all original BLOCKER 1 + WARNING 1-4 findings CLOSED, AND caught + fixed a latent { data }-envelope read bug on the bot match_announce / /match info / /clan info paths (render.ts:167, match.ts, clan.ts read single-object GETs bare → blank/failed cards). Fixed commit 44a7dc0, audit verdict gaps_found→resolved commit 18fe0ea; bot tsc+eslint clean, 185/185 Vitest GREEN. v1.0 already archived 2026-05-17 (tag v1.0). PROJECT.md Validated section migrated. Remaining: 4-item operator manual smoke (needs live deploy + Discord)."
+last_updated: "2026-06-03T00:00:00.000Z"
+last_activity: 2026-06-03
 progress:
   total_phases: 9
   completed_phases: 9
@@ -559,6 +559,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T16:37:54.428Z
-Stopped at: Completed 09-12-PLAN.md (Wave 9 — [BLOCKING] phase close: Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED + ~40 D-09-* canonical bindings; ROADMAP/REQUIREMENTS/STATE updated; round-1 v1.0 milestone SHIPPABLE pending 4-item operator manual smoke A-D)
+Last session: 2026-06-03
+Stopped at: v1.0 milestone re-verification + close-out. Re-ran an independent 7-dimension audit of the 2026-05-15 MILESTONE-AUDIT findings against current code (each CLOSED claim adversarially refuted; every web-write↔bot-read payload reconciled field-by-field). All original findings (BLOCKER 1 bot dispatcher + WARNING 1-4 + Q6 RCON tail) confirmed CLOSED. The re-check CAUGHT a separate latent bug: the bot read single-object BotApi GETs ({ data }-wrapped) bare on the match_announce dispatch (render.ts:167), /match info (match.ts:116) and /clan info (clan.ts:62) paths → "Match undefined"/failed cards. FIXED (commit 44a7dc0: unwrap .data + regression tests incl. new matchAnnounceRender.test.ts; bot tsc+eslint clean, 185/185 Vitest GREEN, teeth proven). MILESTONE-AUDIT verdict flipped gaps_found→resolved (commit 18fe0ea). v1.0 was already formally archived 2026-05-17 (tag v1.0 → 6fa8641); today tidied PROJECT.md Validated section (15 reqs → Validated). Gotcha saved to memory [[project_bot_web_data_envelope]].
 Resume file: None
+Next: 4-item operator manual smoke (live CRCON probe / two-clan SC-5 happy path / Discord DM+announce live receipt / HMAC key rotation) — needs live Railway deploy + Discord, not runnable in this no-Docker dev env. Then /gsd-new-milestone for round 2.

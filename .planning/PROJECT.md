@@ -43,26 +43,28 @@ Two clans can schedule a scrim, sign up for role slots from Discord, play it on 
 
 <!-- Shipped and confirmed valuable. -->
 
-(None yet — round 1 not yet shipped.)
+All 15 round-1 (v1.0) requirements shipped 2026-05-17 (see `milestones/v1.0-REQUIREMENTS.md`). Discord-side delivery additionally re-verified 2026-06-03 (envelope-bug fix on the match/clan read paths — see `milestones/v1.0-MILESTONE-AUDIT.md` re-verification addendum). Live-deploy operator smoke remains the only outstanding gate.
+
+- ✓ Multi-clan league platform with public clan directory, player profiles, match calendar, bracket viewer (REQ-tenancy-multi-clan) — v1.0
+- ✓ Single shared league Discord guild; each clan = a Discord role inside that guild (REQ-tenancy-single-guild, REQ-constraint-single-guild) — v1.0
+- ✓ Game-agnostic relational data model (Game / GameRole / GameMatchType / GameMatchTypeRoleLimit) with HLL as a seeded preset (REQ-platform-vision) — v1.0
+- ✓ Structured match/tournament workflows replacing ad-hoc Discord scheduling (REQ-goal-match-workflows) — v1.0
+- ✓ Automatic match history capture per clan and per player via CRCON (REQ-goal-rcon-history) — v1.0
+- ✓ Public profiles for clans and players with controllable privacy (per-section + global tier) (REQ-goal-public-profiles) — v1.0
+- ✓ CMS for league announcements and event calendar (REQ-goal-cms) — v1.0
+- ✓ Tight Discord UX: signups, RSVPs, results announcements via slash commands and channel posts (REQ-goal-discord-ux) — v1.0
+- ✓ Round-1 success: end-to-end scrim happy path (REQ-success-end-to-end-scrim) — v1.0
+- ✓ Round-1 success: 8-clan single-elim tournament end-to-end (REQ-success-tournament-end-to-end) — v1.0
+- ✓ Round-1 success: public visitor can browse clans, players, calendar, bracket views, articles (REQ-success-public-browse) — v1.0
+- ✓ League owns HLL game servers; CRCON installed on each (REQ-constraint-league-owns-servers) — v1.0
+- ✓ English at launch; multi-language possible without refactor (REQ-constraint-en-launch-i18n-ready) — v1.0
+- ✓ Deployed to Railway (REQ-constraint-railway-deploy) — v1.0
 
 ### Active
 
-<!-- Round-1 scope. Detailed list with REQ-IDs lives in REQUIREMENTS.md. -->
+<!-- Next milestone scope — defined via /gsd-new-milestone. -->
 
-- [ ] Multi-clan league platform with public clan directory, player profiles, match calendar, bracket viewer (REQ-tenancy-multi-clan)
-- [ ] Single shared league Discord guild; each clan = a Discord role inside that guild (REQ-tenancy-single-guild, REQ-constraint-single-guild)
-- [ ] Game-agnostic relational data model (Game / GameRole / GameMatchType / GameMatchTypeRoleLimit) with HLL as a seeded preset (REQ-platform-vision)
-- [ ] Structured match/tournament workflows replacing ad-hoc Discord scheduling (REQ-goal-match-workflows)
-- [ ] Automatic match history capture per clan and per player via CRCON (REQ-goal-rcon-history)
-- [ ] Public profiles for clans and players with controllable privacy (per-section + global tier) (REQ-goal-public-profiles)
-- [ ] CMS for league announcements and event calendar (REQ-goal-cms)
-- [ ] Tight Discord UX: signups, RSVPs, results announcements via slash commands and channel posts (REQ-goal-discord-ux)
-- [ ] Round-1 success: end-to-end scrim happy path (REQ-success-end-to-end-scrim)
-- [ ] Round-1 success: 8-clan single-elim tournament end-to-end (REQ-success-tournament-end-to-end)
-- [ ] Round-1 success: public visitor can browse clans, players, calendar, bracket views, articles (REQ-success-public-browse)
-- [ ] League owns HLL game servers; CRCON installed on each (REQ-constraint-league-owns-servers)
-- [ ] English at launch; multi-language possible without refactor (REQ-constraint-en-launch-i18n-ready)
-- [ ] Deployed to Railway (REQ-constraint-railway-deploy)
+(None — v1.0 shipped. Next milestone not yet planned; see "Next Milestone Goals" below.)
 
 ### Out of Scope
 
