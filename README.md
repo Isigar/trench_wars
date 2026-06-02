@@ -3,7 +3,7 @@
 Multi-clan league platform for Hell Let Loose (game-agnostic data model).
 Two clans schedule a scrim from Discord, slot up by role, play it on a registered match server, and watch results write themselves.
 
-> **v1.0 status:** ✅ SHIPPED — milestone tag `v1.0` (2026-05-17). Nine phases (foundations → clans → games → matches → bot → tournaments → CMS → RCON automation → polish) delivered across 442 commits / 14 calendar days; 1303 Pest web + 176 bot Vitest + 40 rcon-worker Vitest tests passing; 21 ADRs LOCKED (D-001..D-021).
+> **v1.0 status:** ✅ SHIPPED — milestone tag `v1.0` (2026-05-17). Nine phases (foundations → clans → games → matches → bot → tournaments → CMS → RCON automation → polish) delivered across 442 commits / 14 calendar days; 1303 Pest web + 176 bot Vitest + 40 rcon-worker Vitest tests passing; 22 ADRs LOCKED (D-001..D-022; D-022 added in the production-readiness review supersedes the D-014 service count).
 > Milestone archive: [`.planning/milestones/v1.0-ROADMAP.md`](./.planning/milestones/v1.0-ROADMAP.md) · audit: [`.planning/milestones/v1.0-MILESTONE-AUDIT.md`](./.planning/milestones/v1.0-MILESTONE-AUDIT.md).
 
 ---
@@ -14,7 +14,7 @@ Two clans schedule a scrim from Discord, slot up by role, play it on a registere
 - **Bot** — discord.js v14 thin display layer (Phase 5).
 - **RCON worker** — Node + undici + ws bridge to CRCON (Phase 8).
 - **Datastores** — Postgres 16 + Redis 7.
-- **Hosting** — Railway (5 services + Postgres + Redis plugins).
+- **Hosting** — Railway (6 app services + Postgres + Redis plugins), all built with Nixpacks.
 - **Auth** — Discord OAuth only.
 
 For locked architectural decisions and AI/developer conventions: see [`CLAUDE.md`](./CLAUDE.md) and [`.planning/PROJECT.md`](./.planning/PROJECT.md).
@@ -111,10 +111,10 @@ Click **Log in with Discord** on the landing page to complete OAuth. The first l
 
 ## Production
 
-Trenchwars v1.0 deploys to Railway as 5 services + Postgres 16 + Redis 7 plugins (D-014). The Dockerfiles under `docker/` and the per-service `nixpacks.toml` files in `apps/*/` carry the build contract; production uses the same images as local dev (D-021).
+Trenchwars v1.0 deploys to Railway as **6 app services** — `web`, `ssr`, `worker`, `scheduler`, `bot`, `rcon-worker` — plus Postgres 16 + Redis 7 plugins (D-022, which supersedes the D-014 service count). Every app service builds with the **Nixpacks** builder (`apps/*/railway.json` + `apps/*/nixpacks.toml`). The `web`/`ssr`/`worker`/`scheduler` services share Root Directory `apps/web` and differ only by a per-service start-command override. The `docker/` Dockerfiles are the **local-dev** images (`docker-compose.yml`, D-021) — production does not build the web service from `docker/web/Dockerfile` (it is php-fpm only and fails the `/up` healthcheck).
 
 - [`DEPLOYMENT.md`](./DEPLOYMENT.md) — Railway deploy walkthrough (per-service plumbing, first deploy, first-boot data, rollback).
-- [`CONFIGURATION.md`](./CONFIGURATION.md) — authoritative env-var matrix across web / bot / rcon-worker / ssr / worker.
+- [`CONFIGURATION.md`](./CONFIGURATION.md) — authoritative env-var matrix across web / ssr / worker / scheduler / bot / rcon-worker.
 - [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md) — sequential go-live checklist consolidating the 9-phase manual smoke from `.planning/milestones/v1.0-phases/`.
 
 ---
@@ -154,7 +154,7 @@ trenchwars/
 **Project conventions + architecture:**
 
 - [`CLAUDE.md`](./CLAUDE.md) — AI/developer conventions, container-only rule (D-021), code style + test conventions, security checklist.
-- [`.planning/PROJECT.md`](./.planning/PROJECT.md) — locked decisions (D-001..D-021), Current State, Next Milestone Goals.
+- [`.planning/PROJECT.md`](./.planning/PROJECT.md) — locked decisions (D-001..D-022), Current State, Next Milestone Goals.
 
 **Milestone archive (v1.0):**
 

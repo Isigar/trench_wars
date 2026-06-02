@@ -1,6 +1,6 @@
 # Trenchwars — Production Deployment Guide
 
-Step-by-step Railway deploy walkthrough for Trenchwars v1.0. Operationalises locked decision **D-014** (Railway 5 services + Postgres + Redis plugins) and **D-021** (container-only — same Dockerfiles for local dev and production).
+Step-by-step Railway deploy walkthrough for Trenchwars v1.0. Operationalises locked decision **D-022** (Railway 6 app services + Postgres + Redis plugins — supersedes the D-014 service count) and **D-021** (container-only local dev). Production builds every app service with the **Nixpacks** builder (matches the committed `apps/*/railway.json` files); the `docker/` Dockerfiles are the local-dev images only.
 
 Cross-references:
 
@@ -23,7 +23,8 @@ Railway features evolve; when in doubt against the steps below, follow the curre
    - [3.2 `ssr` (Inertia v2 SSR sidecar)](#32-ssr-inertia-v2-ssr-sidecar)
    - [3.3 `bot` (Discord bot)](#33-bot-discord-bot)
    - [3.4 `rcon-worker` (CRCON adapter)](#34-rcon-worker-crcon-adapter)
-   - [3.5 `worker` (Horizon queue + Scheduler)](#35-worker-horizon-queue--scheduler)
+   - [3.5 `worker` (Horizon queue)](#35-worker-horizon-queue)
+   - [3.6 `scheduler` (Laravel cron)](#36-scheduler-laravel-cron)
 4. [First deploy](#4-first-deploy)
 5. [First-boot data](#5-first-boot-data)
 6. [Production domain + DNS](#6-production-domain--dns)
@@ -38,7 +39,7 @@ Railway features evolve; when in doubt against the steps below, follow the curre
 
 Before opening Railway you need:
 
-- **A Railway account** with billing configured. The Hobby plan supports the 5-service topology; verify current limits at <https://railway.app/pricing>.
+- **A Railway account** with billing configured. The topology is 6 app services + 2 plugins; verify current per-plan service limits at <https://railway.app/pricing>.
 - **A Discord OAuth application** (used by web for login).
   - Create at <https://discord.com/developers/applications>.
   - Capture **Client ID** and **Client Secret**.
@@ -58,48 +59,50 @@ You do **NOT** need PHP, Composer, Postgres, Redis, or Node on your operator wor
 ## 2. Railway project setup
 
 1. In Railway, create a new project. Source: **Deploy from GitHub repo**, choose this repo, branch `master` (or whichever branch carries the `v1.0` tag).
-2. Add the **Postgres 16** plugin (Railway dashboard → New → Database → Postgres). Capture the auto-provided `DATABASE_URL` (visible under Postgres service → Variables). The project ships migrations targeting Postgres 16 (D-016) and uses Postgres-only features (`citext`, `uuid-ossp`, `EXCLUDE USING gist`, JSONB, FTS) — do not substitute MySQL.
+2. Add the **Postgres 16** plugin (Railway dashboard → New → Database → Postgres). Capture the auto-provided `DATABASE_URL` (visible under Postgres service → Variables). The project ships migrations targeting Postgres 16 (D-016) and uses Postgres-only features (`citext`, `uuid-ossp`, `EXCLUDE USING gist`, JSONB, FTS) — do not substitute MySQL. **The app reads `DATABASE_URL` directly** (the Railway plugin default name); reference it on the Web env group as `DATABASE_URL=${{Postgres.DATABASE_URL}}`. (`DB_URL` is also accepted as an alias, and the split `DB_*` keys remain a fallback — see [`CONFIGURATION.md`](./CONFIGURATION.md) §2.)
 3. Add the **Redis 7** plugin. Capture `REDIS_URL`. Redis carries session, cache (`Cache::tags` is required by Phase 9 plan 09-05 — set `CACHE_STORE=redis`), queue (Horizon), the bot outbound-message backpressure, and the RCON nonce store.
-4. Do **not** create the 5 application services yet — they need env values from steps 2-3, set those up in §3 below.
+4. Do **not** create the 6 application services yet — they need env values from steps 2-3, set those up in §3 below.
 
 ---
 
 ## 3. Services — one section per service
 
-All 5 services deploy from the **same GitHub repo**. Each service points at a different sub-tree (`apps/web`, `apps/bot`, `apps/rcon-worker`) and uses its own Dockerfile under `docker/`. Per-service env values are listed in [`CONFIGURATION.md`](./CONFIGURATION.md); only the deploy plumbing is documented here.
+All 6 app services deploy from the **same GitHub repo**. Each service points at a sub-tree (`apps/web`, `apps/bot`, `apps/rcon-worker`) via its **Root Directory** and builds with **Nixpacks**. Four services (`web`, `ssr`, `worker`, `scheduler`) share Root Directory `apps/web` and therefore share `apps/web/railway.json` + `apps/web/nixpacks.toml`; they differ only by a per-service dashboard **Start-Command override**. Per-service env values are listed in [`CONFIGURATION.md`](./CONFIGURATION.md); only the deploy plumbing is documented here.
 
-> **Build choice.** This repo ships both **Nixpacks** configs (`apps/*/nixpacks.toml` + `apps/*/railway.json` from Phase 1 plan 01-17) **and** **Dockerfile** images under `docker/{web,bot,rcon-worker}/Dockerfile` (D-021). The Nixpacks path is the historical Railway default; the Dockerfile path is the canonical container image used by `docker-compose.yml` and what production should run for dev/prod parity. Pick one and use it consistently across all services. The walkthrough below assumes **Dockerfile**; for the Nixpacks alternative, leave `railway.json` `builder` as `NIXPACKS` and read the per-service `nixpacks.toml` for the install/build/start contract.
+> **Builder = NIXPACKS (single supported web path).** Production builds every app service with **Nixpacks** (`apps/*/nixpacks.toml` + `apps/*/railway.json` from Phase 1 plan 01-17). Nixpacks' PHP provider auto-wires Caddy + php-fpm (`/start-server.sh`), so `web` serves HTTP on the port Railway expects and passes the `/up` healthcheck. The `docker/{web,bot,rcon-worker}/Dockerfile` images are the **local-dev** containers used by `docker-compose.yml` (D-021) — do **not** point the production `web` service at `docker/web/Dockerfile`: that image is php-fpm only (port 9000, no HTTP listener) and would fail the `/up` healthcheck. Leave each `railway.json` `builder` as `NIXPACKS`; read the per-service `nixpacks.toml` for the install/build/start contract.
 
 ### 3.1 `web` (Laravel HTTP + Filament admin)
 
 | Setting | Value |
 |---|---|
 | Source | GitHub repo, this repo |
-| Root directory | `/` (Dockerfile build context is the repo root so it can read `pnpm-workspace.yaml` and bind-mount `packages/shared-types`) |
-| Dockerfile path | `docker/web/Dockerfile` |
-| Internal port | `9000` (php-fpm). Production must terminate HTTP at Railway's edge or with a colocated nginx — see note below. |
-| Healthcheck path | `/up` (Laravel default health endpoint; `apps/web/railway.json` sets this for Nixpacks builds). For Dockerfile builds, configure `Settings → Health Check Path = /up` on the service. |
-| Release command | `php artisan migrate --force && php artisan storage:link` |
+| Builder | **Nixpacks** (`apps/web/railway.json` → `builder: NIXPACKS`). Do **not** use `docker/web/Dockerfile` for this service — it is php-fpm only and fails the `/up` healthcheck. |
+| Root directory | `apps/web` |
+| Build-time env | `NIXPACKS_PHP_ROOT_DIR=/app/public` (points Caddy at Laravel's `public/`; `apps/web/nixpacks.toml` requires it). |
+| Internal port | Nixpacks' PHP provider listens on the port Railway injects via `$PORT` (Caddy + php-fpm via `/start-server.sh`). No manual port config needed. |
+| Healthcheck path | `/up` (Laravel default health endpoint; `apps/web/railway.json` sets it). |
+| Release / Pre-deploy command | `php artisan migrate --force && php artisan storage:link` — already declared in `apps/web/railway.json` (`deploy.preDeployCommand`). Railway runs it after build, before the deploy goes live. **Migrations are automated; do not run them by hand.** Clear this command on the `ssr`/`worker`/`scheduler` siblings so only `web` owns the release migration. |
 | Env group | "Web env" (see [`CONFIGURATION.md`](./CONFIGURATION.md) §3) |
-
-**nginx note.** `docker/web/Dockerfile` ships php-fpm only. Local dev runs `docker/web/nginx.conf` via a separate `web-nginx` compose service on port 8000. On Railway the simplest topology is the **Nixpacks builder** for `web`, because Nixpacks' PHP provider auto-wires Caddy + php-fpm (`/start-server.sh`). If you keep `docker/web/Dockerfile` you must either: (a) add nginx to that Dockerfile and expose port 80, or (b) front it with a small Caddy/nginx Railway service. The path of least resistance for v1.0 is **Nixpacks for `web` only** and **Dockerfile for `ssr`/`bot`/`rcon-worker`/`worker`**. `apps/web/nixpacks.toml` already requires `NIXPACKS_PHP_ROOT_DIR=/app/public` to point Caddy at Laravel's `public/`.
 
 **SSR client wiring.** Set `INERTIA_SSR_ENABLED=true` and `INERTIA_SSR_URL` pointing at the `ssr` service's internal address (Railway resolves service-to-service via `${{ssr.RAILWAY_PRIVATE_DOMAIN}}:13714`).
 
+**Object storage (production-critical).** Set `FILESYSTEM_DISK=s3` and the S3-compatible credentials (see [`CONFIGURATION.md`](./CONFIGURATION.md) §3 Filesystems). Railway's container filesystem is **ephemeral** — with `FILESYSTEM_DISK=local`, every uploaded clan logo, player avatar, and article cover is lost on each redeploy. Use a persistent object store (any S3-compatible bucket: AWS S3, Cloudflare R2, Backblaze B2, MinIO).
+
 ### 3.2 `ssr` (Inertia v2 SSR sidecar)
 
-Phase 7 plan 07-11 (`Open Question 7 LOCKED — split service`). Reuses the web Dockerfile and runs `php artisan inertia:start-ssr` so SSR is dev/prod parity with the web image.
+Phase 7 plan 07-11 (`Open Question 7 LOCKED — split service`). Reuses the **same Nixpacks `apps/web` image** and runs `php artisan inertia:start-ssr` so SSR is dev/prod parity with the web image. SSR is **enabled** for v1.0.
 
 | Setting | Value |
 |---|---|
 | Source | GitHub repo, this repo |
-| Root directory | `/` |
-| Dockerfile path | `docker/web/Dockerfile` |
-| Start command override | `php artisan inertia:start-ssr` |
+| Builder | **Nixpacks** (same `apps/web/railway.json` + `apps/web/nixpacks.toml` as `web`). |
+| Root directory | `apps/web` |
+| Build-time env | `NIXPACKS_PHP_ROOT_DIR=/app/public` |
+| Start command override | `php artisan inertia:start-ssr` (per-service dashboard override) |
 | Internal port | `13714` (Inertia SSR default) |
 | Public ports | **None.** Internal-only. Set `Settings → Networking → Public Networking = off`. T-07-11-04 mitigation: the SSR Node process must never be reachable from the public internet. |
 | Healthcheck path | `/health` on `13714` (Inertia v2 SSR ships a `GET /health` handler). |
-| Release command | None (does not run migrations) |
+| Release / Pre-deploy command | **None** — clear the inherited `preDeployCommand` so only `web` runs migrations. |
 | Env group | "Web env" — must share `APP_KEY`, DB, Redis, locale resolution with web. Service-level overrides: `INERTIA_SSR_ENABLED=true`, `INERTIA_SSR_URL=http://0.0.0.0:13714`, `APP_ENV=production`. |
 
 ### 3.3 `bot` (Discord bot)
@@ -107,67 +110,89 @@ Phase 7 plan 07-11 (`Open Question 7 LOCKED — split service`). Reuses the web 
 | Setting | Value |
 |---|---|
 | Source | GitHub repo, this repo |
-| Root directory | `/` (Dockerfile context is repo root for the pnpm workspace install) |
-| Dockerfile path | `docker/bot/Dockerfile` |
-| Start command | `node dist/index.js` (CMD in Dockerfile) |
-| Internal port | None — outbound-only client (Discord Gateway WS + polls `${WEB_API_URL}/api/internal/outbound-messages`) |
+| Builder | **Nixpacks** (`apps/bot/railway.json` → `builder: NIXPACKS`). |
+| Root directory | `apps/bot` |
+| Build-time env | `NIXPACKS_NODE_VERSION=22` |
+| Start command | `node dist/index.js` (default from `apps/bot/nixpacks.toml`) |
+| Internal port | None — outbound-only client (Discord Gateway WS + polls `${WEB_API_URL}/api/bot/outbound-messages`) |
 | Public ports | None. |
 | Healthcheck | The compose-level healthcheck is `pgrep node`; Railway healthchecks default to "service is up" if no public port is exposed. No path required. |
 | Env group | "Bot env" (see [`CONFIGURATION.md`](./CONFIGURATION.md) §4) |
 
-`WEB_API_URL` should point at the web service's internal Railway domain (e.g. `https://${{web.RAILWAY_PRIVATE_DOMAIN}}/api`) or the public domain if you have not enabled private networking.
+`WEB_API_URL` should point at the web service's internal Railway domain (e.g. `https://${{web.RAILWAY_PRIVATE_DOMAIN}}`) or the public domain (`https://trenchwars.example`) if you have not enabled private networking. **No `/api` suffix** — the bot's `apiContracts.ts` appends `/api/bot/...` itself (a trailing `/api` would produce `/api/api/bot` and 404 every call). This matches [`CONFIGURATION.md`](./CONFIGURATION.md) §4 verbatim.
 
 ### 3.4 `rcon-worker` (CRCON adapter)
 
 | Setting | Value |
 |---|---|
 | Source | GitHub repo, this repo |
-| Root directory | `/` |
-| Dockerfile path | `docker/rcon-worker/Dockerfile` |
-| Start command | `node dist/index.js` (CMD in Dockerfile) |
+| Builder | **Nixpacks** (`apps/rcon-worker/railway.json` → `builder: NIXPACKS`). |
+| Root directory | `apps/rcon-worker` |
+| Build-time env | `NIXPACKS_NODE_VERSION=22` |
+| Start command | `node dist/index.js` (default from `apps/rcon-worker/nixpacks.toml`) |
 | Internal port | None — outbound-only (CRCON WS + HMAC-signed POST to web `/api/internal/match/{id}/events`) |
 | Public ports | None. |
 | Env group | "Worker env" (see [`CONFIGURATION.md`](./CONFIGURATION.md) §5) |
 
-The worker must reach the league's CRCON instance over the public internet (or via a Railway egress IP that CRCON allow-lists). The worker is a **normaliser only** — all business logic stays in `web` (CON-arch-rcon-to-web-comm, CLAUDE.md §8).
+The worker must reach the league's CRCON instance over the public internet (or via a Railway egress IP that CRCON allow-lists). The worker is a **normaliser only** — all business logic stays in `web` (CON-arch-rcon-to-web-comm, CLAUDE.md §8). The `/api/internal/*` namespace is the **rcon-worker's HMAC-signed** path — distinct from the bot's `/api/bot/*` token path.
 
-### 3.5 `worker` (Horizon queue + Scheduler)
+### 3.5 `worker` (Horizon queue)
 
-This is the 5th Railway service. It runs the same image as `web` and overrides the start command to `php artisan horizon`. Horizon owns the Redis-backed queue (Phase 5+) and the Laravel Schedule entries in `apps/web/routes/console.php`:
+The `worker` service runs the same Nixpacks `apps/web` image and overrides the start command to `php artisan horizon`. Horizon owns the Redis-backed queue (Phase 5+).
+
+> **Horizon does NOT run the Laravel scheduler.** `php artisan horizon` supervises queue workers only — it does **not** tick `schedule:run`. The four cron jobs in `apps/web/routes/console.php` are driven by the dedicated **`scheduler`** service (§3.6), not by `worker`. Without that service every scheduled command is dead in production (D-022).
+
+| Setting | Value |
+|---|---|
+| Source | GitHub repo, this repo |
+| Builder | **Nixpacks** (same `apps/web/railway.json` + `apps/web/nixpacks.toml` as `web`). |
+| Root directory | `apps/web` |
+| Build-time env | `NIXPACKS_PHP_ROOT_DIR=/app/public` |
+| Start command override | `php artisan horizon` (per-service dashboard override) |
+| Release / Pre-deploy command | **None** — clear the inherited `preDeployCommand` so only `web` runs migrations. |
+| Public ports | None. |
+| Healthcheck | No public port = "service up" suffices on Railway; tail logs and confirm the Horizon supervisor started. |
+| Env group | "Web env" — inherits everything `web` has so Horizon shares DB/Redis/queue config. |
+
+### 3.6 `scheduler` (Laravel cron)
+
+The `scheduler` service runs the same Nixpacks `apps/web` image and overrides the start command to `php artisan schedule:work`. This is the process that ticks Laravel's scheduler — **`php artisan horizon` does NOT run `schedule:run`** (the older claim that Horizon supervises the scheduler was wrong). Without this service every scheduled command in `apps/web/routes/console.php` is dead in production (D-022):
 
 - `articles:publish-scheduled` (every minute; Phase 7 plan 07-07)
 - `sitemap:generate` (daily 03:00 UTC; Phase 7 plan 07-12)
 - `notifications:dispatch-upcoming` (every minute; Phase 9 plan 09-04)
 - `notifications:prune` (daily 03:30 UTC; Phase 9 plan 09-04)
 
+`schedule:work` is a long-running foreground loop that invokes `schedule:run` every 60 seconds. Every schedule entry is already guarded with `->withoutOverlapping()->onOneServer()` (Phase 7 plan 07-07 Pitfall 12; Phase 9 plan 09-04), so the scheduler coexists safely with multi-replica `worker`s — but run a **single** `scheduler` replica for the simplest reasoning model.
+
 | Setting | Value |
 |---|---|
 | Source | GitHub repo, this repo |
-| Root directory | `/` |
-| Dockerfile path | `docker/web/Dockerfile` (same image as `web`) — or use the Nixpacks builder with the same `apps/web/nixpacks.toml` and override `Start Command`. |
-| Start command override | `php artisan horizon` |
+| Builder | **Nixpacks** (same `apps/web/railway.json` + `apps/web/nixpacks.toml` as `web`). |
+| Root directory | `apps/web` |
+| Build-time env | `NIXPACKS_PHP_ROOT_DIR=/app/public` |
+| Start command override | `php artisan schedule:work` (per-service dashboard override) |
+| Release / Pre-deploy command | **None** — clear the inherited `preDeployCommand` so only `web` runs migrations. |
 | Public ports | None. |
-| Healthcheck | Compose-level: `tr '\0' ' ' < /proc/1/cmdline | grep -q 'artisan horizon'` (because the image is Alpine-derived and lacks `pgrep`). On Railway, no public port = "service up" suffices. |
-| Env group | "Web env" — inherits everything `web` has so Horizon shares DB/Redis/queue config. |
-
-**Schedule runner.** Horizon's master process supervises Laravel's `schedule:run` on a 60-second tick when `php artisan horizon` is the start command **and** `app/Console/Kernel.php` (Laravel 12 uses `routes/console.php` instead) registers `withSchedule()`. Verify after first deploy: tail Railway logs on `worker` and confirm `Scheduled command "articles:publish-scheduled" ... ran successfully` appears each minute.
-
-If you want a dedicated Schedule cron split from Horizon, add a 6th service with `cmd = "php artisan schedule:work"`. v1.0 ships with a single `worker` for simplicity; both Schedule guards (`->withoutOverlapping()->onOneServer()`) are wired so multi-replica is safe (Phase 7 plan 07-07 Pitfall 12).
+| Healthcheck | No public port = "service up" suffices. Verify after first deploy: tail Railway logs on `scheduler` and confirm `Running scheduled command: ...` / `articles:publish-scheduled ... ran successfully` appears each minute. |
+| Replicas | **1** (the `->onOneServer()` lock makes multi-replica safe, but one replica is simplest). |
+| Env group | "Web env" — inherits everything `web` has so the scheduled commands share DB/Redis/queue config. |
 
 ---
 
 ## 4. First deploy
 
 1. **Push the v1.0 tag** (or the branch you intend to deploy from). Railway auto-builds on push when the GitHub integration is connected.
-2. In Railway, **trigger a deploy** on each service. Build order is independent — services build in parallel. The web service's **release command** (`php artisan migrate --force && php artisan storage:link`) runs after the build but before the service goes live; the others have no release step.
-3. **Watch the build logs.** First-time builds typically take 5-10 minutes (the web image installs PHP 8.4 + Imagick + Node 22 + composer/pnpm). Subsequent builds are layer-cached.
+2. In Railway, **trigger a deploy** on each service. Build order is independent — services build in parallel. The web service's **release / pre-deploy command** (`php artisan migrate --force && php artisan storage:link`, declared in `apps/web/railway.json` → `deploy.preDeployCommand`) runs after the build but before the service goes live. Clear that command on `ssr`/`worker`/`scheduler` so only `web` owns the release migration; `bot` and `rcon-worker` have no release step.
+3. **Watch the build logs.** First-time builds typically take 5-10 minutes (the web image installs PHP 8.4 + Node 22 + composer/pnpm). Subsequent builds are layer-cached.
 4. **Verify service health** in this order:
    1. `postgres` and `redis` plugins are Healthy.
-   2. `web` build completes; release command logs show migrations applied.
+   2. `web` build completes; pre-deploy command logs show migrations applied.
    3. `ssr` reaches Healthy on the `/health` probe.
    4. `worker` (Horizon) reaches Healthy; tail logs and confirm the Horizon supervisor started.
-   5. `bot` connects to Discord (look for `Ready! Logged in as <bot-name>#<tag>` in logs).
-   6. `rcon-worker` starts; on first boot it polls `/api/internal/bookings/due` and idles when no booking is due.
+   5. `scheduler` is up; tail logs and confirm `schedule:run` ticks every minute (e.g. `articles:publish-scheduled ... ran successfully`).
+   6. `bot` connects to Discord (look for `Ready! Logged in as <bot-name>#<tag>` in logs).
+   7. `rcon-worker` starts; on first boot it polls `/api/internal/bookings/due` and idles when no booking is due.
 5. **Curl the web service** on its Railway-provided public URL:
    ```bash
    curl -i https://<railway-generated-domain>/up
@@ -259,8 +284,8 @@ Discord's OAuth callback **must** be `https://` in production; Discord rejects `
 
 ## 8. Scaling notes
 
-- **Horizon `withoutOverlapping()->onOneServer()`** is already wired on every Schedule entry in `apps/web/routes/console.php` (Phase 7 plan 07-07 Pitfall 12; Phase 9 plan 09-04). The cache lock prevents duplicate publishes/dispatches across multiple replicas.
-- **For v1.0 ship with 1 replica of `worker`.** That keeps Horizon supervisor/queue/Schedule on a single host, which is the simplest reasoning model. Scaling out is safe later (the multi-replica guards exist), but it adds nothing for v1.0 traffic.
+- **`withoutOverlapping()->onOneServer()`** is already wired on every Schedule entry in `apps/web/routes/console.php` (Phase 7 plan 07-07 Pitfall 12; Phase 9 plan 09-04). The cache lock prevents duplicate publishes/dispatches across multiple replicas — the `scheduler` service ticks these (not Horizon).
+- **For v1.0 run 1 replica of `worker` and 1 replica of `scheduler`.** The `worker` keeps the Horizon supervisor/queue on a single host; the `scheduler` runs `schedule:work`. Scaling `worker` out is safe later (the multi-replica guards exist), but it adds nothing for v1.0 traffic. Keep `scheduler` at 1 replica.
 - **`web` can scale horizontally.** Sessions are in Redis (`SESSION_DRIVER=redis`), cache is in Redis, no host-local state.
 - **`ssr` can also scale horizontally**, but in practice 1 replica suffices until the SSR render budget becomes the bottleneck.
 - **`bot` MUST stay at 1 replica.** discord.js opens a Gateway shard per process; running two replicas creates two clients responding to every interaction, doubling responses and confusing Discord's interaction-token routing. Phase 5 plan 05-11 does not implement sharding.
@@ -271,9 +296,9 @@ Discord's OAuth callback **must** be `https://` in production; Discord rejects `
 
 ## 9. Troubleshooting
 
-- **`pgrep` healthcheck fails on web/worker Dockerfile.** `docker/web/Dockerfile` is Alpine-derived and ships no `procps`. The compose healthcheck uses `/proc/1/cmdline`. On Railway, configure healthchecks as TCP/HTTP probes, not shell scripts.
-- **Imagick missing on web (`Class "Imagick" not found`).** `docker/web/Dockerfile` installs `imagick-3.7.0` via pecl + `libmagickwand-dev` (Phase 9 plan 09-01 Pitfall 6 mitigation). If you use the Nixpacks builder instead, `apps/web/nixpacks.toml` does **not** include Imagick — fall back to GD (which is in the Nix package list) and add `MEDIA_LIBRARY_IMAGE_DRIVER=gd` to env. WebP conversions still work but a wider format set is unsupported.
-- **`intl` extension missing.** Both Dockerfile (`docker-php-ext-install intl`) and `apps/web/nixpacks.toml` (`php84Extensions.intl`) include it. If you see `Class "NumberFormatter" not found`, your build skipped this step — rebuild from scratch.
+- **`web` fails the `/up` healthcheck / serves nothing on the public URL.** Most likely the service was pointed at `docker/web/Dockerfile` (php-fpm only, port 9000, no HTTP listener) instead of Nixpacks. Set the `web` service builder to **Nixpacks** and the build-time env `NIXPACKS_PHP_ROOT_DIR=/app/public`; the Nixpacks PHP provider wires Caddy + php-fpm and binds `$PORT`.
+- **Imagick missing on web (`Class "Imagick" not found`).** Production builds with Nixpacks, and `apps/web/nixpacks.toml` does **not** include Imagick — fall back to GD (which is in the Nix package list) and add `MEDIA_LIBRARY_IMAGE_DRIVER=gd` to the Web env group. WebP conversions still work but a wider format set is unsupported. (The local-dev `docker/web/Dockerfile` ships Imagick, so this only bites in production.)
+- **`intl` extension missing.** `apps/web/nixpacks.toml` includes `php84Extensions.intl`. If you see `Class "NumberFormatter" not found`, your build skipped this step — rebuild from scratch.
 - **`CACHE_STORE=array` in production.** Phase 9 plan 09-05 (D-09-05-A) requires `redis` because the leaderboard service uses `Cache::tags`, which the array driver does not implement. Symptom: 500 on `/leaderboards`. Fix: set `CACHE_STORE=redis` on the Web env group.
 - **Discord OAuth `invalid_redirect_uri`.** The URI on the Discord developer portal must match `DISCORD_REDIRECT_URI` **verbatim**, including the trailing slash and protocol (CLAUDE.md §6 Pitfall 2). Discord does not normalise.
 - **Bot logs `Missing required env var: WEB_API_TOKEN`.** The bot's `apps/bot/src/env.ts` fail-fast loader throws if any required env var is empty (Phase 5 plan 05-08 — T-05-08-02 mitigation). Set it from the Artisan-issued PAT (§5 step 3).

@@ -28,19 +28,23 @@ Tick before triggering the first deploy. See [`DEPLOYMENT.md`](./DEPLOYMENT.md) 
 
 ### Railway project
 
-- [ ] Railway project created from this GitHub repo (branch carries the `v1.0` tag).
-- [ ] Postgres 16 plugin added; `DATABASE_URL` captured.
+- [ ] Railway project deploys from the **`master` ref (or a freshly re-cut `v1.0` tag at current HEAD)** — NOT the existing `v1.0` tag, which is stale: it predates the production-readiness fixes (SSR bundle build, dedicated `scheduler` service, bot tournament/bracket-announce fix, TrustProxies, `DB_URL`/`DATABASE_URL` fallback). See Go-live sign-off for the rationale.
+- [ ] Postgres 16 plugin added; `DATABASE_URL` captured. (The app reads `DATABASE_URL` directly — reference it as `DATABASE_URL=${{Postgres.DATABASE_URL}}` on Web env; `DB_URL` is an accepted alias, split `DB_*` keys are the fallback.)
 - [ ] Redis 7 plugin added; `REDIS_URL` captured.
-- [ ] 5 application services created and pointed at correct Dockerfiles (or Nixpacks configs): `web`, `ssr`, `bot`, `rcon-worker`, `worker`. See `DEPLOYMENT.md` §3.
-- [ ] Web env group populated (Web env shared by `web`, `ssr`, `worker`).
+- [ ] **6 application services** created with the **Nixpacks builder** and correct Root Directories: `web`, `ssr`, `worker`, `scheduler` (all Root Directory `apps/web`), `bot` (`apps/bot`), `rcon-worker` (`apps/rcon-worker`). Do **not** point the `web` service at `docker/web/Dockerfile` (php-fpm only — fails `/up`). See `DEPLOYMENT.md` §3.
+- [ ] Per-service **start-command overrides** set in the dashboard: `ssr` → `php artisan inertia:start-ssr`; `worker` → `php artisan horizon`; `scheduler` → `php artisan schedule:work`. (`web`/`bot`/`rcon-worker` use their default start.)
+- [ ] **`scheduler` service running** — without it all four cron jobs (articles publish, sitemap, notification dispatch/prune) are dead (Horizon does NOT run `schedule:run` — D-022).
+- [ ] Web env group populated (Web env shared by `web`, `ssr`, `worker`, `scheduler`).
 - [ ] Bot env group populated.
 - [ ] Worker env group populated (for `rcon-worker`).
 - [ ] `WEB_HMAC_SECRET` set to the **same value** on Web env and Worker env (`openssl rand -hex 32` — min 32 chars).
 - [ ] `APP_KEY` set on Web env (generated locally via `php artisan key:generate --show`; do not let release-command mutate `.env`).
-- [ ] `INERTIA_SSR_ENABLED=true` and `INERTIA_SSR_URL` pointing at the `ssr` service private domain on the Web env group.
+- [ ] `FILESYSTEM_DISK=s3` on Web env with the S3-compatible bucket credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_BUCKET`, `AWS_ENDPOINT` + `AWS_USE_PATH_STYLE_ENDPOINT` for non-AWS providers). **Required** — `FILESYSTEM_DISK=local` loses every upload on each redeploy (Railway disk is ephemeral). See `CONFIGURATION.md` §3.
+- [ ] `INERTIA_SSR_ENABLED=true` and `INERTIA_SSR_URL` pointing at the `ssr` service private domain on the Web env group (SSR is enabled for v1.0).
 - [ ] `CACHE_STORE=redis` on Web env (required by Phase 9 plan 09-05 — D-09-05-A).
 - [ ] `SESSION_SECURE_COOKIE=true` on Web env (production HTTPS).
 - [ ] `APP_DEBUG=false` and `APP_ENV=production` on Web env.
+- [ ] Web service **release / pre-deploy command** is `php artisan migrate --force && php artisan storage:link` (ships in `apps/web/railway.json` → `deploy.preDeployCommand`; migrations are automated — do not run by hand). Clear this command on `ssr`/`worker`/`scheduler` so only `web` runs it.
 
 ### Discord — OAuth application
 
@@ -106,11 +110,12 @@ Run **after** the first Railway deploy reports all services Healthy. All `php ar
       ```bash
       php artisan trenchwars:make-cms-editor <THEIR_DISCORD_USER_ID>
       ```
-- [ ] **(Optional) Generate initial sitemap** (otherwise it auto-runs at 03:00 UTC):
+- [ ] **(Optional) Generate initial sitemap** (otherwise the `scheduler` service auto-runs it at 03:00 UTC):
       ```bash
       php artisan sitemap:generate
       ```
-- [ ] **Tail logs** on each service for 5 minutes — no recurring errors. In particular, `bot` should log a successful Discord client `ready` event; `rcon-worker` should log "no bookings due" idling.
+- [ ] **Scheduler ticking.** Tail `scheduler` logs and confirm `schedule:run` fires every minute (e.g. `articles:publish-scheduled ... ran successfully`). If nothing ticks, the `scheduler` service is missing or has the wrong start command (Horizon does NOT run the scheduler — D-022).
+- [ ] **Tail logs** on each service (`web`, `ssr`, `worker`, `scheduler`, `bot`, `rcon-worker`) for 5 minutes — no recurring errors. In particular, `bot` should log a successful Discord client `ready` event; `rcon-worker` should log "no bookings due" idling.
 
 ---
 
@@ -202,13 +207,14 @@ The platform is "live with users" when every box below is ticked.
 - [ ] All 36 smoke items above are GREEN, OR explicitly deferred to v1.1 with a tracker entry in `.planning/REQUIREMENTS.md` v2 section.
 - [ ] Railway monitoring dashboards open and bookmarked. Default: each service's **Logs** + **Metrics** panes.
 - [ ] Horizon dashboard reachable at `/horizon` (admin-only, gated by Filament `admin-access`). Confirm the supervisor shows `running` and recent completed jobs are visible.
+- [ ] `scheduler` service running and ticking `schedule:run` every minute (its logs show scheduled commands firing). Without it the four cron jobs are dead (Horizon does NOT run the scheduler — D-022).
 - [ ] Postgres backups confirmed. Railway → Postgres plugin → **Settings → Backups** → retention window documented (default at time of writing: 7 days for Hobby; verify current Railway docs).
 - [ ] DNS + TLS confirmed: `curl -I https://<your-domain>/up` returns `200` with a valid certificate; `curl -I http://<your-domain>/up` redirects or refuses (Railway auto-redirects HTTP → HTTPS).
 - [ ] SSR confirmed via `curl -s https://<your-domain>/ | head -50` — pre-rendered HTML visible inside the Inertia mount.
 - [ ] Bot reachable in Discord: `/clan list` returns instantly; bot user shows online.
 - [ ] rcon-worker reachable: at least one live ingest event arrived during smoke step 8.
-- [ ] `v1.0` tag confirmed pushed to remote: `git tag --list v1.0 -n1` shows the tag with milestone message (per `aa64913` and the v1.0 milestone close — already done).
-- [ ] Secret rotation runbook handed to ops (or self): cadences per [`CONFIGURATION.md`](./CONFIGURATION.md) §8.
+- [ ] **Deploy built from the right ref.** Confirm the live deploy was built from the **`master` ref** (or a re-cut `v1.0` tag at current HEAD) — **NOT** the existing `v1.0` tag (`6fa8641`). That tag predates the production-readiness blocker fixes (SSR bundle build, dedicated `scheduler` service, bot tournament/bracket announce fix, `TrustProxies`, `DB_URL`/`DATABASE_URL` fallback); deploying it silently re-introduces those blockers. Re-cut the tag (`git tag -f v1.0 <current-HEAD> && git push --force origin v1.0`) or point Railway at `master`. (The audit-hotfix `cdfbfa5` web→bot dispatcher bridge is already included in the `v1.0` tag — it is not the reason to avoid the tag.)
+- [ ] Secret rotation runbook handed to ops (or self): cadences per [`CONFIGURATION.md`](./CONFIGURATION.md) §9.
 - [ ] Operator handover signed: this checklist filed under your team's launch-runbook archive with timestamps + initials.
 
 ---

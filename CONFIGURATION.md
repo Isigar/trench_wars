@@ -1,6 +1,6 @@
 # Trenchwars — Configuration Reference
 
-Authoritative environment-variable matrix for the 5 Railway services + the 2 datastore plugins. Sourced verbatim from `apps/web/.env.example`, `apps/bot/.env.example`, `apps/rcon-worker/src/config.ts`, `docker-compose.yml`, and the relevant `config/*.php` files.
+Authoritative environment-variable matrix for the 6 Railway app services + the 2 datastore plugins. Sourced verbatim from `apps/web/.env.example`, `apps/bot/.env.example`, `apps/rcon-worker/src/config.ts`, `docker-compose.yml`, and the relevant `config/*.php` files.
 
 Cross-references:
 
@@ -20,8 +20,9 @@ Cross-references:
 5. [RCON worker service](#5-rcon-worker-service-appsrcon-workerenv)
 6. [SSR service](#6-ssr-service)
 7. [Worker service (Horizon)](#7-worker-service-horizon)
-8. [Rotation cadence + revocation](#8-rotation-cadence--revocation)
-9. [Secret management](#9-secret-management)
+8. [Scheduler service (cron)](#8-scheduler-service-cron)
+9. [Rotation cadence + revocation](#9-rotation-cadence--revocation)
+10. [Secret management](#10-secret-management)
 
 ---
 
@@ -30,9 +31,9 @@ Cross-references:
 - **Variable names** match Laravel/Node conventions: `UPPER_SNAKE_CASE`. Service-local prefixes (`DISCORD_*`, `RCON_*`, `INERTIA_SSR_*`) keep ownership obvious.
 - **Sensitive** column means the value is a secret — never commit, never log, never echo from a Slash command or admin page. Inject only via Railway env groups (D-014) or `apps/{web,bot}/.env` for local dev.
 - **Required** column means the service fails fast at boot when the var is missing or empty. Both the bot (`apps/bot/src/env.ts`) and rcon-worker (`apps/rcon-worker/src/config.ts`) implement zod-style fail-loud loaders.
-- **Rotate** column gives the default cadence; rotation procedure for each is in §8.
+- **Rotate** column gives the default cadence; rotation procedure for each is in §9.
 - `.env.example` files commit the **shape** only — empty values for every secret-like field (CLAUDE.md §6).
-- Railway services share variables via **Env Groups**. Recommend three groups: **Web env** (used by `web`, `ssr`, `worker`), **Bot env** (used by `bot`), **Worker env** (used by `rcon-worker`). Service-specific overrides live on the service.
+- Railway services share variables via **Env Groups**. Recommend three groups: **Web env** (used by `web`, `ssr`, `worker`, `scheduler`), **Bot env** (used by `bot`), **Worker env** (used by `rcon-worker`). Service-specific overrides live on the service (e.g. the start-command override and, for `ssr`, `INERTIA_SSR_ENABLED=true`).
 
 ---
 
@@ -88,9 +89,17 @@ Either `DATABASE_URL` (from §2) or the `DB_*` split keys. Compose default for l
 
 ### Filesystems
 
+> **Production MUST use an S3-compatible object store.** Railway's container filesystem is **ephemeral** — with `FILESYSTEM_DISK=local`, every uploaded clan logo, player avatar, and article cover is destroyed on each redeploy. Set `FILESYSTEM_DISK=s3` and the `AWS_*` credentials below. Laravel already ships the `s3` disk in `config/filesystems.php`; no code change is needed — this is an operator configuration requirement. Any S3-compatible provider works (AWS S3, Cloudflare R2, Backblaze B2, MinIO).
+
 | Var | Required | Sensitive | Default | Example | Rotate | Notes |
 |---|---|---|---|---|---|---|
-| `FILESYSTEM_DISK` | No | No | `local` | `local` | Never | v1.0 uses local disk + Railway ephemeral storage for `public/storage`. Media library uploads land via `php artisan storage:link`. v2 candidate: S3-compatible bucket. |
+| `FILESYSTEM_DISK` | Yes (prod) | No | `local` | `s3` | Never | `local` for local dev only. **Must be `s3` in production** (Railway disk is ephemeral). |
+| `AWS_ACCESS_KEY_ID` | Yes (prod, if `s3`) | Yes | — | `AKIA…` | On compromise | S3 access key. |
+| `AWS_SECRET_ACCESS_KEY` | Yes (prod, if `s3`) | Yes | — | `…` | On compromise | S3 secret key. |
+| `AWS_DEFAULT_REGION` | Yes (prod, if `s3`) | No | — | `us-east-1` | Never | Bucket region (use `auto` for Cloudflare R2). |
+| `AWS_BUCKET` | Yes (prod, if `s3`) | No | — | `trenchwars-media` | Never | Bucket name. |
+| `AWS_ENDPOINT` | No (AWS) / Yes (non-AWS) | No | — | `https://<account>.r2.cloudflarestorage.com` | Never | Custom endpoint for non-AWS S3-compatible providers (R2 / B2 / MinIO). Omit for AWS S3. |
+| `AWS_USE_PATH_STYLE_ENDPOINT` | No | No | `false` | `true` | Never | Set `true` for MinIO and most non-AWS providers; `false` for AWS S3. |
 
 ### Discord OAuth (D-002)
 
@@ -148,7 +157,7 @@ The bot's loader (`apps/bot/src/env.ts`) throws at module load if any **Required
 | `DISCORD_GUILD_ID` | Yes | No | — | `1234567890123456789` | Never | The single league guild (D-003 — one guild per deploy). Right-click guild with Developer Mode on → Copy Server ID. |
 | `WEB_API_URL` | Yes | No | `http://web-nginx` (compose default) | `https://${{web.RAILWAY_PRIVATE_DOMAIN}}` or `https://trenchwars.example` | On domain change | Base URL for web's API (bot calls `${WEB_API_URL}/api/internal/...`). Prefer Railway private domain to keep bot↔web traffic internal. **No `/api` suffix** — the bot's `apiContracts.ts` appends paths. |
 | `WEB_API_TOKEN` | Yes | Yes | — | `<plaintext PAT from artisan>` | 90 days | Sanctum personal access token with abilities `bot:read`, `bot:act-as-user`, `bot:write-outbound`, `bot:reconcile`. Issued via `php artisan trenchwars:bot:issue-token --name=bot-prod --ttl=90`. Plaintext shown ONCE on issuance — Sanctum stores only the SHA-256 hash. |
-| `OUTBOUND_POLL_INTERVAL_MS` | No | No | `5000` | `5000` | Never | Polling cadence for `GET /api/internal/outbound-messages`. Phase 5 plan 05-11. |
+| `OUTBOUND_POLL_INTERVAL_MS` | No | No | `5000` | `5000` | Never | Polling cadence for `GET /api/bot/outbound-messages` (the bot token path; `/api/internal/*` is the rcon-worker HMAC path). Phase 5 plan 05-11. |
 | `DISCORD_LEAGUE_ANNOUNCE_CHANNEL_ID` | No | No | `` (empty) | `1234567890123456789` | Never | **v1.0 audit-hotfix `cdfbfa5`** — fallback channel when an outbound row has `channel_id=''` (the web side's `ArticleObserver` writes empty channel_id because the channel is resolved at dispatch time via `config('discord.league_announce_channel_id')`). Set to the same value as the web side. Empty here means "no fallback configured" — render.ts marks the row `failed` instead of throwing on `client.channels.fetch('')`. |
 | `REDIS_URL` | No | No | — | `redis://default:pw@host:6379` | Plugin-managed | Optional Redis URL — Phase 5 plan 05-11 keeps the bot stateless and does not require it for v1.0. Reserved for future backpressure. |
 | `NODE_ENV` | No | No | `development` | `production` | Never | Set to `production` on Railway to skip dev-only logging. |
@@ -177,7 +186,7 @@ Optional (set only if the rcon-worker uses its own Sanctum PAT for any non-HMAC 
 
 ## 6. SSR service
 
-Reuses the web Dockerfile and inherits the **Web env** group. Service-level overrides:
+Reuses the same Nixpacks `apps/web` image (Root Directory `apps/web`, start-command override `php artisan inertia:start-ssr`) and inherits the **Web env** group. SSR is **enabled** for v1.0. Service-level overrides:
 
 | Var | Required | Sensitive | Default | Example | Rotate | Notes |
 |---|---|---|---|---|---|---|
@@ -191,13 +200,28 @@ No new secrets — all DB/Redis/Discord config inherits from the Web env group.
 
 ## 7. Worker service (Horizon)
 
-Reuses the web Dockerfile and **fully inherits the Web env group**. The start command override (`php artisan horizon`) replaces php-fpm with the Horizon supervisor; everything else is identical to the `web` service.
+Reuses the same Nixpacks `apps/web` image and **fully inherits the Web env group**. The start command override (`php artisan horizon`, set per-service in the dashboard) replaces php-fpm with the Horizon supervisor; everything else is identical to the `web` service.
 
 No additional env vars required. Horizon config lives in `apps/web/config/horizon.php` (committed to the repo).
 
+> **Horizon does NOT run the Laravel scheduler.** `php artisan horizon` supervises queue workers only; it does **not** tick `schedule:run`. The cron jobs in `apps/web/routes/console.php` are driven by the dedicated **`scheduler`** service (§8), not by `worker` (D-022).
+
 ---
 
-## 8. Rotation cadence + revocation
+## 8. Scheduler service (cron)
+
+Reuses the same Nixpacks `apps/web` image and **fully inherits the Web env group**. The start command override (`php artisan schedule:work`, set per-service in the dashboard) runs the long-lived scheduler loop that invokes `schedule:run` every 60 seconds. Without this service, all four scheduled commands are dead in production (D-022):
+
+- `articles:publish-scheduled` (every minute; Phase 7 plan 07-07)
+- `sitemap:generate` (daily 03:00 UTC; Phase 7 plan 07-12)
+- `notifications:dispatch-upcoming` (every minute; Phase 9 plan 09-04)
+- `notifications:prune` (daily 03:30 UTC; Phase 9 plan 09-04)
+
+No additional env vars required. Every schedule entry is guarded by `->withoutOverlapping()->onOneServer()` (`apps/web/routes/console.php`), so the scheduler is safe to coexist with multi-replica workers — but run a **single** `scheduler` replica.
+
+---
+
+## 9. Rotation cadence + revocation
 
 | Secret | Cadence | Owner | Rotation procedure |
 |---|---|---|---|
@@ -219,11 +243,11 @@ The Sanctum token row is hard-deleted. The bot's next API call returns 401 — b
 
 ---
 
-## 9. Secret management
+## 10. Secret management
 
 - **`.env.example` files commit the SHAPE ONLY.** Every secret-like field is empty in version control (CLAUDE.md §6). `git grep -l 'DISCORD_CLIENT_SECRET=[A-Za-z0-9]' apps/` MUST return zero results.
 - **`.env` files are `.gitignored`.** Never `git add apps/web/.env` or `apps/bot/.env`.
-- **Railway env groups are the production source of truth.** Three groups recommended: **Web env** (`web`, `ssr`, `worker`), **Bot env** (`bot`), **Worker env** (`rcon-worker`). Sharing via groups means rotating a value once flows to all consuming services on next deploy.
+- **Railway env groups are the production source of truth.** Three groups recommended: **Web env** (`web`, `ssr`, `worker`, `scheduler`), **Bot env** (`bot`), **Worker env** (`rcon-worker`). Sharing via groups means rotating a value once flows to all consuming services on next deploy.
 - **Audit trail.** Railway logs env var changes to the project audit log. For internal handover: capture which operator rotated which secret + when, in your team's secret-rotation runbook.
 - **Local dev** uses `apps/web/.env`, `apps/bot/.env`, and (when scaffolded) `apps/rcon-worker/.env`. Copy from `.env.example` and fill in dev-only values (e.g. a separate Discord dev application — not the production one).
 - **CI** does not need secrets for the standard quality gates (Pest + Pint + PHPStan use `phpunit.xml` `<env>` overrides). The `axe-core` workflow (`.github/workflows/a11y.yml`) targets the dev compose stack, not production.

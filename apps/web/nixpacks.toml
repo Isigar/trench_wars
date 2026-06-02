@@ -1,5 +1,9 @@
-# Nixpacks build config for the Railway `web` service (and the `worker` service,
-# which uses the same image and overrides startCommand to `php artisan queue:work ...`).
+# Nixpacks build config for the Railway `web` service. The `ssr`, `worker`, and
+# `scheduler` services share this same image (same Root Directory apps/web) and
+# override the start command per-service in the Railway dashboard:
+#   ssr        → php artisan inertia:start-ssr
+#   worker     → php artisan horizon
+#   scheduler  → php artisan schedule:work
 #
 # Source: 01-RESEARCH.md Pitfall 6 + Nixpacks PHP provider docs.
 # Targeted at Railway nixpacks builder with `apps/web` set as the service Root Directory.
@@ -7,7 +11,7 @@
 # Required Railway service env (set per service in dashboard):
 #   NIXPACKS_PHP_ROOT_DIR=/app/public   (so Caddy serves from public/)
 #
-# See: .planning/phases/01-foundations/RAILWAY-DEPLOY.md for the operator walkthrough.
+# See: .planning/milestones/v1.0-phases/01-foundations/RAILWAY-DEPLOY.md for the operator walkthrough.
 
 [phases.setup]
 nixPkgs = [
@@ -41,8 +45,10 @@ cmds = [
 ]
 
 [start]
-# Default: php-fpm + Caddy via the Nixpacks PHP provider (auto-wired when
-# NIXPACKS_PHP_ROOT_DIR=/app/public is set on the Railway service).
-# The worker service (same image) overrides this to:
-#   php artisan queue:work --tries=3 --backoff=10 --timeout=120
+# Default (the `web` service): php-fpm + Caddy via the Nixpacks PHP provider
+# (auto-wired when NIXPACKS_PHP_ROOT_DIR=/app/public is set on the Railway service).
+# Same-image sibling services override this start command in the dashboard:
+#   worker     → php artisan horizon
+#   scheduler  → php artisan schedule:work
+#   ssr        → php artisan inertia:start-ssr
 cmd = "/start-server.sh"
