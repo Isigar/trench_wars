@@ -56,7 +56,8 @@ let pollHandle: NodeJS.Timeout | null = null;
  * adds the overlap-skip guard + top-level try/catch around this function.
  */
 export async function processOutboundTick(client: Client): Promise<void> {
-    const rows = await api.get<OutboundRow[]>(
+    // Web wraps every BotApiOutboundController response in a { data: ... } envelope.
+    const { data: rows } = await api.get<{ data: OutboundRow[] }>(
         '/outbound-messages?status=pending&limit=20',
     );
     for (const row of rows) {
