@@ -101,7 +101,7 @@ afterEach(() => {
 
 describe('processOutboundTick', () => {
     it('polls /outbound-messages?status=pending&limit=20 on each tick', async () => {
-        vi.mocked(api.get).mockResolvedValue([]);
+        vi.mocked(api.get).mockResolvedValue({ data: [] });
         await processOutboundTick(STUB_CLIENT);
         expect(api.get).toHaveBeenCalledTimes(1);
         expect(api.get).toHaveBeenCalledWith(
@@ -111,7 +111,7 @@ describe('processOutboundTick', () => {
 
     it('calls render for each row and marks sent with the discordMessageId on success', async () => {
         const rows = [makeRow({ id: 'row-a' }), makeRow({ id: 'row-b' })];
-        vi.mocked(api.get).mockResolvedValue(rows);
+        vi.mocked(api.get).mockResolvedValue({ data: rows });
         vi.mocked(render).mockResolvedValueOnce({
             discordMessageId: 'discord-msg-a',
         });
@@ -136,7 +136,7 @@ describe('processOutboundTick', () => {
     });
 
     it('marks failed with err.message when render throws', async () => {
-        vi.mocked(api.get).mockResolvedValue([makeRow({ id: 'row-fail' })]);
+        vi.mocked(api.get).mockResolvedValue({ data: [makeRow({ id: 'row-fail' })] });
         vi.mocked(render).mockRejectedValue(new Error('boom'));
         vi.mocked(api.post).mockResolvedValue({});
 
@@ -149,7 +149,7 @@ describe('processOutboundTick', () => {
     });
 
     it('clamps last_error to 2000 chars', async () => {
-        vi.mocked(api.get).mockResolvedValue([makeRow({ id: 'row-big' })]);
+        vi.mocked(api.get).mockResolvedValue({ data: [makeRow({ id: 'row-big' })] });
         const longMessage = 'x'.repeat(2500);
         vi.mocked(render).mockRejectedValue(new Error(longMessage));
         vi.mocked(api.post).mockResolvedValue({});
@@ -165,7 +165,7 @@ describe('processOutboundTick', () => {
     });
 
     it('coerces non-Error throwables to String(err) for last_error', async () => {
-        vi.mocked(api.get).mockResolvedValue([makeRow({ id: 'row-str' })]);
+        vi.mocked(api.get).mockResolvedValue({ data: [makeRow({ id: 'row-str' })] });
         vi.mocked(render).mockRejectedValue('not an error object');
         vi.mocked(api.post).mockResolvedValue({});
 
@@ -178,7 +178,7 @@ describe('processOutboundTick', () => {
     });
 
     it('does NOT throw on markFailed failure (nested catch swallows)', async () => {
-        vi.mocked(api.get).mockResolvedValue([makeRow({ id: 'row-ack-fail' })]);
+        vi.mocked(api.get).mockResolvedValue({ data: [makeRow({ id: 'row-ack-fail' })] });
         vi.mocked(render).mockRejectedValue(new Error('render fail'));
         vi.mocked(api.post).mockRejectedValue(new Error('api down'));
         const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -194,7 +194,7 @@ describe('processOutboundTick', () => {
             makeRow({ id: 'row-fail' }),
             makeRow({ id: 'row-ok' }),
         ];
-        vi.mocked(api.get).mockResolvedValue(rows);
+        vi.mocked(api.get).mockResolvedValue({ data: rows });
         vi.mocked(render).mockRejectedValueOnce(new Error('fail-1'));
         vi.mocked(render).mockResolvedValueOnce({
             discordMessageId: 'discord-ok',
@@ -214,7 +214,7 @@ describe('processOutboundTick', () => {
 describe('startOutboundWorker', () => {
     it('returns a NodeJS.Timeout handle that can be cleared', () => {
         vi.useFakeTimers();
-        vi.mocked(api.get).mockResolvedValue([]);
+        vi.mocked(api.get).mockResolvedValue({ data: [] });
         const handle = startOutboundWorker(STUB_CLIENT, 5000);
         expect(handle).toBeDefined();
         clearInterval(handle);
@@ -222,7 +222,7 @@ describe('startOutboundWorker', () => {
 
     it('invokes the tick on every intervalMs elapsed', async () => {
         vi.useFakeTimers();
-        vi.mocked(api.get).mockResolvedValue([]);
+        vi.mocked(api.get).mockResolvedValue({ data: [] });
 
         const handle = startOutboundWorker(STUB_CLIENT, 1000);
         // No tick yet — setInterval fires AFTER the first interval, not at t=0.
@@ -277,7 +277,7 @@ describe('startOutboundWorker', () => {
 
     it('respects intervalMs override (constructor argument)', async () => {
         vi.useFakeTimers();
-        vi.mocked(api.get).mockResolvedValue([]);
+        vi.mocked(api.get).mockResolvedValue({ data: [] });
 
         const handle = startOutboundWorker(STUB_CLIENT, 250);
 
