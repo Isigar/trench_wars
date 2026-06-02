@@ -100,6 +100,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
+      - name: Setup Chrome (match @axe-core/cli's bundled ChromeDriver)
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
       - name: Install @axe-core/cli
         run: npm install -g @axe-core/cli@^4.11.3
 
