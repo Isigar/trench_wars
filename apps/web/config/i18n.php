@@ -37,5 +37,5 @@ return [
     | `auth.discord.button_label`, `home.tagline`. Add a namespace here when a new
     | `lang/en/<namespace>.php` file is authored.
     */
-    'shared_namespaces' => ['auth', 'common', 'admin', 'home', 'validation', 'matches', 'tournaments', 'a11y', 'leaderboards', 'notifications'],
+    'shared_namespaces' => ['auth', 'common', 'admin', 'home', 'validation', 'matches', 'tournaments', 'a11y', 'leaderboards', 'notifications', 'clans', 'cms', 'events', 'players', 'reports', 'search'],
 ];
