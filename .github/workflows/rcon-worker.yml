@@ -38,6 +38,9 @@ jobs:
       - name: pnpm install (workspace)
         run: pnpm install --no-frozen-lockfile
 
+      - name: Build workspace deps (shared-types)
+        run: pnpm --filter @trenchwars/shared-types build
+
       - name: Typecheck
         run: pnpm --filter @trenchwars/rcon-worker typecheck
 

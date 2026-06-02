@@ -22,7 +22,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-    "cd ../.. && pnpm --filter @trenchwars/rcon-worker build",
+    "cd ../.. && pnpm --filter @trenchwars/rcon-worker... build",
 ]
 
 [start]
