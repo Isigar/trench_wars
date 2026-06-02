@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 vendor/
+.pnpm-store/
 
 # Env (NEVER commit real secrets)
 .env
