@@ -15,7 +15,6 @@ use App\Models\TournamentStage;
 use App\Services\BracketMatchMaterialiserService;
 use App\Services\Brackets\BracketGeneratorService;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use RuntimeException;
 
 /*
 | Source: 06-06-PLAN.md Task 2 — replaces Wave 0 RED stub from 06-01.

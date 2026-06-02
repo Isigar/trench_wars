@@ -10,8 +10,6 @@ use App\Services\Brackets\BracketGeneratorService;
 use App\Services\Brackets\SingleEliminationGenerator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use InvalidArgumentException;
-use ReflectionMethod;
 
 /*
 | Source: 06-06-PLAN.md Task 1 — replaces Wave 0 RED stub from 06-01.
