@@ -1,14 +1,16 @@
+# syntax=docker/dockerfile:1
 # Railway production image for the Laravel app and its PHP siblings.
 #
-# One image, three runtime roles selected by the SERVICE_ROLE env var:
+# One image, runtime role selected by SERVICE_ROLE:
 #   web        → nginx (on $PORT) + php-fpm   (runs migrations first)
 #   worker     → php artisan horizon
 #   scheduler  → php artisan schedule:work
-#   ssr        → php artisan inertia:start-ssr  (requires Node in the image — disabled for now)
+#   ssr        → php artisan inertia:start-ssr  (needs Node in the image — disabled for now)
 #
-# Selected per Railway service via the RAILWAY_DOCKERFILE_PATH variable, which also
-# forces Railway's Docker builder. Build context = repo root (service Root Directory
-# must be empty), so the pnpm workspace is fully available.
+# Selected per Railway service via RAILWAY_DOCKERFILE_PATH (also forces the Docker
+# builder). Build context = repo root (service Root Directory empty) so the pnpm
+# workspace is available. Runtime config (php.ini / nginx / entrypoint) is inlined
+# via heredocs to avoid Railway build-context COPY quirks.
 
 # ---- Stage 1: front-end assets (pnpm workspace + Vite) ----
 FROM node:22-bookworm-slim AS assets
@@ -36,22 +38,98 @@ RUN pecl install redis-6.1.0 && docker-php-ext-enable redis
 RUN pecl install imagick-3.7.0 && docker-php-ext-enable imagick
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY docker/web/php.ini /usr/local/etc/php/conf.d/zz-trenchwars.ini
+
+# php.ini overrides (inlined)
+COPY <<'INI' /usr/local/etc/php/conf.d/zz-trenchwars.ini
+memory_limit = 512M
+upload_max_filesize = 20M
+post_max_size = 20M
+max_execution_time = 60
+date.timezone = UTC
+opcache.enable = 1
+opcache.validate_timestamps = 0
+log_errors = On
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+INI
+
+# nginx config template — ${PORT} substituted at boot; other $-vars stay literal.
+COPY <<'NGINX' /etc/nginx/nginx.conf.template
+worker_processes auto;
+events { worker_connections 1024; }
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    client_max_body_size 20M;
+
+    server {
+        listen ${PORT} default_server;
+        server_name _;
+        root /app/public;
+        index index.php index.html;
+
+        add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-Content-Type-Options "nosniff";
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+            fastcgi_read_timeout 60s;
+        }
+
+        location ~ /\.(?!well-known).* {
+            deny all;
+        }
+    }
+}
+NGINX
+
+# Runtime entrypoint — role chosen by SERVICE_ROLE (inlined).
+COPY <<'SH' /usr/local/bin/railway-entrypoint.sh
+#!/usr/bin/env bash
+set -e
+cd /app
+
+mkdir -p storage/app/public storage/framework/cache storage/framework/sessions \
+         storage/framework/views storage/logs bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+chmod -R 0775 storage bootstrap/cache 2>/dev/null || true
+
+role="${SERVICE_ROLE:-web}"
+echo "[railway-entrypoint] starting role=${role}"
+
+case "${role}" in
+  web)
+    php artisan migrate --force || echo "[railway-entrypoint] migrate failed (continuing to serve)"
+    php artisan storage:link 2>/dev/null || true
+    php-fpm -D
+    export PORT="${PORT:-8080}"
+    envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+    echo "[railway-entrypoint] nginx listening on ${PORT}"
+    exec nginx -g 'daemon off;'
+    ;;
+  worker)    exec php artisan horizon ;;
+  scheduler) exec php artisan schedule:work ;;
+  ssr)       exec php artisan inertia:start-ssr ;;
+  *)         echo "[railway-entrypoint] unknown SERVICE_ROLE='${role}'" >&2; exit 1 ;;
+esac
+SH
+RUN chmod +x /usr/local/bin/railway-entrypoint.sh
 
 WORKDIR /app
-
-# App source (Laravel lives in apps/web). vendor/ is installed below with the
-# extensions present so platform checks pass; --no-scripts skips artisan during build
-# (no env yet) — Laravel rebuilds the package manifest on first boot.
+# App source (Laravel lives in apps/web). vendor installed with extensions present.
 COPY apps/web /app
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
-
-# Built front-end assets (public/build + Filament theme) from stage 1.
+# Built front-end assets from stage 1.
 COPY --from=assets /repo/apps/web/public /app/public
-
-COPY docker/web.railway.nginx.conf.template /etc/nginx/nginx.conf.template
-COPY docker/web.railway.entrypoint.sh /usr/local/bin/railway-entrypoint.sh
-RUN chmod +x /usr/local/bin/railway-entrypoint.sh
 
 ENV SERVICE_ROLE=web
 ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
