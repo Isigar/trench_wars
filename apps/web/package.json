@@ -1,9 +1,10 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
+    "name": "@trenchwars/web",
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build && vite build --config vite.filament.config.ts",
+        "build": "vite build && vite build --ssr && vite build --config vite.filament.config.ts",
         "build:filament": "vite build --config vite.filament.config.ts",
         "dev": "vite"
     },
