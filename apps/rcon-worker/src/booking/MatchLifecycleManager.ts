@@ -60,11 +60,40 @@ export interface MatchLifecycleManagerOptions {
      * tryComplete without real-time waits.
      */
     completeGraceMs?: number;
+    /**
+     * Dial CRCON `/ws/logs` over TLS (`wss://`) instead of plaintext (`ws://`).
+     * Sourced from the CRCON_WS_SECURE env (config.ts) and threaded down through
+     * BookingScheduler. Defaults to SECURE so the RCON bearer token is never sent
+     * in cleartext by omission. Loopback hosts always downgrade to `ws://` (see
+     * buildCrconWsUrl) so local dev + the integration harness work unchanged.
+     */
+    crconWsSecure?: boolean;
 }
 
 const DEFAULT_FLUSH_INTERVAL_MS = 2_000;
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_COMPLETE_GRACE_MS = 60_000;
+
+/** Loopback hosts that always use plaintext ws:// (local dev + test harness). */
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+
+/**
+ * Build the CRCON `/ws/logs` URL for a host:port pair.
+ *
+ * Scheme selection:
+ *   - Loopback hosts (localhost / 127.0.0.1 / ::1) always use `ws://` — local
+ *     dev + the integration test harness dial a plaintext server on 127.0.0.1.
+ *   - Otherwise `secure` decides: `wss://` (TLS) when true, `ws://` when false.
+ *
+ * The CRCON credentials response carries only a bare host (no scheme), so the
+ * scheme cannot be derived from the URL itself — `secure` (CRCON_WS_SECURE) is
+ * the source of truth and defaults to true so production never leaks the bearer
+ * token over an unencrypted socket by omission.
+ */
+export function buildCrconWsUrl(host: string, port: number, secure: boolean): string {
+    const scheme = LOOPBACK_HOSTS.has(host) ? 'ws' : secure ? 'wss' : 'ws';
+    return `${scheme}://${host}:${port}/ws/logs`;
+}
 
 /**
  * Per-booking session manager — owns one CrconClient + one event buffer.
@@ -111,7 +140,7 @@ export class MatchLifecycleManager {
         }
 
         this.crcon = new CrconClient({
-            url: `ws://${creds.host}:${creds.port_rcon}/ws/logs`,
+            url: buildCrconWsUrl(creds.host, creds.port_rcon, this.opts.crconWsSecure ?? true),
             token: creds.api_token,
             logger: this.opts.logger,
             onLogs: (logs, _lastSeenId) => this.onLogs(logs),
