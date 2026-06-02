@@ -47,6 +47,7 @@ async function main(): Promise<void> {
         redis,
         secret: cfg.WEB_HMAC_SECRET,
         pollIntervalMs: cfg.POLL_INTERVAL_MS,
+        crconWsSecure: cfg.CRCON_WS_SECURE,
     });
 
     const drainer = new RedisFailoverQueue({ redis, webClient, logger });
@@ -58,6 +59,7 @@ async function main(): Promise<void> {
             pollIntervalMs: cfg.POLL_INTERVAL_MS,
             webUrl: cfg.WEB_INTERNAL_URL,
             redisUrl,
+            crconWsSecure: cfg.CRCON_WS_SECURE,
         },
         'rcon-worker started',
     );

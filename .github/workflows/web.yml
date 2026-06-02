@@ -59,6 +59,14 @@ jobs:
           tools: composer:v2
           coverage: none
 
+      - name: Setup Node 22 + pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Cache Composer
         uses: actions/cache@v4
         with:
@@ -74,6 +82,29 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate --force
+
+      - name: Install JS deps (workspace)
+        working-directory: .
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build front-end assets (incl. SSR bundle)
+        working-directory: .
+        run: pnpm --filter @trenchwars/web build
+
+      - name: Assert SSR bundle exists (B3 regression guard)
+        working-directory: .
+        run: |
+          # The Inertia v2 SSR bundle MUST be produced by `vite build --ssr`
+          # (apps/web/package.json build script). Its absence is the
+          # missing-SSR-build class of bug — fail loudly so it can never
+          # silently ship. laravel-vite-plugin defaults the SSR output to
+          # bootstrap/ssr/; accept either .js or .mjs (see SsrBundleExistsTest).
+          if [ ! -f apps/web/bootstrap/ssr/ssr.js ] && [ ! -f apps/web/bootstrap/ssr/ssr.mjs ]; then
+            echo "::error::SSR bundle missing — expected apps/web/bootstrap/ssr/ssr.{js,mjs} after 'pnpm --filter @trenchwars/web build'"
+            exit 1
+          fi
+          echo "SSR bundle present:"
+          ls -l apps/web/bootstrap/ssr/
 
       - name: Enable Postgres extensions
         env:

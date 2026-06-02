@@ -166,14 +166,16 @@ async function renderMatchAnnounce(
     // as-user (no actsAsDiscordId) for the bot's service-level dispatch.
     const match = await api.get<PublicMatchData>(`/matches/${matchId}`);
 
-    const channel = await client.channels.fetch(row.channel_id);
+    const channelId = resolveChannelId(row);
+
+    const channel = await client.channels.fetch(channelId);
     if (
         channel === null ||
         !channel.isTextBased() ||
         !('send' in channel)
     ) {
         throw new Error(
-            `[bot/render] Channel ${row.channel_id} not found or not text-based`,
+            `[bot/render] Channel ${channelId} not found or not text-based`,
         );
     }
     const sendable = channel as TextBasedChannel & {
@@ -223,11 +225,11 @@ async function renderMatchAnnounce(
  *
  * Channel resolution: row.channel_id is server-side resolved at outbound write
  * time by TournamentObserver (plan 06-10). For Phase 6 v1 the column may be
- * empty (the observer writes '' as a placeholder per plan 06-10 — the bot
- * worker resolves the channel via env.DISCORD_ANNOUNCE_CHANNEL_ID OR the
- * organising clan's announce channel). For tests we exercise the embed
- * builder directly; the channel resolution lives in env.* and is integration-
- * tested end-to-end in plan 06-14.
+ * empty (the observer writes '' as a placeholder per plan 06-10) — in that case
+ * resolveChannelId(row) falls back to env.DISCORD_LEAGUE_ANNOUNCE_CHANNEL_ID and
+ * throws a clear render-time error if both are empty. For tests we exercise the
+ * embed builder directly; the channel resolution is integration-tested
+ * end-to-end in plan 06-14.
  *
  * Update path: tournament_announce_update has the SAME payload shape as
  * tournament_announce but the bot worker treats it as "post a fresh message"
@@ -243,14 +245,16 @@ async function renderTournamentAnnounce(
 ): Promise<RenderResult> {
     const payload = row.payload as TournamentAnnouncePayload;
 
-    const channel = await client.channels.fetch(row.channel_id);
+    const channelId = resolveChannelId(row);
+
+    const channel = await client.channels.fetch(channelId);
     if (
         channel === null ||
         !channel.isTextBased() ||
         !('send' in channel)
     ) {
         throw new Error(
-            `[bot/render] Channel ${row.channel_id} not found or not text-based`,
+            `[bot/render] Channel ${channelId} not found or not text-based`,
         );
     }
     const sendable = channel as TextBasedChannel & {
@@ -286,14 +290,16 @@ async function renderBracketResultAnnounce(
 ): Promise<RenderResult> {
     const payload = row.payload as BracketResultPayload;
 
-    const channel = await client.channels.fetch(row.channel_id);
+    const channelId = resolveChannelId(row);
+
+    const channel = await client.channels.fetch(channelId);
     if (
         channel === null ||
         !channel.isTextBased() ||
         !('send' in channel)
     ) {
         throw new Error(
-            `[bot/render] Channel ${row.channel_id} not found or not text-based`,
+            `[bot/render] Channel ${channelId} not found or not text-based`,
         );
     }
     const sendable = channel as TextBasedChannel & {

@@ -12,7 +12,7 @@ v1.0 (Round-1) shipped 2026-05-17 — 9 phases, 120 plans, 1303 Pest web tests +
 
 All 9 phases complete (Foundations → Polish), 120/120 plans, 1303 web Pest + 176 bot Vitest + 40 rcon-worker Vitest GREEN. All 15 mappable v1 requirements Complete. 21 ADR decisions LOCKED (D-001..D-021). Cross-phase milestone audit (`milestones/v1.0-MILESTONE-AUDIT.md`) resolved by audit-hotfix `cdfbfa5` bridging web→bot dispatcher for Phase 7-9 outbound kinds (`article_announce`, `match_result_announce`, `user_dm`).
 
-**Tech state at v1.0 ship:** Laravel 12 + PHP 8.4 + Inertia v2 + Vue 3 + Filament v3 + Tailwind v4 (dual-Tailwind workaround for Filament v3) + Postgres 16 + Redis 7. Bot: Node 22 + discord.js v14 + TypeScript. rcon-worker: Node 22 + TypeScript + ws + undici + ioredis. Monorepo: pnpm-workspaces (`apps/web`, `apps/bot`, `apps/rcon-worker`, `packages/shared-types`). Hosting: Railway (5 services + Postgres + Redis plugins). Local dev: docker-compose at repo root (D-021).
+**Tech state at v1.0 ship:** Laravel 12 + PHP 8.4 + Inertia v2 + Vue 3 + Filament v3 + Tailwind v4 (dual-Tailwind workaround for Filament v3) + Postgres 16 + Redis 7. Bot: Node 22 + discord.js v14 + TypeScript. rcon-worker: Node 22 + TypeScript + ws + undici + ioredis. Monorepo: pnpm-workspaces (`apps/web`, `apps/bot`, `apps/rcon-worker`, `packages/shared-types`). Hosting: Railway (6 app services — web, ssr, worker, scheduler, bot, rcon-worker — + Postgres + Redis plugins; D-022 supersedes the D-014 service count). Local dev: docker-compose at repo root (D-021).
 
 **v1.0 status:** SHIPPABLE pending 4-item operator manual smoke per `milestones/v1.0-ROADMAP.md` Phase 9 section (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Notifications bell + Discord DM live receipt). All other phases also have a `PENDING_MANUAL_SMOKE` checklist recorded in their individual `*-PHASE-VERIFICATION.md` files.
 
@@ -92,7 +92,7 @@ Owner is comfortable in PHP/Vue. Round-1 is the first ship of a brand-new produc
 - **Tech stack — Bot**: Node.js 22 + discord.js v14 + TypeScript + ioredis + undici — discord.js is the de facto Discord library; PHP ecosystem for Discord is weak so the bot is a separate Node service (D-001 trade-off, CON-stack-bot-libraries)
 - **Tech stack — RCON**: Node.js 22 + TypeScript + undici + ioredis + ws — TS aligns with bot tooling; CRCON exposes an HTTP+WebSocket API (CON-stack-rcon-libraries)
 - **Datastore**: Postgres 16 + Redis 7 — JSONB for translatable columns, exclusion constraints for booking ranges, partial unique indexes for "one active clan", more rigorous typing than MySQL (D-016)
-- **Hosting**: Railway (5 services + Postgres + Redis plugins) — owner's choice; per-service deploys, env groups, plugins (D-014, CON-arch-railway-deployment)
+- **Hosting**: Railway (6 app services — web, ssr, worker, scheduler, bot, rcon-worker — + Postgres + Redis plugins) — owner's choice; per-service deploys, env groups, plugins (D-014 superseded by D-022 on service count, CON-arch-railway-deployment)
 - **Repository layout**: Single pnpm-workspaces monorepo (`apps/web`, `apps/bot`, `apps/rcon-worker`, `packages/shared-types`); Composer stays inside `apps/web` (D-015, CON-arch-monorepo-layout)
 - **Auth**: Discord OAuth only via Laravel Socialite — community lives on Discord; email/password adds maintenance for no benefit (D-002)
 - **Discord topology**: One shared league guild; each clan = a Discord role inside that guild (D-003)
@@ -121,7 +121,7 @@ Owner is comfortable in PHP/Vue. Round-1 is the first ship of a brand-new produc
 
 ## Locked Decisions
 
-21 ADR decisions LOCKED (D-001..D-020 from `.docs/15-decisions.md` + D-021 added 2026-05-03 during autonomous Phase 1 environment review). Update protocol: append a new D-### with `Status: Supersedes D-###` rather than editing the original.
+22 ADR decisions LOCKED (D-001..D-020 from `.docs/15-decisions.md` + D-021 added 2026-05-03 during autonomous Phase 1 environment review + D-022 added during the v1.0 production-readiness review; D-022 supersedes the D-014 service count). Update protocol: append a new D-### with `Status: Supersedes D-###` rather than editing the original.
 
 <decisions>
 | ID | Decision | Rationale | Status |
@@ -139,7 +139,7 @@ Owner is comfortable in PHP/Vue. Round-1 is the first ship of a brand-new produc
 | D-011 | Tournaments first-class in round 1: round-robin, single-elim, double-elim, swiss | Owner included tournaments in round-1 scope. Trade-off: ~2 extra weeks. | LOCKED |
 | D-012 | Filament covers every domain entity; per-resource Audit tab + global `/admin/audit`; spatie/laravel-activitylog as engine | Owner's explicit ask for clans/players/profiles in Filament with audit logs. | LOCKED |
 | D-013 | i18n plumbed from day one; EN at launch; URL has no locale prefix at launch | Cheap upfront, expensive to retrofit. | LOCKED |
-| D-014 | Hosting on Railway (5 services + Postgres + Redis plugins) | Owner's choice. Railway handles per-service deploys, plugins, env management cleanly. | LOCKED |
+| D-014 | Hosting on Railway (5 services + Postgres + Redis plugins) | Owner's choice. Railway handles per-service deploys, plugins, env management cleanly. | Superseded by D-022 (service count only; hosting on Railway still LOCKED) |
 | D-015 | pnpm-workspaces monorepo; `apps/web` (Laravel), `apps/bot`, `apps/rcon-worker`, `packages/shared-types`; Composer stays in `apps/web` | Shared TS types, atomic PRs across services, single CI pipeline. pnpm workspaces are lightweight. | LOCKED |
 | D-016 | Postgres 16 (over MySQL) | JSONB for translatable columns, exclusion constraints for booking ranges, partial unique indexes for "one active clan", more rigorous typing. | LOCKED |
 | D-017 | No Laravel starter kit (Breeze/Jetstream); hand-roll auth scaffolding around Discord Socialite | Both starters ship session+email auth that we'd remove. Single-purpose Discord auth is shorter to write than to strip. | LOCKED |
@@ -147,6 +147,7 @@ Owner is comfortable in PHP/Vue. Round-1 is the first ship of a brand-new produc
 | D-019 | Result capture: CRCON live log auto-capture when bookable; manual entry/override always available | RCON pipelines fail; we never want a match locked to "incomplete" because of network issues. | LOCKED |
 | D-020 | TypeScript types generated from Laravel DTOs via spatie/laravel-data + `typescript:generate` artisan command | Keeps frontend, bot, and rcon-worker in lockstep with backend contracts. | LOCKED |
 | D-021 | Local dev via custom `docker-compose.yml` at repo root, with all five Railway services containerized (web/php-fpm 8.4, bot/node 22, rcon-worker/node 22, postgres 16, redis 7); host installs of PHP/Postgres/Redis are not used for development | Owner's machine has PHP 8.3 without dynamic-load support (`intl` extension fails) and no host Postgres/Redis. Containerizing all services keeps dev parity with Railway prod topology and avoids host pollution. Trade-off: requires Docker Desktop with WSL integration; first-time pull cost. Composer/pnpm/artisan run via `docker compose exec`. | LOCKED |
+| D-022 | Railway runs 6 app services (web, ssr, worker, scheduler, bot, rcon-worker) + Postgres + Redis; supersedes D-014 service count | Laravel scheduler needs its own long-running `schedule:work` process — Horizon does not run `schedule:run`, so without a dedicated `scheduler` service all four cron jobs (articles:publish-scheduled, sitemap:generate, notifications:dispatch-upcoming, notifications:prune) are dead in production. `ssr`/`worker`/`scheduler` reuse the `apps/web` Nixpacks image with per-service dashboard start-command overrides. `routes/console.php` already guards every schedule with `->withoutOverlapping()->onOneServer()`, so the scheduler coexists safely with multi-replica workers. | LOCKED — Supersedes D-014 |
 </decisions>
 
 ## Open Questions

@@ -38,6 +38,12 @@ export interface BookingSchedulerOptions {
     /** Poll cadence (ms). Default 30_000 per config.ts. */
     pollIntervalMs: number;
     /**
+     * Dial CRCON `/ws/logs` over TLS (`wss://`). Sourced from CRCON_WS_SECURE
+     * (config.ts) and passed through to each spawned MatchLifecycleManager.
+     * Defaults to SECURE so the RCON bearer token is never sent in cleartext.
+     */
+    crconWsSecure?: boolean;
+    /**
      * Factory for spawning per-booking managers. Defaults to the real
      * MatchLifecycleManager constructor; tests inject a stub.
      */
@@ -69,6 +75,7 @@ export class BookingScheduler {
                     logger: opts.logger,
                     redis: opts.redis,
                     secret: opts.secret,
+                    crconWsSecure: opts.crconWsSecure ?? true,
                 }));
     }
 

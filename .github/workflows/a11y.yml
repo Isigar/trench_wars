@@ -1,8 +1,15 @@
 # Source: .planning/phases/09-polish/09-10-PLAN.md task 1 +
 #         .planning/phases/09-polish/09-RESEARCH.md § "Accessibility (WCAG 2.1 AA)".
 #
-# Runs @axe-core/cli@^4.11.3 against the public surface of the local docker
-# compose stack. WCAG 2.1 AA tags (wcag2aa + wcag21aa) are the SC-5 deliverable.
+# Runs @axe-core/cli@^4.11.3 against the public surface of a natively-booted
+# Laravel stack. WCAG 2.1 AA tags (wcag2aa + wcag21aa) are the SC-5 deliverable.
+#
+# Boot strategy: the deploy target is Railway on the Nixpacks builder (no
+# Dockerfile-for-web), so CI boots the app the same way web.yml does — PHP +
+# Postgres/Redis service containers, composer install, key:generate, migrate,
+# seed, asset build, then `php artisan serve`. This guarantees an APP_KEY,
+# a migrated+seeded database, and built front-end assets so axe scans a real
+# page instead of a 500 error (which would be a false GREEN).
 #
 # Pitfall 11 compliance — admin / auth-gated routes are NOT scanned:
 #   axe is unauthenticated; scanning /admin, /login, /auth/* would either
@@ -24,14 +31,12 @@ on:
     branches: [main, develop, master]
     paths:
       - 'apps/web/**'
-      - 'docker/**'
-      - 'docker-compose.yml'
+      - 'packages/shared-types/**'
       - '.github/workflows/a11y.yml'
   pull_request:
     paths:
       - 'apps/web/**'
-      - 'docker/**'
-      - 'docker-compose.yml'
+      - 'packages/shared-types/**'
       - '.github/workflows/a11y.yml'
   workflow_dispatch:
 
@@ -40,24 +45,109 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: trenchwars_test
+          POSTGRES_USER: trenchwars
+          POSTGRES_PASSWORD: trenchwars
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U trenchwars"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Native-boot DB/Redis pointing at the service containers (parity with web.yml).
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: trenchwars_test
+      DB_USERNAME: trenchwars
+      DB_PASSWORD: trenchwars
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      APP_URL: http://localhost:8000
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_pgsql, pgsql, redis, gd, bcmath, zip, mbstring, pcntl, exif, opcache
+          tools: composer:v2
+          coverage: none
 
       - name: Setup Node 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Chrome + matching ChromeDriver
+        id: chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+          install-chromedriver: true
+
       - name: Install @axe-core/cli
         run: npm install -g @axe-core/cli@^4.11.3
 
-      - name: Build + start docker compose stack
+      - name: Composer install
+        working-directory: apps/web
+        run: composer install --no-progress --no-interaction --prefer-dist
+
+      - name: Prepare .env
+        working-directory: apps/web
         run: |
-          docker compose up -d --build
-          # Wait for nginx (port 8000 per docker-compose.yml) to serve the homepage.
-          # Bound the wait at ~120 s — Phase 9 plan 09-09 SUMMARY records ~38 h
-          # warm-stack uptime; a cold-boot CI runner needs migrations + seeders.
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Install JS deps (workspace)
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build front-end assets (incl. SSR bundle)
+        run: pnpm --filter @trenchwars/web build
+
+      - name: Enable Postgres extensions
+        env:
+          PGPASSWORD: trenchwars
+        run: |
+          psql -h 127.0.0.1 -U trenchwars -d trenchwars_test -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+          psql -h 127.0.0.1 -U trenchwars -d trenchwars_test -c "CREATE EXTENSION IF NOT EXISTS \"pgcrypto\";"
+          psql -h 127.0.0.1 -U trenchwars -d trenchwars_test -c "CREATE EXTENSION IF NOT EXISTS citext;"
+
+      - name: Migrate + seed
+        working-directory: apps/web
+        run: |
+          php artisan migrate --force
+          php artisan db:seed --force
+
+      - name: Start Laravel server
+        working-directory: apps/web
+        run: |
+          # `php artisan serve` binds 127.0.0.1:8000 — matches the axe URLs below
+          # and APP_URL. Run detached; the wait loop below confirms readiness.
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          echo "SERVER_PID=$!" >> "$GITHUB_ENV"
+          # Bound the wait at ~120 s for a cold-boot runner.
           for i in $(seq 1 60); do
             if curl -sfo /dev/null http://localhost:8000/; then
               echo "Web stack reachable after ${i} retries"
@@ -65,7 +155,7 @@ jobs:
             fi
             sleep 2
           done
-          curl -sfI http://localhost:8000/ || (docker compose logs web web-nginx; exit 1)
+          curl -sfI http://localhost:8000/ || (echo "::error::Laravel server did not become reachable"; exit 1)
 
       - name: Run axe scans against public routes (Pitfall 11 — public only)
         id: axe
@@ -81,9 +171,9 @@ jobs:
             echo "::group::axe scan ${url}"
             axe "http://localhost:8000${url}" \
               --tags wcag2aa,wcag21aa \
+              --chromedriver-path "${{ steps.chrome.outputs.chromedriver-path }}" \
               --exit \
-              --reporter v2 \
-              > "axe-${slug}.json"
+              --save "axe-${slug}.json"
             STATUS=$?
             if [ "${STATUS}" -ne 0 ]; then
               echo "Violations found on ${url} (exit ${STATUS})"
@@ -101,6 +191,12 @@ jobs:
           path: 'axe-*.json'
           retention-days: 14
 
-      - name: Dump web/nginx logs on failure
+      - name: Dump Laravel log on failure
         if: failure()
-        run: docker compose logs web web-nginx --tail=200
+        working-directory: apps/web
+        run: |
+          if [ -f storage/logs/laravel.log ]; then
+            tail -n 200 storage/logs/laravel.log
+          else
+            echo "No storage/logs/laravel.log present."
+          fi

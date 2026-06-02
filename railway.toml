@@ -3,17 +3,36 @@
 # Railway uses PER-SERVICE Root Directory + per-service railway.json (NOT this file).
 # This file exists only as a documentation pointer.
 #
-# See: .planning/phases/01-foundations/RAILWAY-DEPLOY.md for the operator walkthrough.
+# See: .planning/milestones/v1.0-phases/01-foundations/RAILWAY-DEPLOY.md for the operator walkthrough.
 #
-# Topology (D-014 LOCKED — 5 services + 2 plugins):
-#   web         → Root Directory: apps/web         → nixpacks (PHP 8.4 + php-fpm + Caddy)
-#   worker      → Root Directory: apps/web         → nixpacks (override startCommand: php artisan queue:work)
-#   bot         → Root Directory: apps/bot         → nixpacks (Node 22)
-#   rcon-worker → Root Directory: apps/rcon-worker → nixpacks (Node 22)
+# Builder = NIXPACKS for every app service (matches the committed apps/*/railway.json files).
+# The web service is NOT built from docker/web/Dockerfile in production — that image is php-fpm
+# only (port 9000, no HTTP listener) and fails the /up healthcheck. Nixpacks is the single
+# supported web path (its PHP provider auto-wires Caddy + php-fpm via /start-server.sh).
+#
+# Topology (D-022 supersedes D-014 service count — 6 app services + 2 plugins):
+#   web         → Root Directory: apps/web         → nixpacks → default start (/start-server.sh: Caddy + php-fpm)
+#   ssr         → Root Directory: apps/web         → nixpacks → start override: php artisan inertia:start-ssr
+#   worker      → Root Directory: apps/web         → nixpacks → start override: php artisan horizon
+#   scheduler   → Root Directory: apps/web         → nixpacks → start override: php artisan schedule:work
+#   bot         → Root Directory: apps/bot         → nixpacks → default start (node dist/index.js)
+#   rcon-worker → Root Directory: apps/rcon-worker → nixpacks → default start (node dist/index.js)
 #   db          → Postgres 16 plugin
 #   redis       → Redis 7 plugin
 #
+# Railway derives ONE railway.json per Root Directory. apps/web/railway.json therefore carries
+# only the web defaults (start = /start-server.sh, healthcheck = /up). The ssr, worker, and
+# scheduler services all share Root Directory apps/web and set their differing start commands as
+# per-service DASHBOARD START-COMMAND OVERRIDES (Railway cannot hold three different start commands
+# in one apps/web/railway.json).
+#
+# Web release/pre-deploy command — ships in apps/web/railway.json as deploy.preDeployCommand:
+#   php artisan migrate --force && php artisan storage:link
+# Railway runs it after build, before the deploy goes live, so migrations are automated on `web`.
+# Clear this command in the dashboard on the ssr/worker/scheduler siblings (they share
+# apps/web/railway.json) so only `web` owns the release migration.
+#
 # Per-service config lives in:
-#   apps/web/railway.json + apps/web/nixpacks.toml
+#   apps/web/railway.json + apps/web/nixpacks.toml         (web, ssr, worker, scheduler)
 #   apps/bot/railway.json + apps/bot/nixpacks.toml
 #   apps/rcon-worker/railway.json + apps/rcon-worker/nixpacks.toml

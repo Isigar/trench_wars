@@ -6,6 +6,7 @@ use App\Http\Middleware\VerifyRconSignature;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
@@ -20,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
+        // Honor Railway's edge proxy so per-IP rate-limit bucketing works behind
+        // the proxy AND HTTPS is detected correctly (secure cookies, absolute URLs).
+        $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
         // Plan 05-03: Sanctum CheckAbilities + ResolveBotActsAsUser aliases for /api/bot/*.
         // 'abilities' = AND-all required scopes; 'ability' = OR-any (kept for future use).
         // 'bot.acts-as' rebinds the request-scope auth via Auth::onceUsingId so
