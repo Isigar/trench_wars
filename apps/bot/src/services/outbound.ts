@@ -44,6 +44,11 @@ import { render } from './render.js';
 
 let running = false;
 
+// Handle for the interval started by startOutboundWorker. Captured at module
+// scope so the entrypoint's graceful-shutdown handler can stop the poll loop
+// via stopOutboundWorker() without threading the handle through ready.ts.
+let pollHandle: NodeJS.Timeout | null = null;
+
 /**
  * processOutboundTick — single poll-and-dispatch pass.
  *
@@ -85,7 +90,7 @@ export function startOutboundWorker(
     intervalMs: number = env.OUTBOUND_POLL_INTERVAL_MS,
 ): NodeJS.Timeout {
     console.log(`[bot/outbound] Starting poll loop every ${intervalMs}ms`);
-    return setInterval(() => {
+    const handle = setInterval(() => {
         if (running) {
             return;
         }
@@ -98,6 +103,22 @@ export function startOutboundWorker(
                 running = false;
             });
     }, intervalMs);
+    pollHandle = handle;
+    return handle;
+}
+
+/**
+ * stopOutboundWorker — clear the poll loop interval for clean shutdown.
+ *
+ * Called by the entrypoint's SIGTERM/SIGINT handler (index.ts) so the process
+ * can exit without the setInterval keeping the event loop alive. Safe to call
+ * when no worker is running (the null guard makes it a no-op).
+ */
+export function stopOutboundWorker(): void {
+    if (pollHandle !== null) {
+        clearInterval(pollHandle);
+        pollHandle = null;
+    }
 }
 
 /**
