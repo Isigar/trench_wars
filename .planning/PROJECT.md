@@ -16,12 +16,26 @@ All 9 phases complete (Foundations → Polish), 120/120 plans, 1303 web Pest + 1
 
 **v1.0 status:** SHIPPABLE pending 4-item operator manual smoke per `milestones/v1.0-ROADMAP.md` Phase 9 section (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Notifications bell + Discord DM live receipt). All other phases also have a `PENDING_MANUAL_SMOKE` checklist recorded in their individual `*-PHASE-VERIFICATION.md` files.
 
-## Next Milestone Goals
+## Current Milestone: v1.1 Completion
 
-_v1.1 not yet planned._ Candidate deferred work (from v1.0 archive, `milestones/v1.0-REQUIREMENTS.md` v2 section):
+**Goal:** Finish the partially-built and deferred round-1-adjacent features so the platform's core workflows are fully fleshed out.
 
-- **NOTF-01**: User-configurable notification preferences full UX (v1.0 ships default sensible rules wired only)
-- **NOTF-02**: Email transactional mail provider (currently no email need beyond OAuth)
+**Target features:**
+- Clan-apply submission flow (web + Discord) — build the missing application-creation path; wire the bot `/clan apply` stub to it
+- Swiss next-round auto-trigger (replace the admin-click)
+- List pagination for `/match list` + `/clan list`
+- NOTF-01: full notification-preferences UX (account settings; v1.0 wired defaults only)
+- ELO-based `by_rank` tournament seeding (replace the `created_at` proxy)
+- Median Buchholz tiebreaker (Swiss)
+- Stage-level `GameMatchType` override
+
+Detailed REQ-IDs in `REQUIREMENTS.md`. Mostly extensions of existing Phase 2/5/6/9 code; web/PHP work is CI-verified (no local Docker — only the Node bot is testable in the dev env). Clan-apply carries open product decisions (clan opt-in to recruiting? one pending application per clan or total? cover message required?) resolved at phase spec time.
+
+## Future Milestones (v2.0+)
+
+Deferred infra/scale work — candidates, not yet scoped:
+
+- **NOTF-02**: Email transactional mail provider
 - **SRCH-01**: Meilisearch over Postgres FTS
 - **TOUR-V2-01**: WebSocket live tournament updates (replace 30s polling)
 - **I18N-V2-01**: Ship CS / SK / PL / DE / RU / FR locale packs
@@ -30,8 +44,7 @@ _v1.1 not yet planned._ Candidate deferred work (from v1.0 archive, `milestones/
 - **OPS-V2-01**: GDPR right-to-erasure flow (anonymise vs delete)
 - **OPS-V2-02**: Activity log partitioning + 12-month archive
 - **OPS-V2-03**: Monitoring stack (Sentry / Logtail) beyond Railway logs
-
-Start the next milestone with `/gsd-new-milestone` after operator smoke clears all 4 PENDING_MANUAL_SMOKE items.
+- Notification batching/digest · multi-replica rcon-worker + booking lease
 
 ## Core Value
 
@@ -62,9 +75,15 @@ All 15 round-1 (v1.0) requirements shipped 2026-05-17 (see `milestones/v1.0-REQU
 
 ### Active
 
-<!-- Next milestone scope — defined via /gsd-new-milestone. -->
+<!-- v1.1 Completion scope. Detailed REQ-IDs in REQUIREMENTS.md. -->
 
-(None — v1.0 shipped. Next milestone not yet planned; see "Next Milestone Goals" below.)
+- [ ] Clan-apply submission flow — web + Discord (CLAN-*)
+- [ ] Swiss next-round auto-trigger (TOUR-*)
+- [ ] List pagination for /match list + /clan list (BOT-*)
+- [ ] Full notification-preferences UX (NOTF-01)
+- [ ] ELO-based by_rank tournament seeding (TOUR-*)
+- [ ] Median Buchholz tiebreaker (TOUR-*)
+- [ ] Stage-level GameMatchType override (TOUR-*)
 
 ### Out of Scope
 
@@ -208,4 +227,4 @@ Unresolved at planning time (from `.docs/16-open-questions.md`). Advisory, not b
 - Reserved words list for clan slugs (`admin`, `me`, `api`, etc.).
 
 ---
-*Last updated: 2026-05-17 after v1.0 milestone close (round-1 Trenchwars HLL league platform — 9 phases / 120 plans / 1303+ tests / 15/15 v1 requirements Complete)*
+*Last updated: 2026-06-03 — v1.1 Completion milestone started (7 features completing round-1-adjacent gaps). v1.0 round-1 shipped 2026-05-17 (9 phases / 120 plans / 1303+ tests / 15/15 v1 requirements Complete).*

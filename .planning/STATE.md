@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: "v1.0 milestone re-verification (2026-06-03): independent 7-dimension audit re-check confirmed all original BLOCKER 1 + WARNING 1-4 findings CLOSED, AND caught + fixed a latent { data }-envelope read bug on the bot match_announce / /match info / /clan info paths (render.ts:167, match.ts, clan.ts read single-object GETs bare → blank/failed cards). Fixed commit 44a7dc0, audit verdict gaps_found→resolved commit 18fe0ea; bot tsc+eslint clean, 185/185 Vitest GREEN. v1.0 already archived 2026-05-17 (tag v1.0). PROJECT.md Validated section migrated. Remaining: 4-item operator manual smoke (needs live deploy + Discord)."
-last_updated: "2026-06-03T00:00:00.000Z"
+milestone: v1.1
+milestone_name: Completion
+status: planning
+last_updated: "2026-06-03T09:18:07.423Z"
 last_activity: 2026-06-03
 progress:
-  total_phases: 9
-  completed_phases: 9
-  total_plans: 120
-  completed_plans: 120
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,12 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-03)
 
 ## Current Position
 
-Phase: 09 (Polish) — COMPLETE PENDING_MANUAL_SMOKE
-Plan: 12/12 — 09-12 closed (Phase9I18nKeyCoverageTest GREEN + 7 quality gates GREEN + 09-PHASE-VERIFICATION.md authored mapping SC-1..SC-5 + 12 Pitfalls + 8 OQs LOCKED inline + ~40 D-09-* canonical bindings; ROADMAP Phase 9 12/12 Complete 2026-05-15; STATE completed_phases 8 -> 9 + percent 89 -> 100)
-Status: Phase 9 COMPLETE PENDING_MANUAL_SMOKE — v1.0 milestone ready to ship pending operator smoke
-Last activity: 2026-05-15
-
-Progress: [██████████] 100% (9/9 phases; 120/120 plans — round 1 COMPLETE)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-03 — Milestone v1.1 started
 
 ## Performance Metrics
 
