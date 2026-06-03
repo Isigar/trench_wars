@@ -3,6 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 Round-1** — Phases 1-9 (shipped 2026-05-17 — see [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md))
+- 🚧 **v1.1 Completion** — Phases 10-12 (in progress — started 2026-06-03)
 
 ## Phases
 
@@ -23,9 +24,46 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 
 </details>
 
-### Next milestone
+### v1.1 Completion (Phases 10-12)
 
-_Not yet planned. Start with `/gsd-new-milestone`._
+- [ ] **Phase 10: Clan applications** — Submission flow on web and Discord, eligibility enforcement, and per-clan recruiting toggle
+- [ ] **Phase 11: Tournament depth** — Swiss auto-advance, ELO seeding, median Buchholz tiebreaker, and stage-level GameMatchType override
+- [ ] **Phase 12: Notifications & bot polish** — Notification-preferences account-settings UX and bot list pagination
+
+## Phase Details
+
+### Phase 10: Clan applications
+**Goal**: Users can apply to join a clan from the web and from Discord, and clan leaders control whether their clan accepts applications
+**Depends on**: Phase 2 (ClanApplication model/observer already present), Phase 5 (bot `/clan apply` stub exists)
+**Requirements**: CLAN-01, CLAN-02, CLAN-03, CLAN-04
+**Success Criteria** (what must be TRUE):
+  1. A logged-in user who is not already in an active clan can submit an application from a clan's public page, and the application appears in the clan's Filament admin view
+  2. A user can run `/clan apply <slug>` in Discord and receive confirmation that their application was submitted (the bot calls the web API rather than returning a stub redirect)
+  3. Submitting a second application to the same clan while one is pending, or applying when already in an active clan, returns a clear, localized error on both web and Discord — no duplicate or ineligible application is persisted
+  4. A clan leader or officer can toggle "accepting applications" on their clan; any application attempt to a closed clan is rejected with a localized reason on both web and Discord
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 11: Tournament depth
+**Goal**: Swiss tournaments self-advance, standings use the correct tiebreaker, seeding uses actual player ratings, and stage configuration is more flexible
+**Depends on**: Phase 6 (SwissGenerator, StandingsCalculatorService, BracketGenerator, TournamentStage all present)
+**Requirements**: TOUR-01, TOUR-02, TOUR-03, TOUR-04
+**Success Criteria** (what must be TRUE):
+  1. When the final match of a Swiss round has its result recorded, the next round is generated automatically and the tournament page reflects the new round without any admin action
+  2. When seeding a tournament bracket, an admin can choose "by rank" and the bracket is seeded by ELO-derived player rating rather than signup order
+  3. Swiss standings show median Buchholz alongside plain Buchholz, and the tiebreaker column is visible on the public bracket view
+  4. An admin can set a different GameMatchType on an individual tournament stage (overriding the tournament-level default), and matches in that stage are created with the overridden type
+**Plans**: TBD
+
+### Phase 12: Notifications & bot polish
+**Goal**: Users have full control over which notifications they receive and how, and the Discord bot's list commands support pagination
+**Depends on**: Phase 9 (UserNotificationPreference model + NotificationDispatcher present), Phase 5 (bot `/match list` + `/clan list` commands present)
+**Requirements**: NOTF-01, BOT-01
+**Success Criteria** (what must be TRUE):
+  1. A user can open their account-settings page and see all notification event-types with their current preference (in-app / Discord DM / both / none) per channel, change any preference, and have the notification dispatcher honor those choices from that point forward
+  2. When `/match list` or `/clan list` returns more results than fit on a single Discord response, the user can navigate to subsequent pages using interactive controls in the same message
+**Plans**: TBD
+**UI hint**: yes
 
 ## Progress
 
@@ -40,3 +78,6 @@ _Not yet planned. Start with `/gsd-new-milestone`._
 | 7. CMS | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
+| 10. Clan applications | v1.1 | 0/TBD | Not started | - |
+| 11. Tournament depth | v1.1 | 0/TBD | Not started | - |
+| 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |

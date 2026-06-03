@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
 status: planning
-last_updated: "2026-06-03T09:18:07.423Z"
+last_updated: "2026-06-03T12:00:00.000Z"
 last_activity: 2026-06-03
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,21 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-03)
+See: .planning/PROJECT.md (updated 2026-06-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** v1.0 milestone — round-1 SHIPPABLE pending 4-item operator manual smoke (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Discord DM live receipt) per 09-PHASE-VERIFICATION.md.
+**Current focus:** v1.1 Completion milestone — 3 phases (10-12) covering clan-application submission flow, tournament depth extensions, and notification-preferences UX + bot pagination. Roadmap created 2026-06-03. Ready to plan Phase 10.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-06-03 — Milestone v1.1 started
+Phase: 10 — Clan applications
+Plan: — (ready to plan)
+Status: Planning / ready to plan
+Last activity: 2026-06-03 — Roadmap created for v1.1 Completion (Phases 10-12); all 10 requirements mapped
+
+```
+v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/3 phases)
+```
 
 ## Performance Metrics
 
@@ -160,7 +164,7 @@ Last activity: 2026-06-03 — Milestone v1.1 started
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table (D-001 through D-021, all LOCKED).
+Decisions are logged in PROJECT.md Key Decisions table (D-001 through D-022, all LOCKED).
 Recent decisions affecting current work:
 
 - D-001 Stack: Laravel 12 + PHP 8.4 + Inertia v2 + Vue 3 + Filament v3
@@ -169,6 +173,7 @@ Recent decisions affecting current work:
 - D-014 Hosting on Railway (5 services + Postgres + Redis plugins)
 - D-017 No Laravel starter kit; hand-roll Discord Socialite auth scaffolding
 - D-021 Local dev via custom `docker-compose.yml` at repo root (all 5 services + postgres + redis containerized; host runs only Docker Desktop, Node 22, Composer-via-container)
+- D-022 Railway runs 6 app services (web, ssr, worker, scheduler, bot, rcon-worker) + Postgres + Redis; supersedes D-014 service count
 
 Plan-level decisions logged during execution:
 
@@ -222,7 +227,7 @@ Plan-level decisions logged during execution:
 - [Phase ?]: Plan 01-15: cross-package shared-types sync via in-container artisan command + extra docker bind mount (./packages/shared-types -> /repo/packages/shared-types on web service); host-side packages/shared-types/scripts/sync-types.sh as fallback for environments without the bind mount
 - [Phase ?]: Plan 01-15: packages/shared-types/src/index.ts uses '/// <reference path>' + type aliases ('export type UserData = App.Data.UserData') so consumers can import without spelling out the ambient App.Data.* namespace
 - [Phase ?]: Plan 01-14: spatie/laravel-activitylog v5 single-migration consolidation; UUID subject_id/causer_id via follow-up ALTER; LogsActivity on User suppresses last_login_at-only changes
-- [Phase ?]: Plan 01-14: Audit Filament Page gated on audit.view permission (web guard); read-only by design (CLAUDE.md \xc2\xa76 + D-012); per-resource Audit tab via Forms\\Components\\Tabs + Placeholder pattern
+- [Phase ?]: Plan 01-14: Audit Filament Page gated on audit.view permission (web guard); read-only by design (CLAUDE.md §6 + D-012); per-resource Audit tab via Forms\Components\Tabs + Placeholder pattern
 - [Phase ?]: [Phase 01]: Plan 01-18: phase verification report doubles as the canonical phase-close artifact (M1..M7 traceability + ROADMAP SC-1..SC-5 mapping); manual smokes deferred to operator per autonomous-mode handoff
 - [Phase ?]: [Phase 01]: Plan 01-18: Rule 3 fix added @types/node to packages/shared-types/package.json — pre-existing config gap from plan 01-15 surfaced when running bot/rcon-worker/shared-types pipelines as part of phase close; strictly additive (no architectural change)
 - [Phase ?]: [Phase 01]: Plan 01-18: pnpm-lock.yaml committed at repo root for the first time (4193 lines) — improves reproducibility; CI workflows already use --no-frozen-lockfile so optional but recommended
@@ -535,6 +540,8 @@ Plan-level decisions logged during execution:
 - [Phase 09]: Plan 09-12 D-09-12-B — Pint auto-fix in 09-12 commit narrowed scope to 4 Phase-9 source files (Rule 1 deviation — AbuseReportResource.php fully_qualified_strict_types, routes/web.php ordered_imports, AbuseReportWorkflowTest.php fully_qualified_strict_types, RateLimiterDefinitionsTest.php class_definition + fully_qualified_strict_types); zero pre-Phase-9 file touched; preserves the audit boundary that Phase 9 commits only touch Phase 9 code paths.
 - [Phase ?]: D-09-12-A: Phase9I18nKeyCoverageTest mirrors canonical CmsI18nKeyCoverageTest two-it() idiom (expected-key resolution + source-grep round-trip); CI-gated for v2 drift detection on notifications/leaderboards/moderation/a11y/reports namespaces
 - [Phase ?]: D-09-12-B: Pint auto-fix in 09-12 commit narrowed scope to 4 Phase-9 source files (Rule 1 deviation); zero pre-Phase-9 file touched
+- [v1.1 Roadmap creation 2026-06-03]: D-05-09-B superseded — Phase 10 will replace the /clan apply redirect-to-web stub with a live BotApiClanApplicationController backed by ClanApplicationService::apply(). Phases 10-12 continue D-04-03-A GameMatch canonical binding and all D-* conventions from v1.0.
+- [v1.1 Roadmap creation 2026-06-03]: Phase 11 TOUR-01 will replace the D-06-11-C admin-click generate_next_swiss_round HeaderAction with an observer/event-driven auto-trigger. Phase 11 TOUR-02 will replace D-06-05-B by_rank created_at proxy with ELO-derived rating.
 
 ### Pending Todos
 
@@ -542,7 +549,7 @@ None yet.
 
 ### Blockers/Concerns
 
-No active blockers. Docker Desktop WSL integration is enabled (verified 2026-05-03: `docker --version` 29.3.0, daemon reachable). Phase 1 execution is in flight per D-021 (everything in containers).
+No active blockers. Docker Desktop WSL integration is enabled (verified 2026-05-03: `docker --version` 29.3.0, daemon reachable). Phase 10 planning can begin.
 
 Advisory (non-blocking): Open Questions in PROJECT.md (branding, editorial cadence, tournament tiebreakers, league-guild membership requirement) — worth resolving before phases that depend on them.
 
@@ -557,6 +564,6 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-06-03
-Stopped at: v1.0 milestone re-verification + close-out. Re-ran an independent 7-dimension audit of the 2026-05-15 MILESTONE-AUDIT findings against current code (each CLOSED claim adversarially refuted; every web-write↔bot-read payload reconciled field-by-field). All original findings (BLOCKER 1 bot dispatcher + WARNING 1-4 + Q6 RCON tail) confirmed CLOSED. The re-check CAUGHT a separate latent bug: the bot read single-object BotApi GETs ({ data }-wrapped) bare on the match_announce dispatch (render.ts:167), /match info (match.ts:116) and /clan info (clan.ts:62) paths → "Match undefined"/failed cards. FIXED (commit 44a7dc0: unwrap .data + regression tests incl. new matchAnnounceRender.test.ts; bot tsc+eslint clean, 185/185 Vitest GREEN, teeth proven). MILESTONE-AUDIT verdict flipped gaps_found→resolved (commit 18fe0ea). v1.0 was already formally archived 2026-05-17 (tag v1.0 → 6fa8641); today tidied PROJECT.md Validated section (15 reqs → Validated). Gotcha saved to memory [[project_bot_web_data_envelope]].
+Stopped at: v1.1 roadmap created (Phases 10-12). All 10 requirements mapped. Files written: ROADMAP.md, REQUIREMENTS.md, STATE.md.
 Resume file: None
-Next: 4-item operator manual smoke (live CRCON probe / two-clan SC-5 happy path / Discord DM+announce live receipt / HMAC key rotation) — needs live Railway deploy + Discord, not runnable in this no-Docker dev env. Then /gsd-new-milestone for round 2.
+Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?

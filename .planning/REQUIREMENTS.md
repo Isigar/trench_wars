@@ -75,22 +75,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLAN-01 | TBD | Pending |
-| CLAN-02 | TBD | Pending |
-| CLAN-03 | TBD | Pending |
-| CLAN-04 | TBD | Pending |
-| TOUR-01 | TBD | Pending |
-| TOUR-02 | TBD | Pending |
-| TOUR-03 | TBD | Pending |
-| TOUR-04 | TBD | Pending |
-| NOTF-01 | TBD | Pending |
-| BOT-01 | TBD | Pending |
+| CLAN-01 | 10 | Pending |
+| CLAN-02 | 10 | Pending |
+| CLAN-03 | 10 | Pending |
+| CLAN-04 | 10 | Pending |
+| TOUR-01 | 11 | Pending |
+| TOUR-02 | 11 | Pending |
+| TOUR-03 | 11 | Pending |
+| TOUR-04 | 11 | Pending |
+| NOTF-01 | 12 | Pending |
+| BOT-01 | 12 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 10 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 10 ⚠️ (filled by roadmapper)
+- Mapped to phases: 10
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-03*
-*Last updated: 2026-06-03 after v1.1 milestone definition*
+*Last updated: 2026-06-03 — roadmap created, all 10 requirements mapped*
