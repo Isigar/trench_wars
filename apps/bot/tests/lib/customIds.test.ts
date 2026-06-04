@@ -119,6 +119,74 @@ describe('customId malformed input (T-05-08-04)', () => {
     });
 });
 
+describe('customId list_page encode (12-02)', () => {
+    it('encodes list_page match as "pg:m:<page>"', () => {
+        expect(encodeButtonId({ kind: 'list_page', listType: 'match', page: 2 })).toBe('pg:m:2');
+    });
+
+    it('encodes list_page clan as "pg:c:<page>"', () => {
+        expect(encodeButtonId({ kind: 'list_page', listType: 'clan', page: 1 })).toBe('pg:c:1');
+    });
+});
+
+describe('customId list_page decode (12-02)', () => {
+    it('decodes pg:m:3 to { kind: list_page, listType: match, page: 3 }', () => {
+        expect(decodeButtonId('pg:m:3')).toEqual({ kind: 'list_page', listType: 'match', page: 3 });
+    });
+
+    it('decodes pg:c:1 to { kind: list_page, listType: clan, page: 1 }', () => {
+        expect(decodeButtonId('pg:c:1')).toEqual({ kind: 'list_page', listType: 'clan', page: 1 });
+    });
+
+    it('returns null on pg:m (wrong arity — missing page)', () => {
+        expect(decodeButtonId('pg:m')).toBeNull();
+    });
+
+    it('returns null on pg:m:2:extra (wrong arity — extra segment)', () => {
+        expect(decodeButtonId('pg:m:2:extra')).toBeNull();
+    });
+
+    it('returns null on pg:x:2 (unknown listType)', () => {
+        expect(decodeButtonId('pg:x:2')).toBeNull();
+    });
+
+    it('returns null on pg:m:abc (non-integer page)', () => {
+        expect(decodeButtonId('pg:m:abc')).toBeNull();
+    });
+
+    it('returns null on pg:m:0 (zero page — must be positive integer)', () => {
+        expect(decodeButtonId('pg:m:0')).toBeNull();
+    });
+
+    it('returns null on pg:m:-1 (negative page)', () => {
+        expect(decodeButtonId('pg:m:-1')).toBeNull();
+    });
+});
+
+describe('customId list_page round-trip (12-02)', () => {
+    it('round-trips list_page match page 5', () => {
+        const action: ButtonAction = { kind: 'list_page', listType: 'match', page: 5 };
+        expect(decodeButtonId(encodeButtonId(action))).toEqual(action);
+    });
+
+    it('round-trips list_page clan page 1', () => {
+        const action: ButtonAction = { kind: 'list_page', listType: 'clan', page: 1 };
+        expect(decodeButtonId(encodeButtonId(action))).toEqual(action);
+    });
+});
+
+describe('customId existing variants unchanged after list_page addition (12-02)', () => {
+    it('m:s: variant still round-trips', () => {
+        const action: ButtonAction = { kind: 'match_signup', matchId: UUID_A, gameRoleId: UUID_B };
+        expect(decodeButtonId(encodeButtonId(action))).toEqual(action);
+    });
+
+    it('c:a: variant still round-trips', () => {
+        const action: ButtonAction = { kind: 'clan_apply', clanId: UUID_A };
+        expect(decodeButtonId(encodeButtonId(action))).toEqual(action);
+    });
+});
+
 describe('customId length budget (Pitfall 5 — Discord 100-char limit)', () => {
     it('produces customId <= 100 chars for two UUIDs (match_signup worst case)', () => {
         // 'm:s:' (4) + 36 + ':' (1) + 36 = 77 chars; comfortably under 100.
