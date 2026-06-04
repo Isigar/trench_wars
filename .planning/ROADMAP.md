@@ -78,7 +78,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 **Plans**: 5 plans
   - [x] 12-01-PLAN.md — NOTF-01: notification-preferences nav link (discoverability) + end-to-end honor test
   - [x] 12-02-PLAN.md — BOT-01: list_page customId + Prev/Next pagination button factory (TDD)
-  - [ ] 12-03-PLAN.md — BOT-01: in-message pagination render in /match list + /clan list (page + "Page X of Y")
+  - [x] 12-03-PLAN.md — BOT-01: in-message pagination render in /match list + /clan list (page + "Page X of Y")
   - [ ] 12-04-PLAN.md — BOT-01: Prev/Next handler re-fetches page and interaction.update()s the same message
   - [ ] 12-05-PLAN.md — Phase close: full web + bot gate suites green; trace NOTF-01 + BOT-01 to Met
 **UI hint**: yes
@@ -98,4 +98,4 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
 | 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
 | 11. Tournament depth | v1.1 | 5/5 | Complete   | 2026-06-04 |
-| 12. Notifications & bot polish | v1.1 | 2/5 | In Progress|  |
+| 12. Notifications & bot polish | v1.1 | 3/5 | In Progress|  |
