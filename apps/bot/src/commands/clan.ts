@@ -5,22 +5,11 @@
 //
 //   /clan info <slug>   — single clan card
 //   /clan list          — paginated clan list
-//   /clan apply <slug>  — v1: redirect-to-web message (Open Question Q2)
+//   /clan apply <slug>  — live api.post to /clans/{slug}/applications
+//                         (Phase 10-05; replaces the v1 redirect-to-web stub)
 //
 // Pitfall 1: every branch calls interaction.deferReply() as the FIRST awaited
 // statement to claim the 3s interaction-response window.
-//
-// /clan apply v1 implementation note: the web-side endpoint
-// /api/bot/clans/{id}/applications is documented as "future v1+" in RESEARCH.
-// Shipping the slash command stub with a redirect-to-web message satisfies
-// SC-1 ("command exists with privacy-aware response") because:
-//   1. The command itself is registered in Discord — invocable.
-//   2. The "use the website" response is privacy-aware (the website's auth
-//      gate enforces clan-application policy, not the bot).
-//   3. Discord users without web login are blocked from applying anyway (per
-//      RESEARCH Q2 reasoning) — there's no UX regression.
-// Phase 6+ ships the live BotApiClanApplicationController endpoint and this
-// handler swaps to api.post() at that time.
 
 import {
     ChatInputCommandInteraction,
@@ -29,6 +18,7 @@ import {
 } from 'discord.js';
 
 import { api } from '../services/api.js';
+import { translateError } from '../components/rsvpButton.js';
 import type { ClanData } from '../types/apiContracts.js';
 
 export const data = new SlashCommandBuilder()
@@ -80,13 +70,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     if (sub === 'apply') {
         const slug = interaction.options.getString('slug', true);
-        // v1 — redirect to web (Open Question Q2 resolution). Phase 6+ ships
-        // the live /api/bot/clans/{slug}/applications endpoint and this
-        // branch flips to api.post().
-        await interaction.editReply(
-            `Apply via the website: visit the clan page for **${slug}** and click "Apply". ` +
-                'Discord applications are not yet available — coming in a future release.',
-        );
+        try {
+            await api.post(
+                `/clans/${slug}/applications`,
+                {},
+                { actsAsDiscordId: interaction.user.id },
+            );
+            await interaction.editReply('Your application has been submitted.');
+        } catch (err) {
+            await interaction.editReply(translateError(err));
+        }
         return;
     }
 }

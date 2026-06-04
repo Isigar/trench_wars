@@ -1,14 +1,17 @@
-// Trenchwars bot — RSVP button handler tests (Wave 9 GREEN flip).
+// Trenchwars bot — RSVP button handler tests (Wave 9 GREEN flip, Phase 10-05 update).
 //
 // Source: .planning/phases/05-discord-bot-v1/05-10-PLAN.md task 3.
-// Replaces the Wave 0 RED stub. Asserts:
+// Updated in Phase 10-05: clan_apply describe block flipped from redirect-to-web
+// stub assertions to live api.post assertions; translateError extended with
+// 3 new clan error code cases. Asserts:
 //
 //   - decodeButtonId routing: match_open_signup_modal -> showModal (no defer
 //     expected; the dispatcher does not pre-defer modal-opening buttons)
 //   - match_signup -> api.post(/matches/{id}/signups) with actsAsDiscordId
 //   - match_leave -> api.delete(/matches/{id}/signups/{role}) with
 //     actsAsDiscordId
-//   - translateError maps the 4 typed errors to friendly user copy
+//   - clan_apply -> api.post(/clans/{clanId}/applications) with actsAsDiscordId
+//   - translateError maps the 7 typed errors to friendly user copy
 //   - Unknown / malformed customId emits 'Unknown button.'
 //
 // vi.mock for ../../src/services/api replaces the module-level `api` object
@@ -177,26 +180,50 @@ describe('rsvpButton.handle — match_leave', () => {
     });
 });
 
-describe('rsvpButton.handle — clan_apply (v1 redirect-to-web stub)', () => {
-    it('does NOT call api.post (v1 stub per D-05-09-B)', async () => {
+describe('rsvpButton.handle — clan_apply', () => {
+    it('calls api.post(/clans/{clanId}/applications) with actsAsDiscordId', async () => {
+        vi.mocked(api.post).mockResolvedValue({ data: {} });
         const customId = encodeButtonId({
             kind: 'clan_apply',
             clanId: 'c-uuid',
         });
         const interaction = makeButtonInteraction(customId);
         await handle(interaction as unknown as ButtonInteraction);
-        expect(api.post).not.toHaveBeenCalled();
+        expect(api.post).toHaveBeenCalledWith(
+            '/clans/c-uuid/applications',
+            {},
+            { actsAsDiscordId: INVOKER_DISCORD_ID },
+        );
     });
 
-    it('editReplies a message mentioning the website', async () => {
+    it('editReplies success message on api.post success', async () => {
+        vi.mocked(api.post).mockResolvedValue({ data: {} });
         const customId = encodeButtonId({
             kind: 'clan_apply',
             clanId: 'c-uuid',
         });
         const interaction = makeButtonInteraction(customId);
         await handle(interaction as unknown as ButtonInteraction);
-        const reply = interaction.editReply.mock.calls[0]?.[0] as string;
-        expect(reply.toLowerCase()).toContain('website');
+        expect(interaction.editReply).toHaveBeenCalledWith(
+            'Your application has been submitted.',
+        );
+    });
+
+    it('editReplies translated error on clan_not_recruiting', async () => {
+        vi.mocked(api.post).mockRejectedValue(
+            new Error(
+                'Bot API POST /clans/c-uuid/applications -> 422: {"error":"clan_not_recruiting"}',
+            ),
+        );
+        const customId = encodeButtonId({
+            kind: 'clan_apply',
+            clanId: 'c-uuid',
+        });
+        const interaction = makeButtonInteraction(customId);
+        await handle(interaction as unknown as ButtonInteraction);
+        expect(interaction.editReply).toHaveBeenCalledWith(
+            'This clan is not accepting applications.',
+        );
     });
 });
 
@@ -248,5 +275,22 @@ describe('rsvpButton.translateError', () => {
     it('falls through to "Failed: <message>" for unknown errors', () => {
         const e = new Error('some unrelated 500');
         expect(translateError(e)).toMatch(/^Failed: /);
+    });
+
+    it('maps clan_not_recruiting', () => {
+        const e = new Error('422: {"error":"clan_not_recruiting"}');
+        expect(translateError(e)).toBe('This clan is not accepting applications.');
+    });
+
+    it('maps already_in_clan', () => {
+        const e = new Error('422: {"error":"already_in_clan"}');
+        expect(translateError(e)).toBe('You are already a member of a clan.');
+    });
+
+    it('maps duplicate_application', () => {
+        const e = new Error('422: {"error":"duplicate_application"}');
+        expect(translateError(e)).toBe(
+            'You already have a pending application to this clan.',
+        );
     });
 });

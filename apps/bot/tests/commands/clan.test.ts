@@ -1,10 +1,11 @@
-// Trenchwars bot — /clan slash command tests (Wave 7 GREEN flip).
+// Trenchwars bot — /clan slash command tests (Wave 7 GREEN flip, Phase 10-05 update).
 //
 // Source: .planning/phases/05-discord-bot-v1/05-09-PLAN.md task 3.
-// Replaces the Wave 0 RED stub. Asserts SC-1:
+// Updated in Phase 10-05: apply branch flipped from redirect-to-web stub to
+// live api.post assertions. Asserts SC-1:
 //   - 3 subcommands declared on the SlashCommandBuilder data (info/list/apply)
 //   - info + list call api.get with actsAsDiscordId
-//   - apply ships v1 redirect-to-web message (Open Question Q2 resolution)
+//   - apply calls api.post(/clans/{slug}/applications) with actsAsDiscordId
 //   - every branch defers reply ephemeral as the FIRST awaited statement
 //     (Pitfall 1 — 3s window mitigation)
 
@@ -137,25 +138,45 @@ describe('/clan list subcommand', () => {
 });
 
 describe('/clan apply subcommand', () => {
-    it('does NOT call api.post (v1 redirect-to-web stub — Open Question Q2)', async () => {
-        const interaction = makeInteraction('apply', { slug: 'redwave' });
-        await execute(interaction as unknown as ChatInputCommandInteraction);
-        expect(api.post).not.toHaveBeenCalled();
-    });
-
-    it('editReplies a message referencing the slug + "website"', async () => {
-        const interaction = makeInteraction('apply', { slug: 'redwave' });
-        await execute(interaction as unknown as ChatInputCommandInteraction);
-        const reply = interaction.editReply.mock.calls[0]?.[0] as string;
-        expect(reply).toContain('redwave');
-        expect(reply.toLowerCase()).toContain('website');
-    });
-
     it('defers reply ephemeral first', async () => {
+        vi.mocked(api.post).mockResolvedValue({ data: {} });
         const interaction = makeInteraction('apply', { slug: 'redwave' });
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(interaction.deferReply).toHaveBeenCalledWith({
             flags: MessageFlags.Ephemeral,
         });
+    });
+
+    it('calls api.post(/clans/{slug}/applications) with actsAsDiscordId', async () => {
+        vi.mocked(api.post).mockResolvedValue({ data: {} });
+        const interaction = makeInteraction('apply', { slug: 'redwave' });
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        expect(api.post).toHaveBeenCalledWith(
+            '/clans/redwave/applications',
+            {},
+            { actsAsDiscordId: INVOKER_DISCORD_ID },
+        );
+    });
+
+    it('editReplies success message on api.post success', async () => {
+        vi.mocked(api.post).mockResolvedValue({ data: {} });
+        const interaction = makeInteraction('apply', { slug: 'redwave' });
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        expect(interaction.editReply).toHaveBeenCalledWith(
+            'Your application has been submitted.',
+        );
+    });
+
+    it('editReplies translated error on clan_not_recruiting', async () => {
+        vi.mocked(api.post).mockRejectedValue(
+            new Error(
+                'Bot API POST /clans/redwave/applications -> 422: {"error":"clan_not_recruiting"}',
+            ),
+        );
+        const interaction = makeInteraction('apply', { slug: 'redwave' });
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        expect(interaction.editReply).toHaveBeenCalledWith(
+            'This clan is not accepting applications.',
+        );
     });
 });

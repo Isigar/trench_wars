@@ -2,6 +2,8 @@
 //
 // Source: .planning/phases/05-discord-bot-v1/05-10-PLAN.md task 2 (Wave 9),
 // RESEARCH §Pattern 2 (modal-flow) + Pitfall 5 (customId encoding).
+// Updated in Phase 10-05: clan_apply branch flipped from redirect-to-web stub
+// to live api.post call; translateError extended with 3 new clan error codes.
 //
 // Routes the four `customIds.ts` variants:
 //
@@ -19,13 +21,13 @@
 //   match_leave             -> api.delete(/matches/{id}/signups/{roleId})
 //                              same dispatcher-deferred contract.
 //
-//   clan_apply              -> v1 redirect-to-web stub (plan 05-09 D-05-09-B)
-//                              — the /api/bot/clans/{slug}/applications
-//                              endpoint is RESEARCH Q2 "future v1+"; the
-//                              button reply mirrors the slash-command stub.
+//   clan_apply              -> api.post(/clans/{clanId}/applications, {})
+//                              NOTE: decoded.clanId is a UUID; the web route
+//                              is slug-bound ({clan:slug}). This path posts
+//                              the UUID directly — flagged for end-to-end
+//                              verification in plan 10-07.
 //
-// translateError maps the 4 typed `BotApiErrorBody.error` codes returned by
-// the web side's MatchSignupController (plan 05-04) to friendly user copy.
+// translateError maps typed `BotApiErrorBody.error` codes to friendly copy.
 // The current parser substring-matches on err.message because api.ts builds
 // the message via template-string interpolation of the JSON body; a
 // structured JSON parse is deferred to plan 05-12 polish (won't change the
@@ -92,11 +94,18 @@ export async function handle(interaction: ButtonInteraction): Promise<void> {
     }
 
     if (decoded.kind === 'clan_apply') {
-        // v1 redirect-to-web stub (mirrors plan 05-09 /clan apply slash
-        // command). The endpoint is RESEARCH Q2 deferred to Phase 6+.
-        await interaction.editReply(
-            'Clan applications are managed on the website.',
-        );
+        // Posts decoded.clanId (UUID) — the web route is slug-bound; flagged
+        // for end-to-end verification in plan 10-07.
+        try {
+            await api.post(
+                `/clans/${decoded.clanId}/applications`,
+                {},
+                { actsAsDiscordId: interaction.user.id },
+            );
+            await interaction.editReply('Your application has been submitted.');
+        } catch (err) {
+            await interaction.editReply(translateError(err));
+        }
         return;
     }
 }
@@ -108,10 +117,13 @@ export async function handle(interaction: ButtonInteraction): Promise<void> {
  * full JSON response body (truncated to 500 chars). We substring-match on
  * the canonical error codes from apps/web/lang/en/bot.php bot.errors.* :
  *
- *   match_not_open    -> "This match is not open for signups."
- *   capacity_full     -> "This role is full."
- *   tag_restricted    -> "Your clan tags are not permitted on this match."
- *   already_signed_up -> "You are already signed up to this match."
+ *   match_not_open         -> "This match is not open for signups."
+ *   capacity_full          -> "This role is full."
+ *   tag_restricted         -> "Your clan tags are not permitted on this match."
+ *   already_signed_up      -> "You are already signed up to this match."
+ *   clan_not_recruiting    -> "This clan is not accepting applications."
+ *   already_in_clan        -> "You are already a member of a clan."
+ *   duplicate_application  -> "You already have a pending application to this clan."
  *
  * Anything else falls through to a generic "Failed: <scrubbed-message>" —
  * the original message is already token-scrubbed by api.ts (T-05-08-01
@@ -130,6 +142,15 @@ export function translateError(err: unknown): string {
     }
     if (msg.includes('already_signed_up')) {
         return 'You are already signed up to this match.';
+    }
+    if (msg.includes('clan_not_recruiting')) {
+        return 'This clan is not accepting applications.';
+    }
+    if (msg.includes('already_in_clan')) {
+        return 'You are already a member of a clan.';
+    }
+    if (msg.includes('duplicate_application')) {
+        return 'You already have a pending application to this clan.';
     }
     return `Failed: ${msg.slice(0, 200)}`;
 }
