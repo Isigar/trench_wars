@@ -11,6 +11,7 @@ use App\Models\Clan;
 use App\Models\ClanApplication;
 use App\Models\ClanMembership;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -30,19 +31,28 @@ final class ClanApplicationService
      * Create a pending application for an eligible applicant.
      *
      * Guards (in order):
+     *  0. Clan must be active (BL-02: suspended/disbanded clans reject all new applications).
      *  1. Clan must be accepting applications (CLAN-04 recruiting toggle).
      *  2. Applicant must not have an active ClanMembership (D-009 one-active invariant).
      *  3. No existing pending application to this clan (CLAN-03 duplicate guard).
      *
      * The clan_applications_one_pending_per_clan partial unique index (plan 10-01)
      * is the last-line defence for Guard 3 in concurrent requests (T-10-02-02).
+     * A UniqueConstraintViolationException from a concurrent insert is caught and
+     * re-thrown as DuplicateApplicationException so it maps to the existing 422
+     * path on both web and bot surfaces (BL-01 race-condition defence).
      *
-     * @throws ClanNotRecruitingException When the clan is not accepting applications.
+     * @throws ClanNotRecruitingException When the clan is inactive or not accepting applications.
      * @throws AlreadyInClanException When the applicant already holds an active membership.
      * @throws DuplicateApplicationException When a pending application already exists for this clan.
      */
     public function apply(Clan $clan, User $applicant, ?string $message = null): ClanApplication
     {
+        // Guard 0 — BL-02: clan must be active (suspended/disbanded clans do not recruit).
+        if ($clan->status !== 'active') {
+            throw new ClanNotRecruitingException(__('clans.applications.error.clan_not_recruiting'));
+        }
+
         // Guard 1 — CLAN-04: clan must be accepting applications.
         if (! $clan->accepts_applications) {
             throw new ClanNotRecruitingException(__('clans.applications.error.clan_not_recruiting'));
@@ -67,12 +77,20 @@ final class ClanApplicationService
             throw new DuplicateApplicationException(__('clans.applications.error.duplicate_application'));
         }
 
-        return ClanApplication::create([
-            'clan_id' => $clan->id,
-            'applicant_user_id' => $applicant->id,
-            'status' => 'pending',
-            'message' => $message,
-        ]);
+        // BL-01: wrap create() to catch the DB-level unique constraint violation that
+        // occurs when two concurrent requests both pass Guard 3 before either commits.
+        // UniqueConstraintViolationException extends QueryException — NOT \DomainException —
+        // so it would otherwise bubble to a 500. Translate it to the same domain exception.
+        try {
+            return ClanApplication::create([
+                'clan_id' => $clan->id,
+                'applicant_user_id' => $applicant->id,
+                'status' => 'pending',
+                'message' => $message,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            throw new DuplicateApplicationException(__('clans.applications.error.duplicate_application'));
+        }
     }
 
     /**

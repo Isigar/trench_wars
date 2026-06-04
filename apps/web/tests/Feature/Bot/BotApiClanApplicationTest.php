@@ -140,3 +140,22 @@ it('returns 422 duplicate_application when pending application already exists', 
             ->count()
     )->toBe(1);
 });
+
+// BL-02 — applying to an inactive clan via the bot API is also rejected.
+
+it('returns 422 clan_not_recruiting when clan is suspended even if accepts_applications=true (BL-02)', function (): void {
+    $clan = Clan::factory()->create([
+        'status' => 'suspended',
+        'accepts_applications' => true,
+        'slug' => 'suspended-clan-bot',
+    ]);
+    $human = User::factory()->create(['discord_id' => '100000000000000104']);
+    [, $headers] = botClanAppAuthHeaders($human->discord_id);
+
+    $this->withHeaders($headers)
+        ->postJson("/api/bot/clans/{$clan->slug}/applications")
+        ->assertStatus(422)
+        ->assertJsonPath('error', 'clan_not_recruiting');
+
+    expect(ClanApplication::where('clan_id', $clan->id)->count())->toBe(0);
+});
