@@ -74,14 +74,14 @@ const CLAN_DATA = {
 function singlePageResponse() {
     return {
         data: [CLAN_DATA],
-        meta: { current_page: 1, per_page: 25, total: 1, last_page: 1 },
+        meta: { current_page: 1, per_page: 20, total: 1, last_page: 1 },
     };
 }
 
 function multiPageResponse(page = 1, lastPage = 3) {
     return {
         data: [CLAN_DATA],
-        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
+        meta: { current_page: page, per_page: 20, total: lastPage * 20, last_page: lastPage },
     };
 }
 
@@ -141,24 +141,24 @@ describe('/clan info subcommand', () => {
 });
 
 describe('/clan list subcommand', () => {
-    it('calls api.get with path /clans?page=1 and actsAsDiscordId', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+    it('calls api.get with path /clans?page=1&limit=20 and actsAsDiscordId (WR-01: safe page size)', async () => {
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 20, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
-        expect(api.get).toHaveBeenCalledWith('/clans?page=1', {
+        expect(api.get).toHaveBeenCalledWith('/clans?page=1&limit=20', {
             actsAsDiscordId: INVOKER_DISCORD_ID,
         });
     });
 
     it('editReplies "No clans." when API returns empty list', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 20, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(interaction.editReply).toHaveBeenCalledWith('No clans.');
     });
 
     it('does NOT include components when data is empty', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 20, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         const arg = interaction.editReply.mock.calls[0]?.[0];
@@ -193,6 +193,40 @@ describe('/clan list subcommand', () => {
         const arg = interaction.editReply.mock.calls[0]?.[0];
         const argStr = JSON.stringify(arg);
         expect(argStr).toContain('Page 1 of 3');
+    });
+
+    // BL-02: requesting a page beyond last_page must render last_page, not a dead-end empty message.
+    it('BL-02: page > last_page clamps to last_page and renders with nav buttons', async () => {
+        vi.mocked(api.get)
+            .mockResolvedValueOnce({ data: [], meta: { current_page: 99, per_page: 20, total: 40, last_page: 2 } })
+            .mockResolvedValueOnce({ data: [CLAN_DATA], meta: { current_page: 2, per_page: 20, total: 40, last_page: 2 } });
+        const interaction = makeInteraction('list');
+        const { renderClanListPage } = await import('../../src/commands/clan.js');
+        await renderClanListPage(interaction as unknown as ChatInputCommandInteraction, 99);
+        const arg = interaction.editReply.mock.calls[0]?.[0];
+        expect(arg).not.toBe('No clans.');
+        const argObj = arg as Record<string, unknown>;
+        const components = argObj?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
+    });
+
+    // WR-01: content string must not exceed Discord's 2000-char message cap.
+    it('WR-01: clan list content is sliced to 2000 chars', async () => {
+        // Generate a clan with a very long name to force content truncation.
+        const longNameClan = { ...CLAN_DATA, name: 'A'.repeat(200), tag: 'XX', slug: 'a'.repeat(50) };
+        const manyClans = Array.from({ length: 20 }, (_, i) => ({ ...longNameClan, id: `clan-${i}`, slug: `a${i}` }));
+        vi.mocked(api.get).mockResolvedValue({
+            data: manyClans,
+            meta: { current_page: 1, per_page: 20, total: 20, last_page: 1 },
+        });
+        const interaction = makeInteraction('list');
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const arg = interaction.editReply.mock.calls[0]?.[0];
+        const content = typeof arg === 'string' ? arg : (arg as Record<string, unknown>)?.content as string | undefined;
+        if (content !== undefined) {
+            expect(content.length).toBeLessThanOrEqual(2000);
+        }
     });
 });
 

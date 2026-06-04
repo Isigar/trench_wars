@@ -100,14 +100,28 @@ const CLAN_STUB = {
 function matchListPageResponse(page = 1, lastPage = 3) {
     return {
         data: [MATCH_STUB],
-        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
+        meta: { current_page: page, per_page: 5, total: lastPage * 5, last_page: lastPage },
     };
 }
 
 function clanListPageResponse(page = 1, lastPage = 2) {
     return {
         data: [CLAN_STUB],
-        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
+        meta: { current_page: page, per_page: 20, total: lastPage * 20, last_page: lastPage },
+    };
+}
+
+function emptyMatchPageResponse(requestedPage: number, lastPage: number) {
+    return {
+        data: [] as typeof MATCH_STUB[],
+        meta: { current_page: requestedPage, per_page: 5, total: lastPage * 5, last_page: lastPage },
+    };
+}
+
+function emptyClanPageResponse(requestedPage: number, lastPage: number) {
+    return {
+        data: [] as typeof CLAN_STUB[],
+        meta: { current_page: requestedPage, per_page: 20, total: lastPage * 20, last_page: lastPage },
     };
 }
 
@@ -272,11 +286,11 @@ describe('rsvpButton.handle — clan_apply', () => {
 });
 
 describe('rsvpButton.handle — list_page (match)', () => {
-    it('calls api.get(/matches?page=2) with actsAsDiscordId when customId is pg:m:2', async () => {
+    it('calls api.get(/matches?page=2&limit=5) with actsAsDiscordId when customId is pg:m:2 (BL-01)', async () => {
         vi.mocked(api.get).mockResolvedValue(matchListPageResponse(2, 3));
         const interaction = makeButtonInteraction('pg:m:2', { deferred: false });
         await handle(interaction as unknown as ButtonInteraction);
-        expect(api.get).toHaveBeenCalledWith('/matches?page=2', {
+        expect(api.get).toHaveBeenCalledWith('/matches?page=2&limit=5', {
             actsAsDiscordId: INVOKER_DISCORD_ID,
         });
     });
@@ -330,14 +344,30 @@ describe('rsvpButton.handle — list_page (match)', () => {
         const row = components?.[0]?.toJSON();
         expect(row?.components[1]?.disabled).toBe(true);
     });
+
+    // BL-02: stale pg:m:99 button when last_page=2 must render page 2 with nav, not dead-end empty.
+    it('BL-02: pg:m:99 with last_page=2 clamps to page 2 and renders with nav buttons', async () => {
+        vi.mocked(api.get)
+            .mockResolvedValueOnce(emptyMatchPageResponse(99, 2))
+            .mockResolvedValueOnce(matchListPageResponse(2, 2));
+        const interaction = makeButtonInteraction('pg:m:99', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0] as Record<string, unknown>;
+        // Must not show the dead-end plain-text empty message.
+        expect(updateArg?.content).not.toBe('No open matches.');
+        // Must include nav components.
+        const components = updateArg?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
+    });
 });
 
 describe('rsvpButton.handle — list_page (clan)', () => {
-    it('calls api.get(/clans?page=3) with actsAsDiscordId when customId is pg:c:3', async () => {
+    it('calls api.get(/clans?page=3&limit=20) with actsAsDiscordId when customId is pg:c:3 (WR-01)', async () => {
         vi.mocked(api.get).mockResolvedValue(clanListPageResponse(3, 4));
         const interaction = makeButtonInteraction('pg:c:3', { deferred: false });
         await handle(interaction as unknown as ButtonInteraction);
-        expect(api.get).toHaveBeenCalledWith('/clans?page=3', {
+        expect(api.get).toHaveBeenCalledWith('/clans?page=3&limit=20', {
             actsAsDiscordId: INVOKER_DISCORD_ID,
         });
     });
@@ -375,6 +405,20 @@ describe('rsvpButton.handle — list_page (clan)', () => {
         await handle(interaction as unknown as ButtonInteraction);
         // Must still call update() to acknowledge the interaction (avoid "application did not respond")
         expect(interaction.update).toHaveBeenCalledTimes(1);
+    });
+
+    // BL-02: stale pg:c:99 button when last_page=2 must render page 2 with nav, not dead-end empty.
+    it('BL-02: pg:c:99 with last_page=2 clamps to page 2 and renders with nav buttons', async () => {
+        vi.mocked(api.get)
+            .mockResolvedValueOnce(emptyClanPageResponse(99, 2))
+            .mockResolvedValueOnce(clanListPageResponse(2, 2));
+        const interaction = makeButtonInteraction('pg:c:99', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0] as Record<string, unknown>;
+        expect(updateArg?.content).not.toBe('No clans.');
+        const components = updateArg?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
     });
 });
 

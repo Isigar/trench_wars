@@ -78,14 +78,14 @@ const MATCH_STUB = {
 function singlePageResponse() {
     return {
         data: [MATCH_STUB],
-        meta: { current_page: 1, per_page: 25, total: 1, last_page: 1 },
+        meta: { current_page: 1, per_page: 5, total: 1, last_page: 1 },
     };
 }
 
 function multiPageResponse(page = 1, lastPage = 3) {
     return {
         data: [MATCH_STUB],
-        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
+        meta: { current_page: page, per_page: 5, total: lastPage * 5, last_page: lastPage },
     };
 }
 
@@ -111,7 +111,7 @@ describe('/match SlashCommandBuilder', () => {
 
 describe('/match list subcommand', () => {
     it('defers reply ephemeral as the first awaited statement', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 5, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(interaction.deferReply).toHaveBeenCalledWith({
@@ -119,24 +119,24 @@ describe('/match list subcommand', () => {
         });
     });
 
-    it('calls api.get with path /matches?page=1 and actsAsDiscordId', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+    it('calls api.get with path /matches?page=1&limit=5 and actsAsDiscordId (BL-01: safe page size)', async () => {
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 5, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
-        expect(api.get).toHaveBeenCalledWith('/matches?page=1', {
+        expect(api.get).toHaveBeenCalledWith('/matches?page=1&limit=5', {
             actsAsDiscordId: INVOKER_DISCORD_ID,
         });
     });
 
     it('editReplies "No open matches." when the API returns an empty list', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 5, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(interaction.editReply).toHaveBeenCalledWith('No open matches.');
     });
 
     it('does NOT include components when data is empty', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 5, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         const arg = interaction.editReply.mock.calls[0]?.[0];
@@ -177,13 +177,51 @@ describe('/match list subcommand', () => {
         const twoMatches = [MATCH_STUB, { ...MATCH_STUB, id: 'aaaaaaaa-0000-0000-0000-000000000000' }];
         vi.mocked(api.get).mockResolvedValue({
             data: twoMatches,
-            meta: { current_page: 1, per_page: 25, total: 2, last_page: 1 },
+            meta: { current_page: 1, per_page: 5, total: 2, last_page: 1 },
         });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         const arg = interaction.editReply.mock.calls[0]?.[0] as { embeds: unknown[] };
         // matchCard produces 1 embed per match
         expect(arg.embeds.length).toBe(2);
+    });
+
+    // BL-01: embed count must never exceed Discord's hard cap of 10 per message.
+    it('BL-01: a page returning 10 items produces ≤10 embeds', async () => {
+        const tenMatches = Array.from({ length: 10 }, (_, i) => ({
+            ...MATCH_STUB,
+            id: `aaaaaaaa-0000-0000-0000-${String(i).padStart(12, '0')}`,
+        }));
+        vi.mocked(api.get).mockResolvedValue({
+            data: tenMatches,
+            meta: { current_page: 1, per_page: 10, total: 10, last_page: 1 },
+        });
+        const interaction = makeInteraction('list');
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const arg = interaction.editReply.mock.calls[0]?.[0] as { embeds: unknown[] };
+        expect(arg.embeds.length).toBeLessThanOrEqual(10);
+    });
+
+    // BL-02: requesting a page beyond last_page must render last_page with nav buttons,
+    // not a dead-end "No open matches." message with no navigation.
+    it('BL-02: page > last_page clamps to last_page and renders with nav buttons', async () => {
+        // First call returns empty data (page=99) with last_page=2.
+        // Second call (clamped re-fetch at page=2) returns one match.
+        vi.mocked(api.get)
+            .mockResolvedValueOnce({ data: [], meta: { current_page: 99, per_page: 5, total: 10, last_page: 2 } })
+            .mockResolvedValueOnce({ data: [MATCH_STUB], meta: { current_page: 2, per_page: 5, total: 10, last_page: 2 } });
+        const interaction = makeInteraction('list');
+        // Directly exercise renderMatchListPage at page 99 (simulate stale button).
+        const { renderMatchListPage } = await import('../../src/commands/match.js');
+        await renderMatchListPage(interaction as unknown as ChatInputCommandInteraction, 99);
+        // Must NOT show the dead-end plain-string empty message.
+        const arg = interaction.editReply.mock.calls[0]?.[0];
+        expect(arg).not.toBe('No open matches.');
+        // Must include nav components (page 2 of 2 has Prev button enabled, Next disabled).
+        const argObj = arg as Record<string, unknown>;
+        const components = argObj?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
     });
 });
 

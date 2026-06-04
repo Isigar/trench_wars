@@ -36,11 +36,9 @@
 import { type ButtonInteraction, MessageFlags } from 'discord.js';
 
 import { buildSignupModal } from './signupModal.js';
-import { paginationButtons } from '../lib/buttons.js';
-import { matchCard } from '../lib/embeds.js';
 import { decodeButtonId } from '../lib/customIds.js';
+import { buildClanListPage, buildMatchListPage } from '../lib/pageBuilders.js';
 import { api } from '../services/api.js';
-import type { ClanData, ListMeta, PublicMatchData } from '../types/apiContracts.js';
 
 export async function handle(interaction: ButtonInteraction): Promise<void> {
     const decoded = decodeButtonId(interaction.customId);
@@ -75,52 +73,17 @@ export async function handle(interaction: ButtonInteraction): Promise<void> {
     // T-12-04-T: decodeButtonId already validated listType + positive-integer page;
     //             any crafted pg: that decoded to null is handled by the Unknown button
     //             path above.
+    // Plan 12-04: Prev/Next page navigation.
+    // Dispatcher detected the 'pg:' prefix and DID NOT pre-defer — interaction.update()
+    // IS the initial response (it mutates the original component message in place).
+    // Shared builders (lib/pageBuilders.ts) enforce BL-01 embed cap, BL-02 out-of-range
+    // clamp, and WR-01 clan content truncation — no duplication here.
     if (decoded.kind === 'list_page') {
         try {
-            if (decoded.listType === 'match') {
-                const result = await api.get<{ data: PublicMatchData[]; meta: ListMeta }>(
-                    `/matches?page=${decoded.page}`,
-                    { actsAsDiscordId: interaction.user.id },
-                );
-                const { data: matches, meta } = result;
-
-                if (matches.length === 0) {
-                    await interaction.update({ content: 'No open matches.', embeds: [], components: [] });
-                    return;
-                }
-
-                const embeds = matches.flatMap((m) => matchCard(m).embeds);
-
-                if (meta.last_page <= 1) {
-                    await interaction.update({ embeds, components: [] });
-                    return;
-                }
-
-                const components = [paginationButtons('match', meta.current_page, meta.last_page)];
-                const content = `Page ${meta.current_page} of ${meta.last_page}`;
-                await interaction.update({ content, embeds, components });
-            } else {
-                // listType === 'clan'
-                const result = await api.get<{ data: ClanData[]; meta: ListMeta }>(
-                    `/clans?page=${decoded.page}`,
-                    { actsAsDiscordId: interaction.user.id },
-                );
-                const { data: clans, meta } = result;
-
-                const listText =
-                    clans.length === 0
-                        ? 'No clans.'
-                        : clans.map((c) => `- [${c.tag}] ${c.name} (${c.slug})`).join('\n');
-
-                if (clans.length === 0 || meta.last_page <= 1) {
-                    await interaction.update({ content: listText, embeds: [], components: [] });
-                    return;
-                }
-
-                const components = [paginationButtons('clan', meta.current_page, meta.last_page)];
-                const content = `${listText}\nPage ${meta.current_page} of ${meta.last_page}`;
-                await interaction.update({ content, embeds: [], components });
-            }
+            const builder =
+                decoded.listType === 'match' ? buildMatchListPage : buildClanListPage;
+            const payload = await builder(decoded.page, interaction.user.id);
+            await interaction.update(payload);
         } catch (err) {
             // Error path: must still call update() to acknowledge the interaction;
             // leaving it unacknowledged causes "application did not respond" in Discord.

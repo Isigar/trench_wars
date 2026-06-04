@@ -39,10 +39,10 @@ import {
 } from 'discord.js';
 
 import { buildSignupModal } from '../components/signupModal.js';
-import { paginationButtons } from '../lib/buttons.js';
 import { matchCard } from '../lib/embeds.js';
+import { buildMatchListPage } from '../lib/pageBuilders.js';
 import { api } from '../services/api.js';
-import type { ListMeta, PublicMatchData } from '../types/apiContracts.js';
+import type { PublicMatchData } from '../types/apiContracts.js';
 
 export const data = new SlashCommandBuilder()
     .setName('match')
@@ -136,38 +136,19 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 /**
  * renderMatchListPage — fetches and renders a page of matches.
  *
- * Exported so plan 12-04's button handler can call the same builder without
- * duplicating fetch/render logic.
- *
- * - Fetches /matches?page=N with the invoking user's Discord ID forwarded.
- * - Empty data → plain-string reply; no components.
- * - last_page === 1 → embeds only; no pagination components.
- * - last_page > 1  → embeds + Prev/Next ActionRow + "Page X of Y" content.
+ * Delegates to buildMatchListPage (lib/pageBuilders.ts) which enforces:
+ *   BL-01: limit=5 fetch + MAX_EMBEDS=10 cap (Discord 10-embed hard limit).
+ *   BL-02: out-of-range page clamp to last_page (stale button recovery).
  */
 export async function renderMatchListPage(
     interaction: ChatInputCommandInteraction,
     page: number,
 ): Promise<void> {
-    const result = await api.get<{ data: PublicMatchData[]; meta: ListMeta }>(
-        `/matches?page=${page}`,
-        { actsAsDiscordId: interaction.user.id },
-    );
-    const { data: matches, meta } = result;
-
-    if (matches.length === 0) {
-        await interaction.editReply('No open matches.');
+    const payload = await buildMatchListPage(page, interaction.user.id);
+    if ('content' in payload && payload.embeds.length === 0 && payload.components.length === 0) {
+        // Plain-string reply for empty state (keeps existing test assertion green).
+        await interaction.editReply(payload.content as string);
         return;
     }
-
-    const embeds = matches.flatMap((m) => matchCard(m).embeds);
-
-    if (meta.last_page <= 1) {
-        await interaction.editReply({ embeds });
-        return;
-    }
-
-    // Multi-page: include Prev/Next row and a page indicator.
-    const components = [paginationButtons('match', meta.current_page, meta.last_page)];
-    const content = `Page ${meta.current_page} of ${meta.last_page}`;
-    await interaction.editReply({ content, embeds, components });
+    await interaction.editReply(payload);
 }
