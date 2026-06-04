@@ -59,9 +59,10 @@ use Illuminate\Support\Facades\DB;
  *   - T-06-08-05 (premature grand-final reset)          — mitigated by `$winnerParticipant->id !== $wWinner->id` guard
  *   - T-06-08-06 (wrong parity slot)                    — Pattern 7 odd/even rule, asserted by Pest "slot a vs b" test
  *   - T-06-08-07 (circular DI)                          — mitigated by app() resolution for StandingsCalculatorService
- *   - T-11-03-01 (Elo applied more than once per bracket) — mitigated by rated_at null-guard + stamp inside this transaction
+ *   - T-11-03-01 (Elo applied more than once per bracket) — mitigated by rated_at lockForUpdate re-read + stamp inside transaction (CR-02 fix)
  *   - T-11-03-02 (Swiss round generated twice)            — mitigated by nextRoundExists check inside the locked transaction
  *   - T-11-03-03 (auto-advance past final round)          — mitigated by inline currentRound < totalRounds guard (no exception-as-flow)
+ *   - T-11-03-04 (bye blocks Swiss auto-complete)         — mitigated by whereNull('winner_participant_id') in allBracketsComplete() guard (CR-01 fix)
  */
 final class BracketAdvancementService
 {
@@ -312,8 +313,10 @@ final class BracketAdvancementService
      * match_id=NULL (not yet materialised). The check above excludes those rows,
      * so allBracketsComplete() would spuriously return true after a NON-final
      * swiss round. Guard: if the tournament format is 'swiss' and any swiss-round
-     * stage has unmaterialised brackets (match_id IS NULL), the tournament is
-     * NOT complete — those brackets are a pending round, not a clean terminal state.
+     * stage has brackets with BOTH match_id IS NULL AND winner_participant_id IS NULL,
+     * the tournament is NOT complete — those brackets represent a pending round.
+     * Byes (match_id=null, winner_participant_id≠null) are intentionally excluded
+     * from this guard: they are already resolved and must not block completion (CR-01).
      */
     private function allBracketsComplete(Tournament $tournament): bool
     {
@@ -346,9 +349,14 @@ final class BracketAdvancementService
                 ->where('type', 'swiss-round')
                 ->pluck('id');
 
+            // Byes have match_id=null AND winner_participant_id≠null (pre-assigned by
+            // SwissGenerator). Only a bracket that is BOTH unmaterialised AND undecided
+            // represents a pending round. Excluding byes here prevents odd-N Swiss
+            // tournaments from getting stuck in the "never complete" state (CR-01).
             $hasUnmaterialisedSwissBrackets = TournamentBracket::query()
                 ->whereIn('tournament_stage_id', $swissStageIds)
                 ->whereNull('match_id')
+                ->whereNull('winner_participant_id')
                 ->exists();
 
             if ($hasUnmaterialisedSwissBrackets) {

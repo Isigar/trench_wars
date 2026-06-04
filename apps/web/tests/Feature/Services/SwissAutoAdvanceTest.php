@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Clan;
 use App\Models\Game;
+use App\Models\GameMatch;
 use App\Models\GameMatchType;
 use App\Models\GameMatchTypeRoleLimit;
 use App\Models\GameRole;
@@ -250,4 +251,85 @@ it('auto-advance does not generate a duplicate round when advance() is re-fired 
 
     // Count must not have increased — the existence-check guard prevented a duplicate.
     expect($tournament->fresh()->stages()->where('type', 'swiss-round')->count())->toBe($countAfterRound1);
+});
+
+// ---------------------------------------------------------------------------
+// CR-01 regression: odd-N Swiss with bye must auto-complete (not stuck forever)
+// ---------------------------------------------------------------------------
+
+it('odd-N Swiss tournament auto-completes when last real match resolves (bye must not block completion)', function (): void {
+    // Regression for CR-01: allBracketsComplete() previously returned false forever
+    // for any odd-N Swiss tournament because byes (match_id=null, winner_participant_id≠null)
+    // were mistakenly counted as "unmaterialised pending rounds".
+    //
+    // Setup: 1-round swiss stage (final round), 1 real match + 1 bye bracket.
+    // All materialised matches are already resolved. When we advance the last real
+    // match, the tournament must transition to 'completed'.
+    $game = Game::factory()->create();
+    $matchType = GameMatchType::factory()->for($game)->create();
+    $role = GameRole::factory()->for($game)->create();
+    GameMatchTypeRoleLimit::factory()->create([
+        'game_match_type_id' => $matchType->id,
+        'game_role_id' => $role->id,
+        'capacity' => 2,
+    ]);
+
+    $tournament = Tournament::factory()
+        ->ofFormat('swiss')
+        ->inStatus('running')
+        ->for($game)
+        ->create(['default_game_match_type_id' => $matchType->id]);
+
+    // 3 participants: clan A vs clan B (real match) + clan C bye.
+    $clans = Clan::factory()->count(3)->create();
+    $pA = TournamentParticipant::factory()->for($tournament)->create(['seed' => 1, 'status' => 'active', 'clan_id' => $clans[0]->id]);
+    $pB = TournamentParticipant::factory()->for($tournament)->create(['seed' => 2, 'status' => 'active', 'clan_id' => $clans[1]->id]);
+    $pC = TournamentParticipant::factory()->for($tournament)->create(['seed' => 3, 'status' => 'active', 'clan_id' => $clans[2]->id]);
+
+    /** @var TournamentStage $stage */
+    $stage = TournamentStage::factory()->for($tournament)->create([
+        'type' => 'swiss-round',
+        'ordinal' => 1,
+    ]);
+
+    // Real match bracket (materialised — has a match_id).
+    $gameMatch = GameMatch::factory()->create([
+        'game_match_type_id' => $matchType->id,
+        'organiser_user_id' => $tournament->organiser_user_id,
+    ]);
+    TournamentBracket::create([
+        'tournament_stage_id' => $stage->id,
+        'round_number' => 1,
+        'position' => 1,
+        'participant_a_id' => $pA->id,
+        'participant_b_id' => $pB->id,
+        'winner_participant_id' => null,
+        'match_id' => $gameMatch->id,
+    ]);
+
+    // Bye bracket: match_id=null, winner pre-assigned. This is the row that used
+    // to make allBracketsComplete() return false forever (CR-01).
+    TournamentBracket::create([
+        'tournament_stage_id' => $stage->id,
+        'round_number' => 1,
+        'position' => 2,
+        'participant_a_id' => $pC->id,
+        'participant_b_id' => null,
+        'winner_participant_id' => $pC->id,
+        'match_id' => null,
+    ]);
+
+    expect($tournament->fresh()->status)->toBe('running');
+
+    // Record the result for the one real match — this is the final resolvable match.
+    $result = new MatchResult([
+        'match_id' => $gameMatch->id,
+        'winner_clan_id' => $clans[0]->id,
+        'allies_score' => 3,
+        'axis_score' => 0,
+    ]);
+    app(BracketAdvancementService::class)->advance($result);
+
+    // The tournament MUST auto-complete. Before CR-01 fix it stayed 'running' forever.
+    expect($tournament->fresh()->status)->toBe('completed');
 });
