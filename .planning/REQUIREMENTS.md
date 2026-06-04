@@ -83,8 +83,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TOUR-02 | 11 | Complete |
 | TOUR-03 | 11 | Complete |
 | TOUR-04 | 11 | Complete |
-| NOTF-01 | 12 | Complete |
-| BOT-01 | 12 | Complete |
+| NOTF-01 | 12 (12-01) | Complete |
+| BOT-01 | 12 (12-02, 12-03, 12-04) | Complete |
 
 **Coverage:**
 - v1.1 requirements: 10 total
@@ -93,4 +93,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-06-03*
-*Last updated: 2026-06-04 — TOUR-01..04 verified complete (Phase 11 close — 11-05)*
+*Last updated: 2026-06-04 — NOTF-01 (12-01) + BOT-01 (12-02..04) verified complete (Phase 12 close — 12-05)*
