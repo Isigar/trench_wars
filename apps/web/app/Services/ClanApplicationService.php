@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\AlreadyInClanException;
+use App\Exceptions\ClanNotRecruitingException;
+use App\Exceptions\DuplicateApplicationException;
+use App\Models\Clan;
 use App\Models\ClanApplication;
 use App\Models\ClanMembership;
 use App\Models\User;
@@ -22,6 +26,55 @@ use Illuminate\Support\Facades\DB;
  */
 final class ClanApplicationService
 {
+    /**
+     * Create a pending application for an eligible applicant.
+     *
+     * Guards (in order):
+     *  1. Clan must be accepting applications (CLAN-04 recruiting toggle).
+     *  2. Applicant must not have an active ClanMembership (D-009 one-active invariant).
+     *  3. No existing pending application to this clan (CLAN-03 duplicate guard).
+     *
+     * The clan_applications_one_pending_per_clan partial unique index (plan 10-01)
+     * is the last-line defence for Guard 3 in concurrent requests (T-10-02-02).
+     *
+     * @throws ClanNotRecruitingException When the clan is not accepting applications.
+     * @throws AlreadyInClanException When the applicant already holds an active membership.
+     * @throws DuplicateApplicationException When a pending application already exists for this clan.
+     */
+    public function apply(Clan $clan, User $applicant, ?string $message = null): ClanApplication
+    {
+        // Guard 1 — CLAN-04: clan must be accepting applications.
+        if (! $clan->accepts_applications) {
+            throw new ClanNotRecruitingException(__('clans.applications.error.clan_not_recruiting'));
+        }
+
+        // Guard 2 — D-009: applicant must not already be in any clan.
+        $applicantAlreadyMember = ClanMembership::where('user_id', $applicant->id)
+            ->whereNull('left_at')
+            ->exists();
+
+        if ($applicantAlreadyMember) {
+            throw new AlreadyInClanException(__('clans.applications.error.already_in_clan'));
+        }
+
+        // Guard 3 — CLAN-03: no existing pending application to this clan.
+        $duplicatePending = ClanApplication::where('clan_id', $clan->id)
+            ->where('applicant_user_id', $applicant->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($duplicatePending) {
+            throw new DuplicateApplicationException(__('clans.applications.error.duplicate_application'));
+        }
+
+        return ClanApplication::create([
+            'clan_id' => $clan->id,
+            'applicant_user_id' => $applicant->id,
+            'status' => 'pending',
+            'message' => $message,
+        ]);
+    }
+
     /**
      * Accept a pending application and atomically create a ClanMembership.
      *
