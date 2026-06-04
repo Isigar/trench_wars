@@ -76,7 +76,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
   1. A user can open their account-settings page and see all notification event-types with their current preference (in-app / Discord DM / both / none) per channel, change any preference, and have the notification dispatcher honor those choices from that point forward
   2. When `/match list` or `/clan list` returns more results than fit on a single Discord response, the user can navigate to subsequent pages using interactive controls in the same message
 **Plans**: 5 plans
-  - [ ] 12-01-PLAN.md — NOTF-01: notification-preferences nav link (discoverability) + end-to-end honor test
+  - [x] 12-01-PLAN.md — NOTF-01: notification-preferences nav link (discoverability) + end-to-end honor test
   - [ ] 12-02-PLAN.md — BOT-01: list_page customId + Prev/Next pagination button factory (TDD)
   - [ ] 12-03-PLAN.md — BOT-01: in-message pagination render in /match list + /clan list (page + "Page X of Y")
   - [ ] 12-04-PLAN.md — BOT-01: Prev/Next handler re-fetches page and interaction.update()s the same message
@@ -98,4 +98,4 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
 | 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
 | 11. Tournament depth | v1.1 | 5/5 | Complete   | 2026-06-04 |
-| 12. Notifications & bot polish | v1.1 | 0/5 | Not started | - |
+| 12. Notifications & bot polish | v1.1 | 1/5 | In Progress|  |

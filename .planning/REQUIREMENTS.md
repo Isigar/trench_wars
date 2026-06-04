@@ -23,7 +23,7 @@ Requirements for the v1.1 "Completion" milestone — finishing the partially-bui
 
 ### Notifications (NOTF)
 
-- [ ] **NOTF-01**: A user can view and configure their notification preferences (per event-type × channel) in account settings, and the notification dispatcher honors those choices.
+- [x] **NOTF-01**: A user can view and configure their notification preferences (per event-type × channel) in account settings, and the notification dispatcher honors those choices.
 
 ### Discord UX (BOT)
 
@@ -83,7 +83,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TOUR-02 | 11 | Complete |
 | TOUR-03 | 11 | Complete |
 | TOUR-04 | 11 | Complete |
-| NOTF-01 | 12 | Pending |
+| NOTF-01 | 12 | Complete |
 | BOT-01 | 12 | Pending |
 
 **Coverage:**

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
 status: executing
-stopped_at: "Completed Phase 11 Plan 05 (PHASE COMPLETE): median Buchholz column + shared-types regen + full gate suite + TOUR-01..04 traced"
-last_updated: "2026-06-04T12:04:00Z"
+stopped_at: Completed Phase 11 Plan 05 (PHASE COMPLETE) — median Buchholz column + shared-types regen + full gate suite (1365/4802) + TOUR-01..04 traced + ROADMAP Phase 11 Complete
+last_updated: "2026-06-04T12:22:58.582Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 17
+  completed_plans: 13
   percent: 67
 ---
 
@@ -21,11 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 11 — Tournament depth
+**Current focus:** Phase 12 — Notifications & bot polish
 
 ## Current Position
 
-Phase: 11 (Tournament depth) — COMPLETE
+Phase: 12 (Notifications & bot polish) — EXECUTING
+Plan: 2 of 5
 Phase 12 (Notifications & bot polish) — NEXT
 Last activity: 2026-06-04
 
@@ -588,7 +589,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-04T12:04:00Z
+Last session: 2026-06-04T12:22:58.570Z
 Stopped at: Completed Phase 11 Plan 05 (PHASE COMPLETE) — median Buchholz column + shared-types regen + full gate suite (1365/4802) + TOUR-01..04 traced + ROADMAP Phase 11 Complete
 Resume file: None
 Next: Phase 12 (Notifications & bot polish) — NOTF-01 + BOT-01; planning required before execution.
