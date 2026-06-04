@@ -85,6 +85,6 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 7. CMS | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
-| 10. Clan applications | v1.1 | 7/7 | Complete | 2026-06-04 |
+| 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
 | 11. Tournament depth | v1.1 | 0/TBD | Not started | - |
 | 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |
