@@ -43,6 +43,7 @@ class TournamentStanding extends Model
         'draws',
         'points',
         'tiebreak_score',
+        'median_buchholz',
         'rank',
     ];
 
@@ -55,6 +56,7 @@ class TournamentStanding extends Model
             'draws' => 'integer',
             'points' => 'decimal:2',
             'tiebreak_score' => 'decimal:2',
+            'median_buchholz' => 'decimal:2',
             'rank' => 'integer',
         ];
     }

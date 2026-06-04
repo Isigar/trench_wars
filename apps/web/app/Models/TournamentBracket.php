@@ -48,6 +48,7 @@ class TournamentBracket extends Model
         'participant_a_id',
         'participant_b_id',
         'winner_participant_id',
+        'rated_at',
         'match_id',
         'advances_to_bracket_id',
         'loser_advances_to_bracket_id',
@@ -59,6 +60,7 @@ class TournamentBracket extends Model
         return [
             'round_number' => 'integer',
             'position' => 'integer',
+            'rated_at' => 'datetime',
         ];
     }
 

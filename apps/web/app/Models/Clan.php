@@ -58,6 +58,8 @@ class Clan extends Model implements HasMedia, Sitemapable
         'owner_user_id',
         'status',
         'accepts_applications',
+        'elo_rating',
+        'elo_matches_count',
         'discord_role_id',
         'discord_announce_channel_id',
     ];
@@ -75,6 +77,8 @@ class Clan extends Model implements HasMedia, Sitemapable
     {
         return [
             'accepts_applications' => 'boolean',
+            'elo_rating' => 'integer',
+            'elo_matches_count' => 'integer',
         ];
     }
 

@@ -39,6 +39,7 @@ class TournamentStage extends Model
         'ordinal',
         'name',
         'settings',
+        'game_match_type_id',
     ];
 
     /** @return array<string, string> */
@@ -71,5 +72,23 @@ class TournamentStage extends Model
         return $this->hasMany(TournamentBracket::class)
             ->orderBy('round_number')
             ->orderBy('position');
+    }
+
+    /**
+     * TOUR-04: Stage-level GameMatchType override.
+     *
+     * When set, BracketMatchMaterialiserService (plan 11-04) uses this type
+     * instead of the tournament's default_game_match_type_id. NULL = use
+     * tournament default (no override).
+     *
+     * nullOnDelete FK: dropping a GameMatchType nulls this column — the stage
+     * survives (T-11-01-01 mitigation). Mirror of the tournament() BelongsTo
+     * generic annotation pattern.
+     *
+     * @return BelongsTo<GameMatchType, $this>
+     */
+    public function gameMatchType(): BelongsTo
+    {
+        return $this->belongsTo(GameMatchType::class, 'game_match_type_id');
     }
 }
