@@ -23,8 +23,6 @@ final class EloRatingService
 {
     private const K = 32;
 
-    private const BASE = 1500;
-
     /**
      * Apply a match result to both clans' Elo ratings.
      *
