@@ -124,6 +124,41 @@ it('by_rank with all clans at 1500 matches created_at desc order (D-11-03-A no-r
 });
 
 // ---------------------------------------------------------------------------
+// WR-01 regression: soft-deleted clan seeds at 1500 default without error
+// ---------------------------------------------------------------------------
+
+it('by_rank treats a soft-deleted clan as elo_rating 1500 without throwing TypeError (WR-01)', function (): void {
+    // Regression for WR-01: $a->clan->elo_rating would throw TypeError when the clan
+    // is soft-deleted (loadMissing returns null). Fix uses the nullsafe operator:
+    // $a->clan?->elo_rating ?? 1500.
+    $tournament = Tournament::factory()->inStatus('registering')->create();
+
+    $normalClan = Clan::factory()->create(['elo_rating' => 1800]);
+    $deletedClan = Clan::factory()->create(['elo_rating' => 2000]); // high elo, but soft-deleted
+
+    // Soft-delete the clan AFTER the participant is created so the FK exists.
+    $pNormal = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $normalClan->id,
+        'created_at' => now()->subMinutes(2),
+    ]);
+    $pDeleted = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $deletedClan->id,
+        'created_at' => now()->subMinutes(1),
+    ]);
+
+    // Soft-delete the clan; loadMissing('clan') will now return null for $pDeleted.
+    $deletedClan->delete();
+
+    // Must not throw — the nullsafe operator provides a 1500 fallback.
+    expect(fn () => app(TournamentSeedingService::class)->seed($tournament, 'by_rank'))->not->toThrow(\Throwable::class);
+
+    // The normal clan (1800 elo) should get seed 1; the soft-deleted clan falls
+    // back to 1500 so it ranks second.
+    expect($pNormal->fresh()->seed)->toBe(1);
+    expect($pDeleted->fresh()->seed)->toBe(2);
+});
+
+// ---------------------------------------------------------------------------
 // Strategy: random — Faker shuffle (probabilistic; 5-run loose flake budget)
 // ---------------------------------------------------------------------------
 
