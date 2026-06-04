@@ -26,7 +26,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 
 ### v1.1 Completion (Phases 10-12)
 
-- [ ] **Phase 10: Clan applications** — Submission flow on web and Discord, eligibility enforcement, and per-clan recruiting toggle
+- [x] **Phase 10: Clan applications** — Submission flow on web and Discord, eligibility enforcement, and per-clan recruiting toggle
 - [ ] **Phase 11: Tournament depth** — Swiss auto-advance, ELO seeding, median Buchholz tiebreaker, and stage-level GameMatchType override
 - [ ] **Phase 12: Notifications & bot polish** — Notification-preferences account-settings UX and bot list pagination
 
@@ -48,7 +48,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 - [x] 10-04-PLAN.md — CLAN-04 recruiting toggle surfaces (ClanData DTO, MyClan settings UI, Filament admin)
 - [x] 10-05-PLAN.md — Bot wiring: /clan apply + clan_apply button → api.post, translateError extension, bot tests
 - [x] 10-06-PLAN.md — Web "Apply to join" form on the clan show page + eligibility props + feature test
-- [ ] 10-07-PLAN.md — Phase close: full web+bot gate suite, SC traceability, REQUIREMENTS/ROADMAP updates
+- [x] 10-07-PLAN.md — Phase close: full web+bot gate suite, SC traceability, REQUIREMENTS/ROADMAP updates
 **UI hint**: yes
 
 ### Phase 11: Tournament depth
@@ -85,6 +85,6 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 7. CMS | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
-| 10. Clan applications | v1.1 | 6/7 | In Progress|  |
+| 10. Clan applications | v1.1 | 7/7 | Complete | 2026-06-04 |
 | 11. Tournament depth | v1.1 | 0/TBD | Not started | - |
 | 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |
