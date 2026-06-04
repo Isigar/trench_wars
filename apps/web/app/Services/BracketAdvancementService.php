@@ -202,13 +202,30 @@ final class BracketAdvancementService
             //     Skip byes: $loserParticipant is null when only one slot is filled.
             //     Circular-DI break (T-11-03): EloRatingService resolved via app(),
             //     NOT constructor injection (same pattern as StandingsCalculatorService above).
-            if ($loserParticipant !== null && $bracket->rated_at === null) {
-                $winnerClan = Clan::find($winnerParticipant->clan_id);
-                $loserClan = Clan::find($loserParticipant->clan_id);
-                if ($winnerClan !== null && $loserClan !== null) {
-                    app(EloRatingService::class)->applyResult($winnerClan, $loserClan);
-                    // Stamp the idempotency marker inside the same transaction (T-11-03-01).
-                    $bracket->update(['rated_at' => now()]);
+            //
+            //     CR-02 fix: re-fetch the bracket row inside the transaction using
+            //     lockForUpdate() so that two concurrent advance() calls (e.g. on admin
+            //     correction) serialise on THIS row and only the first caller sees
+            //     rated_at=null. The stale $bracket PHP object (fetched before the
+            //     transaction) must NOT be used for the idempotency check — it could
+            //     hold a null from before a concurrent caller already stamped rated_at.
+            if ($loserParticipant !== null) {
+                /** @var TournamentBracket|null $lockedBracket */
+                $lockedBracket = TournamentBracket::query()
+                    ->whereKey($bracket->id)
+                    ->lockForUpdate()
+                    ->first();
+                if ($lockedBracket !== null && $lockedBracket->rated_at === null) {
+                    $winnerClan = Clan::find($winnerParticipant->clan_id);
+                    $loserClan = Clan::find($loserParticipant->clan_id);
+                    if ($winnerClan !== null && $loserClan !== null) {
+                        app(EloRatingService::class)->applyResult($winnerClan, $loserClan);
+                        // Stamp the idempotency marker on the LOCKED row, not the stale
+                        // $bracket object, so the stamp is visible to any concurrent caller
+                        // waiting on the same row lock (T-11-03-01, CR-02).
+                        $lockedBracket->update(['rated_at' => now()]);
+                        $bracket->rated_at = $lockedBracket->rated_at;
+                    }
                 }
             }
 

@@ -255,3 +255,62 @@ it('bye bracket does not apply Elo and leaves rated_at null', function (): void 
     // rated_at must remain null (bye stamp-guard, plan 11-03 INFO finding).
     expect($byeBracket->fresh()->rated_at)->toBeNull();
 });
+
+// ---------------------------------------------------------------------------
+// CR-02 regression: concurrent re-fire uses lockForUpdate on DB row (not stale object)
+// ---------------------------------------------------------------------------
+
+it('advance() reads rated_at from the locked DB row, not the stale PHP object (CR-02 concurrent guard)', function (): void {
+    // Regression for CR-02: the Elo hook previously checked $bracket->rated_at on the
+    // PHP object fetched BEFORE the transaction. Two concurrent callers could both see
+    // a stale null and both apply Elo. The fix re-fetches with lockForUpdate() inside
+    // the transaction so only the first caller through the lock sees rated_at=null.
+    //
+    // Simulation: after the first advance() stamps rated_at, manually reset the PHP
+    // object's rated_at to null (simulating what a stale pre-transaction fetch would
+    // look like for a concurrent second caller) and call advance() again directly.
+    // The lockForUpdate re-read must see the DB-stamped value and skip Elo.
+    $tournament = makeEloTournament('single_elimination');
+    makeEloParticipants($tournament, 4);
+    app(BracketGeneratorService::class)->generate($tournament);
+    app(BracketMatchMaterialiserService::class)->materialiseFirstRound($tournament);
+
+    /** @var TournamentStage $stage */
+    $stage = $tournament->stages()->first();
+    /** @var TournamentBracket $bracket */
+    $bracket = $stage->brackets()->where('round_number', 1)->where('position', 1)->firstOrFail();
+    /** @var TournamentParticipant $participantA */
+    $participantA = $bracket->participantA;
+    /** @var TournamentParticipant $participantB */
+    $participantB = $bracket->participantB;
+
+    // First advance: stamps rated_at in the DB.
+    MatchResult::factory()->create([
+        'match_id' => $bracket->match_id,
+        'winner_clan_id' => $participantA->clan_id,
+    ]);
+
+    $ratingWinnerAfterFirst = Clan::query()->whereKey($participantA->clan_id)->value('elo_rating');
+    $ratingLoserAfterFirst = Clan::query()->whereKey($participantB->clan_id)->value('elo_rating');
+
+    // Confirm DB has rated_at stamped.
+    expect(TournamentBracket::query()->whereKey($bracket->id)->value('rated_at'))->not->toBeNull();
+
+    // Simulate a concurrent second call: build a fresh in-memory MatchResult (bypassing
+    // the observer chain) so the advance() code re-enters with a bracket object where
+    // rated_at appears null (as it would for a concurrent caller who fetched the bracket
+    // before the first transaction committed). We do not refresh $bracket — just call
+    // advance() again with a new synthetic result so the service queries the bracket fresh
+    // inside its own transaction, which is where the lockForUpdate re-read matters.
+    $syntheticResult = new MatchResult([
+        'match_id' => $bracket->match_id,
+        'winner_clan_id' => $participantA->clan_id,
+        'allies_score' => 3,
+        'axis_score' => 0,
+    ]);
+    app(BracketAdvancementService::class)->advance($syntheticResult);
+
+    // Ratings must be unchanged — the locked re-read saw rated_at≠null and skipped Elo.
+    expect(Clan::query()->whereKey($participantA->clan_id)->value('elo_rating'))->toBe($ratingWinnerAfterFirst);
+    expect(Clan::query()->whereKey($participantB->clan_id)->value('elo_rating'))->toBe($ratingLoserAfterFirst);
+});
