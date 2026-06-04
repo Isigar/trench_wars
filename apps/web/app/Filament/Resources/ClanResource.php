@@ -109,6 +109,11 @@ class ClanResource extends Resource
                                         ->relationship(titleAttribute: 'slug')
                                         ->preload(),
 
+                                    Forms\Components\Toggle::make('accepts_applications')
+                                        ->label(__('admin.clan.fields.accepts_applications'))
+                                        ->helperText(__('admin.clan.fields.accepts_applications_help'))
+                                        ->default(true),
+
                                     // Discord fields are protected by an "Enable edit" toggle (T-02-09-02 mitigation).
                                     // Admin must explicitly enable editing to prevent accidental snowflake changes.
                                     Forms\Components\Toggle::make('discord_advanced_fields_enabled')

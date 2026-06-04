@@ -51,6 +51,7 @@ const profileForm = useForm({
     tag: props.clan?.tag ?? '',
     description: props.clan?.description?.en ?? '',
     country_code: props.clan?.country_code ?? '',
+    accepts_applications: props.clan?.accepts_applications ?? true,
 });
 
 function saveProfile(): void {
@@ -264,6 +265,25 @@ function truncateMessage(msg: string | null, max = 120): string {
                                 :placeholder="'e.g. GB'"
                                 :errors="profileForm.errors.country_code ? [profileForm.errors.country_code] : []"
                             />
+
+                            <div class="flex flex-col gap-1">
+                                <label class="flex items-center gap-2 cursor-pointer select-none">
+                                    <input
+                                        id="profile-accepts-applications"
+                                        v-model="profileForm.accepts_applications"
+                                        type="checkbox"
+                                        class="h-4 w-4 rounded border border-[var(--color-border)]
+                                               bg-[var(--color-surface)] text-[var(--color-primary)]
+                                               focus:outline-2 focus:outline-[var(--color-focus-ring)]"
+                                    />
+                                    <span class="text-sm font-medium text-[var(--color-text)]">
+                                        {{ t('clans.form.accepts_applications.label') }}
+                                    </span>
+                                </label>
+                                <p class="text-sm text-[var(--color-text-muted)] pl-6">
+                                    {{ t('clans.form.accepts_applications.hint') }}
+                                </p>
+                            </div>
 
                             <div class="flex justify-end">
                                 <Button

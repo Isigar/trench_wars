@@ -168,6 +168,8 @@ return [
             'owner' => 'Owner',
             'status' => 'Status',
             'tags' => 'Tags',
+            'accepts_applications' => 'Accept applications',
+            'accepts_applications_help' => 'When off, users cannot apply to join this clan.',
             'discord_role_id' => 'Discord role ID',
             'discord_announce_channel_id' => 'Discord announce channel ID',
             'discord_announce_channel_id_help' => 'Discord channel snowflake — copy from Channel Settings → Edit Channel → Advanced → Channel ID. Bot needs send + embed perms.',
