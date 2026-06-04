@@ -366,3 +366,25 @@ it('LogsActivity row is written when applicant cancels application', function ()
     expect($activity)->not->toBeNull();
     expect($activity->causer_id)->toBe($applicant->id);
 });
+
+// ===========================================================================
+// WR-01 — accept() flash message uses the APPLICANT's username, not the acceptor's
+// ===========================================================================
+
+it('accept() flash message contains the applicant username, not the acceptor username (WR-01)', function (): void {
+    [$clan, $leader] = setupApplicationClan();
+    $applicant = User::factory()->create(['username' => 'applicant-user-wr01']);
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $response = $this->actingAs($leader)
+        ->post(route('my-clan.applications.accept', $app->id))
+        ->assertRedirect();
+
+    // The success flash must contain the applicant's name, not the leader's.
+    $response->assertSessionHas('success', fn (string $msg): bool => str_contains($msg, 'applicant-user-wr01'));
+});

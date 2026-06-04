@@ -46,8 +46,10 @@ class ClanApplicationController extends Controller
             ]);
         }
 
+        // WR-01: pass the APPLICANT's username (not the acceptor's) to the
+        // 'clans.applications.accepted' string (":name has joined the clan").
         return redirect()->back()->with('success', __('clans.applications.accepted', [
-            'name' => $actor->username,
+            'name' => $application->applicant->username ?? (string) $application->applicant_user_id,
         ]));
     }
 
