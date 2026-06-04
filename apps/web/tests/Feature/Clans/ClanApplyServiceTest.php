@@ -10,6 +10,9 @@ use App\Models\ClanApplication;
 use App\Models\ClanMembership;
 use App\Models\User;
 use App\Services\ClanApplicationService;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /*
 | Source: 10-02-PLAN.md Task 1 — RED phase.
@@ -204,8 +207,8 @@ it('partial unique index on clan_applications raises UniqueConstraintViolationEx
     $clan = Clan::factory()->create(['accepts_applications' => true]);
     $applicant = User::factory()->create();
 
-    \Illuminate\Support\Facades\DB::table('clan_applications')->insert([
-        'id' => \Illuminate\Support\Str::uuid()->toString(),
+    DB::table('clan_applications')->insert([
+        'id' => Str::uuid()->toString(),
         'clan_id' => $clan->id,
         'applicant_user_id' => $applicant->id,
         'status' => 'pending',
@@ -220,9 +223,9 @@ it('partial unique index on clan_applications raises UniqueConstraintViolationEx
     // outer RefreshDatabase transaction.
     $violated = false;
     try {
-        \Illuminate\Support\Facades\DB::transaction(function () use ($clan, $applicant): void {
-            \Illuminate\Support\Facades\DB::table('clan_applications')->insert([
-                'id' => \Illuminate\Support\Str::uuid()->toString(),
+        DB::transaction(function () use ($clan, $applicant): void {
+            DB::table('clan_applications')->insert([
+                'id' => Str::uuid()->toString(),
                 'clan_id' => $clan->id,
                 'applicant_user_id' => $applicant->id,
                 'status' => 'pending',
@@ -233,7 +236,7 @@ it('partial unique index on clan_applications raises UniqueConstraintViolationEx
                 'updated_at' => now(),
             ]);
         });
-    } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+    } catch (UniqueConstraintViolationException) {
         $violated = true;
     }
 
