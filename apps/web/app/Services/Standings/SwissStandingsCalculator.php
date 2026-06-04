@@ -158,6 +158,24 @@ final class SwissStandingsCalculator implements StandingsCalculatorStrategy
             $buchholzByParticipant[$p->id] = $sum;
         }
 
+        // Third pass: Median Buchholz (Buchholz Cut 1) — drop the single highest
+        // and single lowest opponent score. For <3 opponents nothing is dropped,
+        // so median_buchholz == plain Buchholz (T-11-02-04 + TOUR-03).
+        /** @var array<string, float> $medianBuchholzByParticipant */
+        $medianBuchholzByParticipant = [];
+        foreach ($participants as $p) {
+            $opponentScores = [];
+            foreach ($opponentsByParticipant[$p->id] as $oppId) {
+                $opponentScores[] = $pointsByParticipant[$oppId] ?? 0.0;
+            }
+            if (count($opponentScores) >= 3) {
+                sort($opponentScores);
+                array_shift($opponentScores); // drop lowest
+                array_pop($opponentScores);   // drop highest
+            }
+            $medianBuchholzByParticipant[$p->id] = array_sum($opponentScores);
+        }
+
         $rows = [];
         foreach ($participants as $p) {
             $rows[] = [
@@ -167,6 +185,7 @@ final class SwissStandingsCalculator implements StandingsCalculatorStrategy
                 'draws' => $draws[$p->id],
                 'points' => $pointsByParticipant[$p->id],
                 'buchholz' => $buchholzByParticipant[$p->id],
+                'median_buchholz' => $medianBuchholzByParticipant[$p->id],
             ];
         }
 
@@ -176,6 +195,10 @@ final class SwissStandingsCalculator implements StandingsCalculatorStrategy
             }
             if ((float) $a['buchholz'] !== (float) $b['buchholz']) {
                 return $b['buchholz'] <=> $a['buchholz'];
+            }
+            // Third tiebreaker: median_buchholz DESC (TOUR-03).
+            if ((float) $a['median_buchholz'] !== (float) $b['median_buchholz']) {
+                return $b['median_buchholz'] <=> $a['median_buchholz'];
             }
             $aSeed = $a['participant']->seed ?? PHP_INT_MAX;
             $bSeed = $b['participant']->seed ?? PHP_INT_MAX;
@@ -196,6 +219,7 @@ final class SwissStandingsCalculator implements StandingsCalculatorStrategy
                 'draws' => $row['draws'],
                 'points' => $row['points'],
                 'tiebreak_score' => $row['buchholz'],
+                'median_buchholz' => $row['median_buchholz'],
                 'rank' => $index + 1,
             ]);
         }
