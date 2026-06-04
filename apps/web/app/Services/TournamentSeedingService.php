@@ -168,14 +168,36 @@ final class TournamentSeedingService
     }
 
     /**
-     * v1 by_rank: order participants by created_at desc as a deterministic proxy for skill rank.
-     * RESEARCH Assumption A11 — future Phase 9 polish swaps this for ELO-based ranking.
+     * Phase 11 by_rank: order participants by their clan's elo_rating DESC.
+     * Supersedes the v1 created_at DESC proxy (RESEARCH Assumption A11 — plan 11-03).
+     *
+     * Decision D-11-03-A: tiebreak is created_at DESC (not ASC as CONTEXT.md decision #4 stated)
+     * so that all-1500 clans produce byte-identical output to the pre-Phase-11 proxy.
+     * The no-regression requirement (TOUR-02 SC) wins over the CONTEXT.md direction.
+     *
+     * A single usort comparator composes both keys deterministically; chaining two
+     * sortByDesc calls is NOT stable across keys.
      *
      * @param  EloquentCollection<int, TournamentParticipant>  $participants
      * @return Collection<int, TournamentParticipant>
      */
     private function orderByRank(EloquentCollection $participants): Collection
     {
-        return $participants->sortByDesc('created_at')->values();
+        $participants->loadMissing('clan');
+
+        return $participants
+            ->sort(function (TournamentParticipant $a, TournamentParticipant $b): int {
+                $ratingA = $a->clan->elo_rating ?? 1500;
+                $ratingB = $b->clan->elo_rating ?? 1500;
+
+                if ($ratingB !== $ratingA) {
+                    return $ratingB <=> $ratingA; // higher Elo first
+                }
+
+                // Tiebreak: created_at DESC (newest first) — preserves pre-Phase-11 order
+                // when all clans are at 1500 (D-11-03-A no-regression guarantee).
+                return $b->created_at <=> $a->created_at;
+            })
+            ->values();
     }
 }

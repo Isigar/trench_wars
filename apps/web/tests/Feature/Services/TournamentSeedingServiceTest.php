@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Exceptions\SeedingNotAllowedException;
+use App\Models\Clan;
 use App\Models\GameMatch;
 use App\Models\MatchResult;
 use App\Models\Tournament;
@@ -58,6 +59,68 @@ it('by_rank flips every registered participant to active status', function (): v
     foreach ($participants as $p) {
         expect($p->fresh()->status)->toBe('active');
     }
+});
+
+// ---------------------------------------------------------------------------
+// Phase 11 — by_rank orders by clan elo_rating DESC (D-11-03-A)
+// ---------------------------------------------------------------------------
+
+it('by_rank orders participants by clan elo_rating desc (high elo = seed 1)', function (): void {
+    $tournament = Tournament::factory()->inStatus('registering')->create();
+
+    $highEloClan = Clan::factory()->create(['elo_rating' => 1800]);
+    $lowEloClan = Clan::factory()->create(['elo_rating' => 1200]);
+
+    // Create low-elo participant first (older created_at) — to confirm elo_rating
+    // is the primary sort key, not created_at.
+    $pLow = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $lowEloClan->id,
+        'created_at' => now()->subMinutes(5),
+    ]);
+    $pHigh = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $highEloClan->id,
+        'created_at' => now()->subMinutes(1),
+    ]);
+
+    app(TournamentSeedingService::class)->seed($tournament, 'by_rank');
+
+    // High-elo clan gets seed 1 regardless of creation order.
+    expect($pHigh->fresh()->seed)->toBe(1);
+    expect($pLow->fresh()->seed)->toBe(2);
+});
+
+it('by_rank with all clans at 1500 matches created_at desc order (D-11-03-A no-regression)', function (): void {
+    $tournament = Tournament::factory()->inStatus('registering')->create();
+
+    // All clans explicitly at elo_rating=1500 (factory default), distinct created_at.
+    // Expected seed order: most recently registered = seed 1 (newest → oldest).
+    $clans = Clan::factory()->count(4)->create(['elo_rating' => 1500]);
+
+    $p1 = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $clans[0]->id,
+        'created_at' => now()->subMinutes(4),
+    ]);
+    $p2 = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $clans[1]->id,
+        'created_at' => now()->subMinutes(3),
+    ]);
+    $p3 = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $clans[2]->id,
+        'created_at' => now()->subMinutes(2),
+    ]);
+    $p4 = TournamentParticipant::factory()->for($tournament)->create([
+        'clan_id' => $clans[3]->id,
+        'created_at' => now()->subMinutes(1),
+    ]);
+
+    app(TournamentSeedingService::class)->seed($tournament, 'by_rank');
+
+    // With all clans at 1500 the tiebreak is created_at DESC (newest = seed 1).
+    // This is byte-identical to the pre-Phase-11 sortByDesc('created_at') behavior.
+    expect($p4->fresh()->seed)->toBe(1); // newest
+    expect($p3->fresh()->seed)->toBe(2);
+    expect($p2->fresh()->seed)->toBe(3);
+    expect($p1->fresh()->seed)->toBe(4); // oldest
 });
 
 // ---------------------------------------------------------------------------
