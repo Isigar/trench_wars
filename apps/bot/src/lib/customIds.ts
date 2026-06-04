@@ -15,7 +15,8 @@ export type ButtonAction =
     | { kind: 'match_signup'; matchId: string; gameRoleId: string }
     | { kind: 'match_leave'; matchId: string; gameRoleId: string }
     | { kind: 'match_open_signup_modal'; matchId: string }
-    | { kind: 'clan_apply'; clanId: string };
+    | { kind: 'clan_apply'; clanId: string }
+    | { kind: 'list_page'; listType: 'match' | 'clan'; page: number };
 
 export function encodeButtonId(a: ButtonAction): string {
     switch (a.kind) {
@@ -27,6 +28,8 @@ export function encodeButtonId(a: ButtonAction): string {
             return `m:o:${a.matchId}`;
         case 'clan_apply':
             return `c:a:${a.clanId}`;
+        case 'list_page':
+            return `pg:${a.listType === 'match' ? 'm' : 'c'}:${a.page}`;
     }
 }
 
@@ -43,6 +46,14 @@ export function decodeButtonId(s: string): ButtonAction | null {
     }
     if (parts[0] === 'c' && parts[1] === 'a' && parts.length === 3) {
         return { kind: 'clan_apply', clanId: parts[2]! };
+    }
+    if (parts[0] === 'pg' && parts.length === 3) {
+        const typeCode = parts[1];
+        const listType = typeCode === 'm' ? 'match' : typeCode === 'c' ? 'clan' : null;
+        if (listType === null) return null;
+        const page = Number(parts[2]);
+        if (!Number.isInteger(page) || page <= 0) return null;
+        return { kind: 'list_page', listType, page };
     }
     return null;
 }

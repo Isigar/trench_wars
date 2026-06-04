@@ -59,6 +59,35 @@ export function leaveRoleButton(
 }
 
 /**
+ * paginationButtons - returns a [Prev, Next] ActionRow for paginated list embeds.
+ *
+ * Prev is disabled when page <= 1; Next is disabled when page >= lastPage.
+ * CustomIds are always encoded via encodeButtonId — never hand-formatted strings.
+ */
+export function paginationButtons(
+    listType: 'match' | 'clan',
+    page: number,
+    lastPage: number,
+): ActionRowBuilder<ButtonBuilder> {
+    const prevPage = Math.max(1, page - 1);
+    const nextPage = Math.min(lastPage, page + 1);
+
+    const prev = new ButtonBuilder()
+        .setCustomId(encodeButtonId({ kind: 'list_page', listType, page: prevPage }))
+        .setLabel('Prev')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page <= 1);
+
+    const next = new ButtonBuilder()
+        .setCustomId(encodeButtonId({ kind: 'list_page', listType, page: nextPage }))
+        .setLabel('Next')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page >= lastPage);
+
+    return new ActionRowBuilder<ButtonBuilder>().addComponents(prev, next);
+}
+
+/**
  * rsvpButtons - convenience helper returning the [Sign up, Leave] pair as a
  * pre-assembled ActionRow.
  *
