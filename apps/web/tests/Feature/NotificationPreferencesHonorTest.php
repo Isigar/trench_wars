@@ -12,9 +12,10 @@ declare(strict_types=1);
  * NOTF-01 SC-1: "The dispatcher honors preference changes from that point forward."
  */
 
+use App\Models\GameMatch;
 use App\Models\User;
-use App\Notifications\MatchStartingSoon;
 use App\Notifications\Channels\DiscordChannel;
+use App\Notifications\MatchStartingSoon;
 
 it('disabling discord for match_starting_soon removes it from enabledNotificationChannels', function (): void {
     // Arrange: user with a discord_id so discord is default-ON for match_starting_soon.
@@ -54,7 +55,7 @@ it('notification via() reflects the disabled discord channel for match_starting_
         ->assertRedirect();
 
     // Act: instantiate the MatchStartingSoon notification (no match needed for via()).
-    $match = \App\Models\GameMatch::factory()->create();
+    $match = GameMatch::factory()->create();
     $notification = new MatchStartingSoon($match, 15);
 
     $freshUser = $user->fresh();
