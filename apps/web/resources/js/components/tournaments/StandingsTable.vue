@@ -27,6 +27,8 @@ const tiebreakLabel = computed<string>(() => {
     return t('tournaments.standings.tiebreak_default');
 });
 
+const showMedianBuchholz = computed<boolean>(() => props.format === 'swiss');
+
 // Inertia + spatie/laravel-data attach the eager-loaded clan name on the
 // participant relation, but only when the controller loads
 // standings.participant.clan. The DTO doesn't expose it directly — we permissively
@@ -62,6 +64,7 @@ function rankLabel(row: TournamentStandingData): string {
                     <th class="text-right px-3 py-2 font-semibold">{{ t('tournaments.standings.draws') }}</th>
                     <th class="text-right px-3 py-2 font-semibold">{{ t('tournaments.standings.points') }}</th>
                     <th class="text-right px-3 py-2 font-semibold">{{ tiebreakLabel }}</th>
+                    <th v-if="showMedianBuchholz" class="text-right px-3 py-2 font-semibold">{{ t('tournaments.standings.tiebreak_median_buchholz') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +80,7 @@ function rankLabel(row: TournamentStandingData): string {
                     <td class="px-3 py-2 text-right">{{ row.draws }}</td>
                     <td class="px-3 py-2 text-right">{{ row.points }}</td>
                     <td class="px-3 py-2 text-right">{{ row.tiebreak_score }}</td>
+                    <td v-if="showMedianBuchholz" class="px-3 py-2 text-right">{{ row.median_buchholz }}</td>
                 </tr>
             </tbody>
         </table>

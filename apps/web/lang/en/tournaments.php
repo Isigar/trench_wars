@@ -206,6 +206,7 @@ return [
         'draws' => 'D',
         'points' => 'Points',
         'tiebreak_buchholz' => 'Buchholz',
+        'tiebreak_median_buchholz' => 'Median Buchholz',
         'tiebreak_point_diff' => 'Point diff',
         'tiebreak_default' => 'Tiebreak',
     ],

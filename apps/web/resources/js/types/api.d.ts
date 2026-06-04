@@ -371,6 +371,7 @@ losses: number,
 draws: number,
 points: number,
 tiebreak_score: number,
+median_buchholz: number,
 rank: number | null,
 };
 export type UserData = {
