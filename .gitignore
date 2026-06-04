@@ -36,3 +36,8 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Local tooling & internal-only (keep out of the public repo)
+.claude/
+.docs/
+.planning/ui-reviews/
