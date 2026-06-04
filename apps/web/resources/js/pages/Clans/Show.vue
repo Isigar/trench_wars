@@ -199,7 +199,7 @@ const showAllHiddenPrivacyNotice = computed(
                         <Textarea
                             id="apply-message"
                             v-model="applyForm.message"
-                            :label="t('clans.applications.apply_heading')"
+                            :label="t('clans.applications.message_label')"
                             :placeholder="t('clans.applications.message_placeholder')"
                             :rows="3"
                             :errors="applyForm.errors.message ? [applyForm.errors.message] : []"

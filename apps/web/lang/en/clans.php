@@ -148,6 +148,7 @@ return [
         'applied' => 'Your application has been submitted.',
         'apply_heading' => 'Apply to join',
         'apply_button' => 'Submit application',
+        'message_label' => 'Cover message (optional)',
         'message_placeholder' => 'Add a cover message (optional)…',
         'not_accepting' => 'This clan is not currently accepting applications.',
         'error' => [
