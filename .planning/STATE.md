@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
 status: executing
-stopped_at: "Completed Phase 11 Plan 01: schema migrations + RED scaffolds for tournament depth"
-last_updated: "2026-06-04T11:30:22.759Z"
+stopped_at: "Completed Phase 11 Plan 03: Elo hook + Swiss auto-advance + by_rank elo seeding"
+last_updated: "2026-06-04T11:44:59.546Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-03)
 ## Current Position
 
 Phase: 11 (Tournament depth) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-06-04
 
@@ -168,6 +168,7 @@ v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 | Phase 11-tournament-depth P01 | 408 | 2 tasks | 13 files |
 | Phase 11-tournament-depth P02 | 121 | 2 tasks | 2 files |
 | Phase 11-tournament-depth P04 | 350 | 2 tasks | 5 files |
+| Phase 11-tournament-depth P03 | 720 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -563,6 +564,7 @@ Plan-level decisions logged during execution:
 - [Phase 11]: D-11-04-B: PHPStan L8 nullsafe.neverNull rule prefers ternary null-check over ?-> when receiver can be proved non-null; used explicit ternary for game_match_type_id access in materialiser
 - [Phase 11]: D-11-04-C: StagesRelationManager getOwnerRecord() returns parent Tournament; options closure traverses tournament->game->matchTypes() (Pattern 3 cross-game guard analog to RoleLimitsRelationManager)
 - [Phase 11]: D-11-04-D: mountTableAction scoping test replaced with unit closure approach — ViewAction registers infolist that conflicts with form(Form) signature in Filament v3.3 Livewire tests (TypeError: Infolist given where Form expected)
+- [Phase ?]: D-11-03-A: by_rank tiebreak created_at DESC (no-regression over CONTEXT.md ASC)
 
 ### Pending Todos
 
@@ -584,7 +586,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-04T11:30:22.749Z
-Stopped at: Completed Phase 11 Plan 01: schema migrations + RED scaffolds for tournament depth
+Last session: 2026-06-04T11:44:59.536Z
+Stopped at: Completed Phase 11 Plan 03: Elo hook + Swiss auto-advance + by_rank elo seeding
 Resume file: None
 Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?
