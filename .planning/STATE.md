@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
-status: complete
-stopped_at: Completed Phase 12 Plan 05 (PHASE COMPLETE) — full gate suite (1370/4817) + NOTF-01 + BOT-01 traced + ROADMAP Phase 12 Complete — v1.1 Completion milestone DONE
-last_updated: "2026-06-04T12:47:00Z"
-last_activity: 2026-06-04
+status: completed
+stopped_at: v1.1 Completion milestone archived 2026-06-04 — 3 phases / 17 plans / 1370 web Pest + 238 bot Vitest GREEN; all 10 v1.1 requirements (CLAN-01..04, TOUR-01..04, NOTF-01, BOT-01) Complete
+last_updated: "2026-06-04T13:00:00Z"
+last_activity: 2026-06-04 — v1.1 milestone archived; next milestone not yet planned
 progress:
   total_phases: 3
   completed_phases: 3
@@ -25,14 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-03)
 
 ## Current Position
 
-Phase: 12 (Notifications & bot polish) — EXECUTING
-Plan: 5 of 5 (COMPLETE)
-Phase 12 (Notifications & bot polish) — COMPLETE
-Last activity: 2026-06-04
-
-```
-v1.1 Progress: [████████████████████] 100% (3/3 phases) — MILESTONE COMPLETE
-```
+Phase: Milestone v1.1 Completion — ARCHIVED 2026-06-04
+Plan: — (all 17 plans complete)
+Status: v1.1 shipped; next milestone not yet planned
+Last activity: 2026-06-04 — v1.1 milestone archived (3 phases / 17 plans / 1370 web Pest + 238 bot Vitest)
 
 ## Performance Metrics
 
@@ -597,3 +593,7 @@ Last session: 2026-06-04T12:35:58.787Z
 Stopped at: Completed Phase 11 Plan 05 (PHASE COMPLETE) — median Buchholz column + shared-types regen + full gate suite (1365/4802) + TOUR-01..04 traced + ROADMAP Phase 11 Complete
 Resume file: None
 Next: Phase 12 (Notifications & bot polish) — NOTF-01 + BOT-01; planning required before execution.
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

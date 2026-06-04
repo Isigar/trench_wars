@@ -6,7 +6,13 @@ Trenchwars is a web platform where multiple clans organise competitive matches a
 
 v1.0 (Round-1) shipped 2026-05-17 — 9 phases, 120 plans, 1303 Pest web tests + 176 bot Vitest + 40 rcon-worker Vitest GREEN. See `milestones/v1.0-ROADMAP.md`.
 
+v1.1 (Completion) shipped 2026-06-04 — 3 phases, 17 plans, 1370 Pest web tests + 238 bot Vitest GREEN. See `milestones/v1.1-ROADMAP.md`.
+
 ## Current State
+
+**v1.1 Completion — SHIPPED 2026-06-04.**
+
+3 phases complete (Clan applications → Tournament depth → Notifications & bot polish), 17/17 plans, 1370 web Pest + 238 bot Vitest GREEN. All 10 v1.1 requirements (CLAN-01..04, TOUR-01..04, NOTF-01, BOT-01) Complete. See `milestones/v1.1-ROADMAP.md`.
 
 **v1.0 Round-1 Trenchwars HLL league platform — SHIPPED 2026-05-17.**
 
@@ -16,20 +22,9 @@ All 9 phases complete (Foundations → Polish), 120/120 plans, 1303 web Pest + 1
 
 **v1.0 status:** SHIPPABLE pending 4-item operator manual smoke per `milestones/v1.0-ROADMAP.md` Phase 9 section (axe-core CI canonical first run / manual keyboard nav 10-step / rate-limit boundary smoke / Notifications bell + Discord DM live receipt). All other phases also have a `PENDING_MANUAL_SMOKE` checklist recorded in their individual `*-PHASE-VERIFICATION.md` files.
 
-## Current Milestone: v1.1 Completion
+## Current Milestone
 
-**Goal:** Finish the partially-built and deferred round-1-adjacent features so the platform's core workflows are fully fleshed out.
-
-**Target features:**
-- Clan-apply submission flow (web + Discord) — build the missing application-creation path; wire the bot `/clan apply` stub to it
-- Swiss next-round auto-trigger (replace the admin-click)
-- List pagination for `/match list` + `/clan list`
-- NOTF-01: full notification-preferences UX (account settings; v1.0 wired defaults only)
-- ELO-based `by_rank` tournament seeding (replace the `created_at` proxy)
-- Median Buchholz tiebreaker (Swiss)
-- Stage-level `GameMatchType` override
-
-Detailed REQ-IDs in `REQUIREMENTS.md`. Mostly extensions of existing Phase 2/5/6/9 code; web/PHP work is CI-verified (no local Docker — only the Node bot is testable in the dev env). Clan-apply carries open product decisions (clan opt-in to recruiting? one pending application per clan or total? cover message required?) resolved at phase spec time.
+**v1.1 Completion — SHIPPED 2026-06-04.** Next milestone not yet planned. See `## Future Milestones (v2.0+)` for candidates.
 
 ## Future Milestones (v2.0+)
 
@@ -72,18 +67,16 @@ All 15 round-1 (v1.0) requirements shipped 2026-05-17 (see `milestones/v1.0-REQU
 - ✓ League owns HLL game servers; CRCON installed on each (REQ-constraint-league-owns-servers) — v1.0
 - ✓ English at launch; multi-language possible without refactor (REQ-constraint-en-launch-i18n-ready) — v1.0
 - ✓ Deployed to Railway (REQ-constraint-railway-deploy) — v1.0
+- ✓ Clan-apply submission flow — web + Discord, eligibility enforcement, recruiting toggle (CLAN-01..04) — v1.1
+- ✓ Swiss auto-advance, ELO seeding, median Buchholz tiebreaker, stage-level GameMatchType override (TOUR-01..04) — v1.1
+- ✓ Full notification-preferences UX — per event-type × channel in account settings (NOTF-01) — v1.1
+- ✓ Discord bot list pagination — /match list + /clan list Prev/Next navigation (BOT-01) — v1.1
 
 ### Active
 
-<!-- v1.1 Completion scope. Detailed REQ-IDs in REQUIREMENTS.md. -->
+<!-- No active milestone — v1.1 shipped; next milestone not yet planned. -->
 
-- [ ] Clan-apply submission flow — web + Discord (CLAN-*)
-- [ ] Swiss next-round auto-trigger (TOUR-*)
-- [ ] List pagination for /match list + /clan list (BOT-*)
-- [ ] Full notification-preferences UX (NOTF-01)
-- [ ] ELO-based by_rank tournament seeding (TOUR-*)
-- [ ] Median Buchholz tiebreaker (TOUR-*)
-- [ ] Stage-level GameMatchType override (TOUR-*)
+(None — v1.1 shipped; next milestone not yet planned.)
 
 ### Out of Scope
 
@@ -227,4 +220,4 @@ Unresolved at planning time (from `.docs/16-open-questions.md`). Advisory, not b
 - Reserved words list for clan slugs (`admin`, `me`, `api`, etc.).
 
 ---
-*Last updated: 2026-06-03 — v1.1 Completion milestone started (7 features completing round-1-adjacent gaps). v1.0 round-1 shipped 2026-05-17 (9 phases / 120 plans / 1303+ tests / 15/15 v1 requirements Complete).*
+*Last updated: 2026-06-04 — v1.1 Completion milestone archived (3 phases / 17 plans / 1370 web Pest + 238 bot Vitest / 10/10 v1.1 requirements Complete). v1.0 round-1 shipped 2026-05-17 (9 phases / 120 plans / 1303+ tests / 15/15 v1 requirements Complete).*
