@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
 status: executing
-stopped_at: "Completed Phase 10 Plan 01: schema + model + exceptions foundation"
-last_updated: "2026-06-04T08:53:36.869Z"
+stopped_at: "Completed Phase 10 Plan 05: bot clan apply live api.post + translateError clan codes"
+last_updated: "2026-06-04T08:58:33.546Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 7
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-03)
 ## Current Position
 
 Phase: 10 (Clan applications) — EXECUTING
-Plan: 3 of 7
+Plan: 4 of 7
 Status: Ready to execute
 Last activity: 2026-06-04
 
@@ -162,6 +162,7 @@ v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 | Phase 09-polish P12 | ~11min | 2 tasks tasks | 7 files files |
 | Phase 10-clan-applications P01 | 95 | 2 tasks | 5 files |
 | Phase 10-clan-applications P02 | 135s | 2 tasks | 4 files |
+| Phase 10-clan-applications P05 | 169 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -547,6 +548,7 @@ Plan-level decisions logged during execution:
 - [v1.1 Roadmap creation 2026-06-03]: Phase 11 TOUR-01 will replace the D-06-11-C admin-click generate_next_swiss_round HeaderAction with an observer/event-driven auto-trigger. Phase 11 TOUR-02 will replace D-06-05-B by_rank created_at proxy with ELO-derived rating.
 - [Phase ?]: 10-01: accepts_applications defaults to true — existing clans accept applications; leaders opt OUT
 - [Phase ?]: 10-01: Three typed DomainException subclasses map to distinct bot error codes: clan_not_recruiting, already_in_clan, duplicate_application
+- [Phase ?]: 10-05-A: clan_apply button posts UUID to /clans/{clanId}/applications (web route is slug-bound); UUID-vs-slug discrepancy flagged for end-to-end verification in plan 10-07 (known_discrepancy option B)
 
 ### Pending Todos
 
@@ -568,7 +570,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-04T08:53:36.857Z
-Stopped at: Completed Phase 10 Plan 01: schema + model + exceptions foundation
+Last session: 2026-06-04T08:58:33.533Z
+Stopped at: Completed Phase 10 Plan 05: bot clan apply live api.post + translateError clan codes
 Resume file: None
 Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?
