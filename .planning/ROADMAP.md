@@ -27,7 +27,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 ### v1.1 Completion (Phases 10-12)
 
 - [x] **Phase 10: Clan applications** — Submission flow on web and Discord, eligibility enforcement, and per-clan recruiting toggle
-- [ ] **Phase 11: Tournament depth** — Swiss auto-advance, ELO seeding, median Buchholz tiebreaker, and stage-level GameMatchType override
+- [x] **Phase 11: Tournament depth** — Swiss auto-advance, ELO seeding, median Buchholz tiebreaker, and stage-level GameMatchType override
 - [ ] **Phase 12: Notifications & bot polish** — Notification-preferences account-settings UX and bot list pagination
 
 ## Phase Details
@@ -65,7 +65,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 - [x] 11-02-PLAN.md — Pure logic (TDD): EloRatingService (K=32, base 1500) + median Buchholz (Cut 1) in SwissStandingsCalculator
 - [x] 11-03-PLAN.md — BracketAdvancementService hooks: Elo apply (rated_at-guarded, once per bracket) + Swiss auto-advance (idempotent) + by_rank seeding by elo_rating
 - [x] 11-04-PLAN.md — TOUR-04 stage override: materialiser stage.game_match_type_id fallback + cross-game-scoped Filament Select + i18n
-- [ ] 11-05-PLAN.md — Public median Buchholz column + shared-types regen + phase-close full web/bot gate suite + TOUR traceability
+- [x] 11-05-PLAN.md — Public median Buchholz column + shared-types regen + phase-close full web/bot gate suite + TOUR traceability
 **UI hint**: yes
 
 ### Phase 12: Notifications & bot polish
@@ -92,5 +92,5 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
 | 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
-| 11. Tournament depth | v1.1 | 4/5 | In Progress|  |
+| 11. Tournament depth | v1.1 | 5/5 | Complete   | 2026-06-04 |
 | 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |

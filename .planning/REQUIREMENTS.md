@@ -93,4 +93,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-06-03*
-*Last updated: 2026-06-04 — CLAN-01..04 verified complete (Phase 10 close — 10-07)*
+*Last updated: 2026-06-04 — TOUR-01..04 verified complete (Phase 11 close — 11-05)*
