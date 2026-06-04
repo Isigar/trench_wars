@@ -33,6 +33,7 @@ final class TournamentStandingData extends Data
         public int $draws,
         public float $points,
         public float $tiebreak_score,
+        public float $median_buchholz,
         public ?int $rank,
     ) {}
 
@@ -48,6 +49,7 @@ final class TournamentStandingData extends Data
             draws: (int) $standing->draws,
             points: (float) $standing->points,
             tiebreak_score: (float) $standing->tiebreak_score,
+            median_buchholz: (float) $standing->median_buchholz,
             rank: $standing->rank,
         );
     }
