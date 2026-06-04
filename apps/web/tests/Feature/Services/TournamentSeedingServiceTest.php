@@ -150,7 +150,7 @@ it('by_rank treats a soft-deleted clan as elo_rating 1500 without throwing TypeE
     $deletedClan->delete();
 
     // Must not throw — the nullsafe operator provides a 1500 fallback.
-    expect(fn () => app(TournamentSeedingService::class)->seed($tournament, 'by_rank'))->not->toThrow(\Throwable::class);
+    expect(fn () => app(TournamentSeedingService::class)->seed($tournament, 'by_rank'))->not->toThrow(Throwable::class);
 
     // The normal clan (1800 elo) should get seed 1; the soft-deleted clan falls
     // back to 1500 so it ranks second.

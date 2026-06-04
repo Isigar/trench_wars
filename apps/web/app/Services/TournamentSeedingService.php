@@ -187,11 +187,13 @@ final class TournamentSeedingService
 
         return $participants
             ->sort(function (TournamentParticipant $a, TournamentParticipant $b): int {
-                // Nullsafe operator handles soft-deleted clans (WR-01): loadMissing('clan')
-                // returns null when the clan is soft-deleted, so $a->clan->elo_rating
-                // would throw TypeError without the nullsafe ?->.
-                $ratingA = $a->clan?->elo_rating ?? 1500;
-                $ratingB = $b->clan?->elo_rating ?? 1500;
+                // WR-01 fix: loadMissing('clan') returns null at runtime for soft-deleted
+                // clans even though PHPStan types BelongsTo as non-null. Assign to local
+                // nullable variables to satisfy both the runtime null-guard and PHPStan.
+                $clanA = $a->clan;
+                $clanB = $b->clan;
+                $ratingA = ($clanA !== null ? $clanA->elo_rating : null) ?? 1500;
+                $ratingB = ($clanB !== null ? $clanB->elo_rating : null) ?? 1500;
 
                 if ($ratingB !== $ratingA) {
                     return $ratingB <=> $ratingA; // higher Elo first
