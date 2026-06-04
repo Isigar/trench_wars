@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\BracketWinnerNotParticipantException;
+use App\Models\Clan;
 use App\Models\DiscordOutboundMessage;
 use App\Models\MatchResult;
 use App\Models\Tournament;
 use App\Models\TournamentBracket;
 use App\Models\TournamentParticipant;
+use App\Services\Brackets\SwissGenerator;
 use App\Support\DiscordOutboundPayloadBuilder;
 use Illuminate\Support\Facades\DB;
 
@@ -43,6 +45,12 @@ use Illuminate\Support\Facades\DB;
  * of StandingsCalculatorService may need to read brackets; pulling it through
  * the container at the call site avoids the cycle.
  *
+ * Circular-DI break (T-11-03) — EloRatingService and SwissGenerator are also
+ * resolved via app() lookup, NOT constructor injection. EloRatingService uses
+ * DB::transaction + lockForUpdate on clan rows and may transitively read
+ * tournament data; SwissGenerator reads standings which may depend on brackets.
+ * Both are resolved at call-site to preserve the same isolation guarantee.
+ *
  * Threat refs:
  *   - T-06-08-01 (concurrent advance() race)            — mitigated by DB::transaction + lockForUpdate
  *   - T-06-08-02 (advances_to cycle)                    — mitigated by single-hop walk + DB CHECK no_self_advance (plan 06-02)
@@ -51,6 +59,9 @@ use Illuminate\Support\Facades\DB;
  *   - T-06-08-05 (premature grand-final reset)          — mitigated by `$winnerParticipant->id !== $wWinner->id` guard
  *   - T-06-08-06 (wrong parity slot)                    — Pattern 7 odd/even rule, asserted by Pest "slot a vs b" test
  *   - T-06-08-07 (circular DI)                          — mitigated by app() resolution for StandingsCalculatorService
+ *   - T-11-03-01 (Elo applied more than once per bracket) — mitigated by rated_at null-guard + stamp inside this transaction
+ *   - T-11-03-02 (Swiss round generated twice)            — mitigated by nextRoundExists check inside the locked transaction
+ *   - T-11-03-03 (auto-advance past final round)          — mitigated by inline currentRound < totalRounds guard (no exception-as-flow)
  */
 final class BracketAdvancementService
 {
@@ -186,6 +197,58 @@ final class BracketAdvancementService
             // 5. Trigger standings recalc (lazy via app() to break circular DI).
             app(StandingsCalculatorService::class)->recalculate($tournament);
 
+            // 5a. TOUR-02 Elo hook — applies exactly once per bracket (rated_at guard).
+            //     Skip byes: $loserParticipant is null when only one slot is filled.
+            //     Circular-DI break (T-11-03): EloRatingService resolved via app(),
+            //     NOT constructor injection (same pattern as StandingsCalculatorService above).
+            if ($loserParticipant !== null && $bracket->rated_at === null) {
+                $winnerClan = Clan::find($winnerParticipant->clan_id);
+                $loserClan = Clan::find($loserParticipant->clan_id);
+                if ($winnerClan !== null && $loserClan !== null) {
+                    app(EloRatingService::class)->applyResult($winnerClan, $loserClan);
+                    // Stamp the idempotency marker inside the same transaction (T-11-03-01).
+                    $bracket->update(['rated_at' => now()]);
+                }
+            }
+
+            // 5b. TOUR-01 Swiss auto-advance — when every bracket in the current
+            //     swiss-round stage has a winner, generate the next round automatically.
+            //     Only fires for 'swiss-round' stages; skipped for all other stage types.
+            //     Circular-DI break (T-11-03): SwissGenerator resolved via app(),
+            //     NOT constructor injection.
+            if ($stage->type === 'swiss-round') {
+                $roundComplete = ! TournamentBracket::query()
+                    ->where('tournament_stage_id', $stage->id)
+                    ->whereNull('winner_participant_id')
+                    ->exists();
+
+                if ($roundComplete) {
+                    // Exhaustion guard (mirrors SwissGenerator::generateNextRound lines 151-159).
+                    // Prevents calling generateNextRound past the final round and avoids
+                    // LogicException-as-control-flow (T-11-03-03).
+                    $currentRound = $tournament->stages()
+                        ->where('type', 'swiss-round')
+                        ->max('ordinal');
+                    $activeCount = $tournament->participants()
+                        ->where('status', 'active')
+                        ->count();
+                    $totalRounds = max(1, (int) ceil(log(max($activeCount, 2), 2)));
+
+                    // Existence guard — do not create a duplicate next round (T-11-03-02).
+                    $nextRoundExists = $tournament->stages()
+                        ->where('type', 'swiss-round')
+                        ->where('ordinal', '>', $stage->ordinal)
+                        ->exists();
+
+                    if ($currentRound !== null && $currentRound < $totalRounds && ! $nextRoundExists) {
+                        app(SwissGenerator::class)->generateNextRound($tournament);
+                        // Touch the tournament so the 30s public poll picks up the new round
+                        // (TournamentObserver fires tournament_announce_update on updated_at bump).
+                        $tournament->touch();
+                    }
+                }
+            }
+
             // 6. Enqueue Discord bracket_result_announce outbound row.
             DiscordOutboundMessage::create([
                 'channel_id' => '',  // resolved at dispatch time by the bot renderer (plan 05-11)
@@ -243,6 +306,14 @@ final class BracketAdvancementService
      * has winner_participant_id NOT NULL — AND at least one materialised
      * bracket exists (guards against premature completion of a tournament
      * that never started, T-06-08-03).
+     *
+     * Swiss premature-completion guard (plan 11-03 BLOCKER-class finding):
+     * After auto-advance creates the next swiss-round stage, its brackets have
+     * match_id=NULL (not yet materialised). The check above excludes those rows,
+     * so allBracketsComplete() would spuriously return true after a NON-final
+     * swiss round. Guard: if the tournament format is 'swiss' and any swiss-round
+     * stage has unmaterialised brackets (match_id IS NULL), the tournament is
+     * NOT complete — those brackets are a pending round, not a clean terminal state.
      */
     private function allBracketsComplete(Tournament $tournament): bool
     {
@@ -263,7 +334,29 @@ final class BracketAdvancementService
             ->whereNotNull('match_id')
             ->exists();
 
-        return $hasAnyMaterialised;
+        if (! $hasAnyMaterialised) {
+            return false;
+        }
+
+        // Swiss premature-completion guard: if any swiss-round stage has brackets
+        // with match_id=null, a next round has been auto-generated but not yet
+        // materialised — the tournament is still in progress (not terminal).
+        if ($tournament->format === 'swiss') {
+            $swissStageIds = $tournament->stages()
+                ->where('type', 'swiss-round')
+                ->pluck('id');
+
+            $hasUnmaterialisedSwissBrackets = TournamentBracket::query()
+                ->whereIn('tournament_stage_id', $swissStageIds)
+                ->whereNull('match_id')
+                ->exists();
+
+            if ($hasUnmaterialisedSwissBrackets) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
