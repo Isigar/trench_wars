@@ -35,6 +35,11 @@ class ClanApplyController extends Controller
         /** @var User $actor */
         $actor = $request->user();
 
+        // WR-02: cap message length before delegating to the service.
+        $request->validate([
+            'message' => ['nullable', 'string', 'max:2000'],
+        ]);
+
         $message = $request->string('message')->trim()->value();
         $message = $message === '' ? null : $message;
 

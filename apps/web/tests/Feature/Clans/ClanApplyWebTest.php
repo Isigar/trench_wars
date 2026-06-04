@@ -17,6 +17,8 @@ declare(strict_types=1);
 |   (b) Optional message stored; whitespace-only message → null stored.
 |   (c) Guard failure (accepts_applications=false) → assertSessionHasErrors(['application']) + no row.
 |   (d) Guest POST → redirected toward login (auth middleware).
+|   (e) BL-02 — inactive clan (suspended/disbanded) → 422 session error + no row.
+|   (f) WR-02 — message over 2000 chars → 422 validation error + no row.
 */
 
 use App\Models\Clan;
@@ -133,4 +135,52 @@ it('guest POST is redirected to login (auth middleware)', function (): void {
     expect(
         ClanApplication::where('clan_id', $clan->id)->count()
     )->toBe(0);
+});
+
+// BL-02 — applying to an inactive clan is rejected even if accepts_applications=true.
+
+it('applying to a suspended clan returns session error and no row is created (BL-02)', function (): void {
+    $clan = Clan::factory()->create([
+        'status' => 'suspended',
+        'accepts_applications' => true,
+        'slug' => 'web-apply-suspended-clan',
+    ]);
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('clans.apply', $clan->slug))
+        ->assertSessionHasErrors(['application']);
+
+    expect(ClanApplication::where('clan_id', $clan->id)->count())->toBe(0);
+});
+
+it('applying to a disbanded clan returns session error and no row is created (BL-02)', function (): void {
+    $clan = Clan::factory()->create([
+        'status' => 'disbanded',
+        'accepts_applications' => true,
+        'slug' => 'web-apply-disbanded-clan',
+    ]);
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('clans.apply', $clan->slug))
+        ->assertSessionHasErrors(['application']);
+
+    expect(ClanApplication::where('clan_id', $clan->id)->count())->toBe(0);
+});
+
+// WR-02 — message field has a 2000-char maximum; over-long messages are rejected.
+
+it('message longer than 2000 characters returns validation error on message key — no row created (WR-02)', function (): void {
+    $clan = Clan::factory()->create([
+        'accepts_applications' => true,
+        'slug' => 'web-apply-longmsg-clan',
+    ]);
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('clans.apply', $clan->slug), ['message' => str_repeat('a', 2001)])
+        ->assertSessionHasErrors(['message']);
+
+    expect(ClanApplication::where('clan_id', $clan->id)->count())->toBe(0);
 });
