@@ -49,10 +49,11 @@ it('guest sees acceptsApplications=true, viewerIsActiveMember=false, viewerHasPe
 
     $this->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('acceptsApplications', true)
-            ->where('viewerIsActiveMember', false)
-            ->where('viewerHasPendingApplication', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('acceptsApplications', true)
+                ->where('viewerIsActiveMember', false)
+                ->where('viewerHasPendingApplication', false)
         );
 });
 
@@ -61,10 +62,11 @@ it('guest sees acceptsApplications=false for closed clan', function (): void {
 
     $this->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('acceptsApplications', false)
-            ->where('viewerIsActiveMember', false)
-            ->where('viewerHasPendingApplication', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('acceptsApplications', false)
+                ->where('viewerIsActiveMember', false)
+                ->where('viewerHasPendingApplication', false)
         );
 });
 
@@ -79,10 +81,11 @@ it('eligible authed viewer: accepts=true, member=false, pending=false', function
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('acceptsApplications', true)
-            ->where('viewerIsActiveMember', false)
-            ->where('viewerHasPendingApplication', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('acceptsApplications', true)
+                ->where('viewerIsActiveMember', false)
+                ->where('viewerHasPendingApplication', false)
         );
 });
 
@@ -106,9 +109,10 @@ it('authed viewer who is an active member of any clan: viewerIsActiveMember=true
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('viewerIsActiveMember', true)
-            ->where('viewerHasPendingApplication', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('viewerIsActiveMember', true)
+                ->where('viewerHasPendingApplication', false)
         );
 });
 
@@ -127,8 +131,9 @@ it('authed viewer whose membership has left_at set is NOT counted as active memb
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('viewerIsActiveMember', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('viewerIsActiveMember', false)
         );
 });
 
@@ -149,9 +154,10 @@ it('authed viewer with a pending application to THIS clan: viewerHasPendingAppli
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('viewerHasPendingApplication', true)
-            ->where('viewerIsActiveMember', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('viewerHasPendingApplication', true)
+                ->where('viewerIsActiveMember', false)
         );
 });
 
@@ -174,9 +180,10 @@ it('authed viewer whose only application to this clan was declined: viewerHasPen
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('viewerHasPendingApplication', false)
-            ->where('viewerIsActiveMember', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('viewerHasPendingApplication', false)
+                ->where('viewerIsActiveMember', false)
         );
 });
 
@@ -198,8 +205,9 @@ it('authed viewer with a cancelled application: viewerHasPendingApplication=fals
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('viewerHasPendingApplication', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('viewerHasPendingApplication', false)
         );
 });
 
@@ -222,7 +230,8 @@ it('authed viewer with pending application to a different clan: viewerHasPending
     $this->actingAs($viewer)
         ->get(route('clans.show', $clan->slug))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('viewerHasPendingApplication', false)
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->where('viewerHasPendingApplication', false)
         );
 });

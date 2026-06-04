@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Data\ClanData;
 use App\Data\ClanMembershipData;
 use App\Models\Clan;
+use App\Models\ClanApplication;
 use App\Models\ClanMembership;
 use App\Services\PlayerPrivacyGate;
 use Illuminate\Database\Eloquent\Collection;
@@ -38,6 +39,16 @@ class ClanShowController extends Controller
 
         $viewer = auth()->user();
 
+        // Viewer-state props for the Apply-to-join block (T-10-06-02).
+        $acceptsApplications = (bool) $clan->accepts_applications;
+        $viewerIsActiveMember = $viewer !== null
+            && ClanMembership::where('user_id', $viewer->id)->whereNull('left_at')->exists();
+        $viewerHasPendingApplication = $viewer !== null
+            && ClanApplication::where('clan_id', $clan->id)
+                ->where('applicant_user_id', $viewer->id)
+                ->where('status', 'pending')
+                ->exists();
+
         /** @var Collection<int, ClanMembership> $activeMembers */
         $activeMembers = $clan->activeMembers;
         $totalCount = $activeMembers->count();
@@ -60,6 +71,9 @@ class ClanShowController extends Controller
             'clan' => ClanData::fromModel($clan),
             'members' => $visibleMembers->values()->map(fn (ClanMembership $m) => ClanMembershipData::fromModel($m))->all(),
             'hiddenMemberCount' => $hiddenCount,
+            'acceptsApplications' => $acceptsApplications,
+            'viewerIsActiveMember' => $viewerIsActiveMember,
+            'viewerHasPendingApplication' => $viewerHasPendingApplication,
         ]);
     }
 }
