@@ -76,12 +76,18 @@ export function registerInteractionHandler(client: Client): void {
                 return;
             }
 
-            // Plan 05-10 refinement: split button handling by customId prefix.
+            // Plan 05-10 refinement + plan 12-04: split button handling by customId prefix.
             // Modal-opening buttons (m:o:...) cannot be pre-deferred — the
-            // showModal() call IS the initial response. Everything else is
-            // pre-deferred per Pitfall 11.
+            // showModal() call IS the initial response. Pagination buttons
+            // (pg:...) also cannot be pre-deferred — interaction.update() IS
+            // the initial response (it edits the original component message in
+            // place; deferReply would claim the window first and block update()).
+            // Everything else is pre-deferred per Pitfall 11.
             if (interaction.isButton()) {
-                if (interaction.customId.startsWith('m:o:')) {
+                if (
+                    interaction.customId.startsWith('m:o:') ||
+                    interaction.customId.startsWith('pg:')
+                ) {
                     await handleButton(interaction);
                     return;
                 }
