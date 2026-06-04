@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
 status: executing
-stopped_at: "Completed Phase 11 Plan 03: Elo hook + Swiss auto-advance + by_rank elo seeding"
-last_updated: "2026-06-04T11:44:59.546Z"
+stopped_at: "Completed Phase 11 Plan 05 (PHASE COMPLETE): median Buchholz column + shared-types regen + full gate suite + TOUR-01..04 traced"
+last_updated: "2026-06-04T12:04:00Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 12
-  completed_plans: 11
-  percent: 33
+  completed_plans: 12
+  percent: 67
 ---
 
 # Project State
@@ -25,13 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-03)
 
 ## Current Position
 
-Phase: 11 (Tournament depth) — EXECUTING
-Plan: 5 of 5
-Status: Ready to execute
+Phase: 11 (Tournament depth) — COMPLETE
+Phase 12 (Notifications & bot polish) — NEXT
 Last activity: 2026-06-04
 
 ```
-v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/3 phases)
+v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 67% (2/3 phases)
 ```
 
 ## Performance Metrics
@@ -169,6 +168,7 @@ v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 | Phase 11-tournament-depth P02 | 121 | 2 tasks | 2 files |
 | Phase 11-tournament-depth P04 | 350 | 2 tasks | 5 files |
 | Phase 11-tournament-depth P03 | 720 | 2 tasks | 5 files |
+| Phase 11-tournament-depth P05 | ~18min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -565,6 +565,8 @@ Plan-level decisions logged during execution:
 - [Phase 11]: D-11-04-C: StagesRelationManager getOwnerRecord() returns parent Tournament; options closure traverses tournament->game->matchTypes() (Pattern 3 cross-game guard analog to RoleLimitsRelationManager)
 - [Phase 11]: D-11-04-D: mountTableAction scoping test replaced with unit closure approach — ViewAction registers infolist that conflicts with form(Form) signature in Filament v3.3 Livewire tests (TypeError: Infolist given where Form expected)
 - [Phase ?]: D-11-03-A: by_rank tiebreak created_at DESC (no-regression over CONTEXT.md ASC)
+- [Phase 11]: D-11-05-A: row.median_buchholz accessed directly (typed number after shared-types regen); no as-any cast per plan environment instruction
+- [Phase 11]: D-11-05-B: showMedianBuchholz computed<boolean>(() => props.format === 'swiss') gates both <th> and <td> for the median Buchholz column in StandingsTable.vue
 
 ### Pending Todos
 
@@ -586,7 +588,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-04T11:44:59.536Z
-Stopped at: Completed Phase 11 Plan 03: Elo hook + Swiss auto-advance + by_rank elo seeding
+Last session: 2026-06-04T12:04:00Z
+Stopped at: Completed Phase 11 Plan 05 (PHASE COMPLETE) — median Buchholz column + shared-types regen + full gate suite (1365/4802) + TOUR-01..04 traced + ROADMAP Phase 11 Complete
 Resume file: None
-Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?
+Next: Phase 12 (Notifications & bot polish) — NOTF-01 + BOT-01; planning required before execution.
