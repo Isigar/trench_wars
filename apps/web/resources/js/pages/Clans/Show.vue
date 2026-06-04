@@ -1,15 +1,19 @@
 <!-- Source: 02-UI-SPEC.md § Page: /clans/{slug} (Public clan detail). -->
+<!-- Apply-to-join block added in 10-06-PLAN.md Task 2. -->
 <script setup lang="ts">
 import ClanTagBadge from '@/components/clans/ClanTagBadge.vue';
 import MemberRow from '@/components/clans/MemberRow.vue';
 import ReportButton from '@/components/ReportButton.vue';
+import Button from '@/components/ui/Button.vue';
 import StatusBadge from '@/components/ui/StatusBadge.vue';
+import Textarea from '@/components/ui/Textarea.vue';
 import { useT } from '@/composables/useT';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { computed } from 'vue';
 
 const { t } = useT();
+const page = usePage();
 
 // Use generated DTO types from api.d.ts
 type ClanData = App.Data.ClanData;
@@ -19,6 +23,9 @@ const props = defineProps<{
     clan: ClanData;
     members: ClanMembershipData[];
     hiddenMemberCount: number;
+    acceptsApplications: boolean;
+    viewerIsActiveMember: boolean;
+    viewerHasPendingApplication: boolean;
 }>();
 
 // Clan status badge — only shown if NOT 'active' (UI-SPEC: active is normal state, no badge).
@@ -40,6 +47,25 @@ const memberCountLabel = computed(() => {
     if (count === 1) return t('clans.members.count_one');
     return t('clans.members.count_other', { count });
 });
+
+// Apply-to-join block eligibility (all four conditions must hold).
+// Uses page.props.auth directly — the global auth prop is the user object (or null), NOT { user }.
+const showApplyBlock = computed(
+    () =>
+        page.props.auth != null &&
+        props.acceptsApplications &&
+        !props.viewerIsActiveMember &&
+        !props.viewerHasPendingApplication,
+);
+
+const applyForm = useForm({ message: '' });
+
+function submitApplication(): void {
+    applyForm.post(route('clans.apply', props.clan.slug), {
+        preserveScroll: true,
+        onSuccess: () => applyForm.reset(),
+    });
+}
 
 // Privacy notice: partial = some hidden; all = all hidden.
 const showPartialPrivacyNotice = computed(
@@ -156,6 +182,47 @@ const showAllHiddenPrivacyNotice = computed(
                             {{ t('clans.activity.placeholder') }}
                         </p>
                     </div>
+                </div>
+
+                <!-- Apply-to-join block (10-06-PLAN.md). Visible only to eligible authed viewers:
+                     authed + clan accepts applications + not an active member + no pending application. -->
+                <div
+                    v-if="showApplyBlock"
+                    class="flex flex-col gap-4 p-6 rounded-lg border border-[var(--color-border)]
+                           bg-[var(--color-surface-elevated)]"
+                >
+                    <h2 class="text-xl font-semibold text-[var(--color-text)]">
+                        {{ t('clans.applications.apply_heading') }}
+                    </h2>
+
+                    <form class="flex flex-col gap-4" @submit.prevent="submitApplication">
+                        <Textarea
+                            id="apply-message"
+                            v-model="applyForm.message"
+                            :label="t('clans.applications.apply_heading')"
+                            :placeholder="t('clans.applications.message_placeholder')"
+                            :rows="3"
+                            :errors="applyForm.errors.message ? [applyForm.errors.message] : []"
+                        />
+
+                        <p
+                            v-if="(applyForm.errors as Record<string, string>).application"
+                            class="text-sm text-[var(--color-danger)]"
+                            role="alert"
+                        >
+                            {{ (applyForm.errors as Record<string, string>).application }}
+                        </p>
+
+                        <div class="flex justify-end">
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                :disabled="applyForm.processing"
+                            >
+                                {{ t('clans.applications.apply_button') }}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Plan 09-11 — inline report CTA for authenticated visitors. -->
