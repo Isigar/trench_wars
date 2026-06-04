@@ -117,5 +117,18 @@ class AppServiceProvider extends ServiceProvider
                 ? Limit::perHour(5)->by('user:' . (string) $userId)
                 : Limit::perHour(5)->by('ip:' . (string) ($request->ip() ?? 'unknown'));
         });
+
+        // WR-03 — clan-apply limiter. Per-user to prevent submission storms on
+        // POST /clans/{clan:slug}/apply. 5 attempts per minute is generous enough
+        // for legitimate use (multiple clan browsing) while bounding bot floods.
+        // Route sits under the `auth` middleware group so $request->user() is
+        // always resolvable; the IP fallback is defence-in-depth only.
+        RateLimiter::for('clan-apply', static function (Request $request): Limit {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return $userId !== null
+                ? Limit::perMinute(5)->by('user:' . (string) $userId)
+                : Limit::perMinute(5)->by('ip:' . (string) ($request->ip() ?? 'unknown'));
+        });
     }
 }

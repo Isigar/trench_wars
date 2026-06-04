@@ -145,7 +145,10 @@ Route::middleware('auth')->group(function (): void {
 
     // Application submit — authenticated user applies to join a clan.
     // NOT under /my-clan prefix: applicant may not yet have any clan membership.
-    Route::post('/clans/{clan:slug}/apply', [ClanApplyController::class, 'store'])->name('clans.apply');
+    // WR-03: throttle:clan-apply (5/min per user) guards against submission storms.
+    Route::post('/clans/{clan:slug}/apply', [ClanApplyController::class, 'store'])
+        ->middleware('throttle:clan-apply')
+        ->name('clans.apply');
 
     // Match signups (SC-2 + SC-5 — REQ-goal-match-workflows). MatchSignupService
     // is the SOLE production write path to match_slots.occupant_user_id.
