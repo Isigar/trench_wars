@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
-status: verifying
-stopped_at: "Completed Phase 10 Plan 05: bot clan apply live api.post + translateError clan codes"
-last_updated: "2026-06-04T09:22:29.366Z"
+status: executing
+stopped_at: "Completed Phase 11 Plan 01: schema migrations + RED scaffolds for tournament depth"
+last_updated: "2026-06-04T11:15:37.403Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 12
+  completed_plans: 8
   percent: 33
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** Phase 10 — Clan applications
+**Current focus:** Phase 11 — Tournament depth
 
 ## Current Position
 
-Phase: 10 (Clan applications) — EXECUTING
-Plan: 7 of 7
-Status: Phase complete — ready for verification
+Phase: 11 (Tournament depth) — EXECUTING
+Plan: 2 of 5
+Status: Ready to execute
 Last activity: 2026-06-04
 
 ```
@@ -165,6 +165,7 @@ v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 | Phase 10-clan-applications P05 | 169 | 2 tasks | 4 files |
 | Phase 10-clan-applications P03 | 8min | 2 tasks | 7 files |
 | Phase 10 P04 | 120s | 2 tasks | 7 files |
+| Phase 11-tournament-depth P01 | 408 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -551,6 +552,9 @@ Plan-level decisions logged during execution:
 - [Phase ?]: 10-01: accepts_applications defaults to true — existing clans accept applications; leaders opt OUT
 - [Phase ?]: 10-01: Three typed DomainException subclasses map to distinct bot error codes: clan_not_recruiting, already_in_clan, duplicate_application
 - [Phase ?]: 10-05-A: clan_apply button posts UUID to /clans/{clanId}/applications (web route is slug-bound); UUID-vs-slug discrepancy flagged for end-to-end verification in plan 10-07 (known_discrepancy option B)
+- [Phase ?]: D-11-01-A: game_match_type_id uses nullOnDelete; dropping a GameMatchType nulls stage override, stage survives
+- [Phase ?]: D-11-01-B: median_buchholz decimal(8,2) default 0 — Phase-6 inserts omitting column succeed unchanged
+- [Phase ?]: D-11-01-C: elo_rating NOT NULL default 1500 for all clans — no null-rating leak into Elo seeding
 
 ### Pending Todos
 
@@ -572,7 +576,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-04T09:22:29.356Z
-Stopped at: Completed Phase 10 Plan 05: bot clan apply live api.post + translateError clan codes
+Last session: 2026-06-04T11:15:37.393Z
+Stopped at: Completed Phase 11 Plan 01: schema migrations + RED scaffolds for tournament depth
 Resume file: None
 Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?

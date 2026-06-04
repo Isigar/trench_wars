@@ -16,10 +16,10 @@ Requirements for the v1.1 "Completion" milestone — finishing the partially-bui
 
 ### Tournaments (TOUR)
 
-- [ ] **TOUR-01**: A Swiss tournament automatically advances to the next round once every current-round match has a recorded result (no admin click required).
-- [ ] **TOUR-02**: An admin can seed a tournament by player rating (ELO-based `by_rank`) using actual match performance, rather than signup order.
-- [ ] **TOUR-03**: Swiss standings resolve ties using median Buchholz in addition to plain Buchholz.
-- [ ] **TOUR-04**: An admin can override the `GameMatchType` for an individual tournament stage.
+- [x] **TOUR-01**: A Swiss tournament automatically advances to the next round once every current-round match has a recorded result (no admin click required).
+- [x] **TOUR-02**: An admin can seed a tournament by player rating (ELO-based `by_rank`) using actual match performance, rather than signup order.
+- [x] **TOUR-03**: Swiss standings resolve ties using median Buchholz in addition to plain Buchholz.
+- [x] **TOUR-04**: An admin can override the `GameMatchType` for an individual tournament stage.
 
 ### Notifications (NOTF)
 
@@ -79,10 +79,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLAN-02 | 10 | Complete |
 | CLAN-03 | 10 | Complete |
 | CLAN-04 | 10 | Complete |
-| TOUR-01 | 11 | Pending |
-| TOUR-02 | 11 | Pending |
-| TOUR-03 | 11 | Pending |
-| TOUR-04 | 11 | Pending |
+| TOUR-01 | 11 | Complete |
+| TOUR-02 | 11 | Complete |
+| TOUR-03 | 11 | Complete |
+| TOUR-04 | 11 | Complete |
 | NOTF-01 | 12 | Pending |
 | BOT-01 | 12 | Pending |
 
