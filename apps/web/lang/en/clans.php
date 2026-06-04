@@ -98,6 +98,10 @@ return [
         'tags' => [
             'label' => 'Tags',
         ],
+        'accepts_applications' => [
+            'label' => 'Accept applications',
+            'hint' => 'When disabled, new applications to join this clan will be rejected.',
+        ],
         'save' => 'Save changes',
     ],
 
@@ -141,9 +145,16 @@ return [
         'accepted' => 'Application accepted. :name has joined the clan.',
         'declined' => 'Application declined.',
         'cancelled' => 'Your application has been cancelled.',
+        'applied' => 'Your application has been submitted.',
+        'apply_heading' => 'Apply to join',
+        'apply_button' => 'Submit application',
+        'message_placeholder' => 'Add a cover message (optional)…',
+        'not_accepting' => 'This clan is not currently accepting applications.',
         'error' => [
             'not_pending' => 'This application is no longer pending.',
             'already_in_clan' => 'The applicant is already a member of a clan.',
+            'clan_not_recruiting' => 'This clan is not accepting applications.',
+            'duplicate_application' => 'You already have a pending application to this clan.',
         ],
     ],
 

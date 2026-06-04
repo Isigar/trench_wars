@@ -27,6 +27,9 @@ return [
         'outbound_not_pending' => 'This outbound message has already been claimed or completed.',
         'outbound_not_dispatching' => 'This outbound message is not currently being dispatched.',
         'echo_suppressed' => 'Discord-side change suppressed as bot-originated echo (within 60s window).',
+        'clan_not_recruiting' => 'This clan is not accepting applications.',
+        'already_in_clan' => 'You are already a member of a clan.',
+        'duplicate_application' => 'You already have a pending application to this clan.',
     ],
 
     'embeds' => [
