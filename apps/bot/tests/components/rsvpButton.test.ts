@@ -3,7 +3,11 @@
 // Source: .planning/phases/05-discord-bot-v1/05-10-PLAN.md task 3.
 // Updated in Phase 10-05: clan_apply describe block flipped from redirect-to-web
 // stub assertions to live api.post assertions; translateError extended with
-// 3 new clan error code cases. Asserts:
+// 3 new clan error code cases.
+// Updated in Phase 12-04: list_page branch — pg: buttons call interaction.update()
+// (NOT reply/editReply) with a re-fetched page payload; malformed pg: ids are
+// already covered by the existing "Unknown button" path.
+// Asserts:
 //
 //   - decodeButtonId routing: match_open_signup_modal -> showModal (no defer
 //     expected; the dispatcher does not pre-defer modal-opening buttons)
@@ -11,6 +15,9 @@
 //   - match_leave -> api.delete(/matches/{id}/signups/{role}) with
 //     actsAsDiscordId
 //   - clan_apply -> api.post(/clans/{clanId}/applications) with actsAsDiscordId
+//   - list_page (pg:m:N) -> api.get(/matches?page=N) + interaction.update()
+//   - list_page (pg:c:N) -> api.get(/clans?page=N) + interaction.update()
+//   - list_page update() payload reflects new page bounds (Prev/Next disabled)
 //   - translateError maps the 7 typed errors to friendly user copy
 //   - Unknown / malformed customId emits 'Unknown button.'
 //
@@ -44,6 +51,7 @@ type MockButtonInteraction = {
     editReply: ReturnType<typeof vi.fn>;
     showModal: ReturnType<typeof vi.fn>;
     reply: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
     isRepliable: () => boolean;
     replied: boolean;
     deferred: boolean;
@@ -60,10 +68,46 @@ function makeButtonInteraction(
         editReply: vi.fn().mockResolvedValue(undefined),
         showModal: vi.fn().mockResolvedValue(undefined),
         reply: vi.fn().mockResolvedValue(undefined),
+        update: vi.fn().mockResolvedValue(undefined),
         isRepliable: () => true,
         replied: false,
         deferred: true, // dispatcher has already deferred for non-modal-opening buttons
         ...overrides,
+    };
+}
+
+// Minimal match stub for list_page responses.
+const MATCH_STUB = {
+    id: MATCH_UUID,
+    status: 'open',
+    scheduled_at: null,
+    host_clan_id: null,
+    title: null,
+    description: null,
+    game_match_type_id: null,
+};
+
+// Minimal clan stub for list_page responses.
+const CLAN_STUB = {
+    id: 'clan-uuid',
+    name: 'Test Clan',
+    tag: 'TC',
+    slug: 'test-clan',
+    status: 'active',
+    active_member_count: 5,
+};
+
+function matchListPageResponse(page = 1, lastPage = 3) {
+    return {
+        data: [MATCH_STUB],
+        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
+    };
+}
+
+function clanListPageResponse(page = 1, lastPage = 2) {
+    return {
+        data: [CLAN_STUB],
+        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
     };
 }
 
@@ -224,6 +268,113 @@ describe('rsvpButton.handle — clan_apply', () => {
         expect(interaction.editReply).toHaveBeenCalledWith(
             'This clan is not accepting applications.',
         );
+    });
+});
+
+describe('rsvpButton.handle — list_page (match)', () => {
+    it('calls api.get(/matches?page=2) with actsAsDiscordId when customId is pg:m:2', async () => {
+        vi.mocked(api.get).mockResolvedValue(matchListPageResponse(2, 3));
+        const interaction = makeButtonInteraction('pg:m:2', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        expect(api.get).toHaveBeenCalledWith('/matches?page=2', {
+            actsAsDiscordId: INVOKER_DISCORD_ID,
+        });
+    });
+
+    it('calls interaction.update() (NOT reply/editReply) with the rebuilt page-2 payload', async () => {
+        vi.mocked(api.get).mockResolvedValue(matchListPageResponse(2, 3));
+        const interaction = makeButtonInteraction('pg:m:2', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        expect(interaction.update).toHaveBeenCalledTimes(1);
+        expect(interaction.reply).not.toHaveBeenCalled();
+        expect(interaction.editReply).not.toHaveBeenCalled();
+    });
+
+    it('update() payload includes embeds and pagination components for multi-page match list', async () => {
+        vi.mocked(api.get).mockResolvedValue(matchListPageResponse(2, 3));
+        const interaction = makeButtonInteraction('pg:m:2', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0] as Record<string, unknown>;
+        const components = updateArg?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
+        expect(updateArg?.embeds).toBeDefined();
+    });
+
+    it('update() payload content contains "Page 2 of 3" for match page 2 of 3', async () => {
+        vi.mocked(api.get).mockResolvedValue(matchListPageResponse(2, 3));
+        const interaction = makeButtonInteraction('pg:m:2', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0];
+        expect(JSON.stringify(updateArg)).toContain('Page 2 of 3');
+    });
+
+    it('Prev button is disabled when on page 1 (first page bound)', async () => {
+        vi.mocked(api.get).mockResolvedValue(matchListPageResponse(1, 2));
+        const interaction = makeButtonInteraction('pg:m:1', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0] as Record<string, unknown>;
+        const components = updateArg?.components as Array<{ toJSON: () => { components: Array<{ disabled?: boolean }> } }> | undefined;
+        // The ActionRow's first button (Prev) must be disabled on page 1
+        const row = components?.[0]?.toJSON();
+        expect(row?.components[0]?.disabled).toBe(true);
+    });
+
+    it('Next button is disabled when on the last page (last page bound)', async () => {
+        vi.mocked(api.get).mockResolvedValue(matchListPageResponse(2, 2));
+        const interaction = makeButtonInteraction('pg:m:2', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0] as Record<string, unknown>;
+        const components = updateArg?.components as Array<{ toJSON: () => { components: Array<{ disabled?: boolean }> } }> | undefined;
+        // The ActionRow's second button (Next) must be disabled on last page
+        const row = components?.[0]?.toJSON();
+        expect(row?.components[1]?.disabled).toBe(true);
+    });
+});
+
+describe('rsvpButton.handle — list_page (clan)', () => {
+    it('calls api.get(/clans?page=3) with actsAsDiscordId when customId is pg:c:3', async () => {
+        vi.mocked(api.get).mockResolvedValue(clanListPageResponse(3, 4));
+        const interaction = makeButtonInteraction('pg:c:3', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        expect(api.get).toHaveBeenCalledWith('/clans?page=3', {
+            actsAsDiscordId: INVOKER_DISCORD_ID,
+        });
+    });
+
+    it('calls interaction.update() (NOT reply/editReply) with clan page 3 payload', async () => {
+        vi.mocked(api.get).mockResolvedValue(clanListPageResponse(3, 4));
+        const interaction = makeButtonInteraction('pg:c:3', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        expect(interaction.update).toHaveBeenCalledTimes(1);
+        expect(interaction.reply).not.toHaveBeenCalled();
+        expect(interaction.editReply).not.toHaveBeenCalled();
+    });
+
+    it('update() payload content contains "Page 3 of 4" for clan page 3 of 4', async () => {
+        vi.mocked(api.get).mockResolvedValue(clanListPageResponse(3, 4));
+        const interaction = makeButtonInteraction('pg:c:3', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0];
+        expect(JSON.stringify(updateArg)).toContain('Page 3 of 4');
+    });
+
+    it('update() payload includes pagination components when last_page > 1', async () => {
+        vi.mocked(api.get).mockResolvedValue(clanListPageResponse(1, 2));
+        const interaction = makeButtonInteraction('pg:c:1', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        const updateArg = interaction.update.mock.calls[0]?.[0] as Record<string, unknown>;
+        const components = updateArg?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
+    });
+
+    it('update() on error does not leave interaction unacknowledged', async () => {
+        vi.mocked(api.get).mockRejectedValue(new Error('network failure'));
+        const interaction = makeButtonInteraction('pg:c:1', { deferred: false });
+        await handle(interaction as unknown as ButtonInteraction);
+        // Must still call update() to acknowledge the interaction (avoid "application did not respond")
+        expect(interaction.update).toHaveBeenCalledTimes(1);
     });
 });
 
