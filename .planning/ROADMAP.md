@@ -42,7 +42,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
   3. Submitting a second application to the same clan while one is pending, or applying when already in an active clan, returns a clear, localized error on both web and Discord — no duplicate or ineligible application is persisted
   4. A clan leader or officer can toggle "accepting applications" on their clan; any application attempt to a closed clan is rejected with a localized reason on both web and Discord
 **Plans**: 7 plans
-- [ ] 10-01-PLAN.md — Schema (accepts_applications column + pending-per-clan partial unique index), Clan model cast, 3 typed exceptions
+- [x] 10-01-PLAN.md — Schema (accepts_applications column + pending-per-clan partial unique index), Clan model cast, 3 typed exceptions
 - [ ] 10-02-PLAN.md — ClanApplicationService::apply() with the 3 eligibility guards + service test + web/bot i18n keys
 - [ ] 10-03-PLAN.md — Bot + web submit controllers, routes, and PHP tests (bot 201/422 + abilities, web feature)
 - [ ] 10-04-PLAN.md — CLAN-04 recruiting toggle surfaces (ClanData DTO, MyClan settings UI, Filament admin)
@@ -85,6 +85,6 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 7. CMS | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
-| 10. Clan applications | v1.1 | 0/7 | Planned | - |
+| 10. Clan applications | v1.1 | 1/7 | In Progress|  |
 | 11. Tournament depth | v1.1 | 0/TBD | Not started | - |
 | 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |

@@ -11,8 +11,8 @@ Requirements for the v1.1 "Completion" milestone — finishing the partially-bui
 
 - [ ] **CLAN-01**: A logged-in user can submit an application to join a clan from the clan's public web page.
 - [ ] **CLAN-02**: A user can submit a clan application from Discord via `/clan apply <slug>` (the bot's redirect-to-web stub is replaced with a live API call).
-- [ ] **CLAN-03**: The system blocks ineligible applications (applicant already in an active clan, or a duplicate pending application to the same clan) and returns a clear, localized reason on both web and Discord.
-- [ ] **CLAN-04**: A clan leader/officer can toggle whether their clan is accepting applications; applications to a closed clan are rejected.
+- [x] **CLAN-03**: The system blocks ineligible applications (applicant already in an active clan, or a duplicate pending application to the same clan) and returns a clear, localized reason on both web and Discord.
+- [x] **CLAN-04**: A clan leader/officer can toggle whether their clan is accepting applications; applications to a closed clan are rejected.
 
 ### Tournaments (TOUR)
 
@@ -77,8 +77,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | CLAN-01 | 10 | Pending |
 | CLAN-02 | 10 | Pending |
-| CLAN-03 | 10 | Pending |
-| CLAN-04 | 10 | Pending |
+| CLAN-03 | 10 | Complete |
+| CLAN-04 | 10 | Complete |
 | TOUR-01 | 11 | Pending |
 | TOUR-02 | 11 | Pending |
 | TOUR-03 | 11 | Pending |

@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
-status: planning
-last_updated: "2026-06-03T12:00:00.000Z"
-last_activity: 2026-06-03
+status: executing
+stopped_at: "Completed Phase 10 Plan 01: schema + model + exceptions foundation"
+last_updated: "2026-06-04T08:49:04.479Z"
+last_activity: 2026-06-04
 progress:
   total_phases: 3
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 7
+  completed_plans: 1
   percent: 0
 ---
 
@@ -20,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-03)
 
 **Core value:** Two clans can schedule a scrim, sign up for role slots from Discord, play it on a registered match server, and have a result and per-player events recorded automatically.
-**Current focus:** v1.1 Completion milestone — 3 phases (10-12) covering clan-application submission flow, tournament depth extensions, and notification-preferences UX + bot pagination. Roadmap created 2026-06-03. Ready to plan Phase 10.
+**Current focus:** Phase 10 — Clan applications
 
 ## Current Position
 
-Phase: 10 — Clan applications
-Plan: — (ready to plan)
-Status: Planning / ready to plan
-Last activity: 2026-06-03 — Roadmap created for v1.1 Completion (Phases 10-12); all 10 requirements mapped
+Phase: 10 (Clan applications) — EXECUTING
+Plan: 2 of 7
+Status: Ready to execute
+Last activity: 2026-06-04
 
 ```
 v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/3 phases)
@@ -159,6 +160,7 @@ v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 | Phase 09 P11 | 1093 | 2 tasks | 22 files |
 | Phase 09 P12 | ~30min | 2 tasks | 7 files |
 | Phase 09-polish P12 | ~11min | 2 tasks tasks | 7 files files |
+| Phase 10-clan-applications P01 | 95 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -542,6 +544,8 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-09-12-B: Pint auto-fix in 09-12 commit narrowed scope to 4 Phase-9 source files (Rule 1 deviation); zero pre-Phase-9 file touched
 - [v1.1 Roadmap creation 2026-06-03]: D-05-09-B superseded — Phase 10 will replace the /clan apply redirect-to-web stub with a live BotApiClanApplicationController backed by ClanApplicationService::apply(). Phases 10-12 continue D-04-03-A GameMatch canonical binding and all D-* conventions from v1.0.
 - [v1.1 Roadmap creation 2026-06-03]: Phase 11 TOUR-01 will replace the D-06-11-C admin-click generate_next_swiss_round HeaderAction with an observer/event-driven auto-trigger. Phase 11 TOUR-02 will replace D-06-05-B by_rank created_at proxy with ELO-derived rating.
+- [Phase ?]: 10-01: accepts_applications defaults to true — existing clans accept applications; leaders opt OUT
+- [Phase ?]: 10-01: Three typed DomainException subclasses map to distinct bot error codes: clan_not_recruiting, already_in_clan, duplicate_application
 
 ### Pending Todos
 
@@ -563,7 +567,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-03
-Stopped at: v1.1 roadmap created (Phases 10-12). All 10 requirements mapped. Files written: ROADMAP.md, REQUIREMENTS.md, STATE.md.
+Last session: 2026-06-04T08:49:04.467Z
+Stopped at: Completed Phase 10 Plan 01: schema + model + exceptions foundation
 Resume file: None
 Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?
