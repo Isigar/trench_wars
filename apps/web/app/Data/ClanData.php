@@ -37,6 +37,7 @@ final class ClanData extends Data
         public ?array $description,
         public ?string $country_code,
         public string $status,
+        public bool $accepts_applications,
         public ?string $discord_role_id,
         /** @var list<ClanTagData> */
         public array $tags,
@@ -67,6 +68,7 @@ final class ClanData extends Data
             description: $clan->getTranslations('description') ?: null,
             country_code: $clan->country_code,
             status: $clan->status,
+            accepts_applications: $clan->accepts_applications,
             discord_role_id: $clan->discord_role_id,
             tags: $tags,
             active_member_count: $activeMemberCount,

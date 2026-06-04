@@ -51,6 +51,7 @@ class UpdateClanProfileRequest extends FormRequest
             'tag' => ['sometimes', 'required', 'string', "min:{$tagMin}", "max:{$tagMax}", 'regex:/^[A-Za-z0-9_-]+$/'],
             'description' => ['sometimes', 'nullable', 'string', "max:{$descMax}"],
             'country_code' => ['sometimes', 'nullable', 'string', 'size:2'],
+            'accepts_applications' => ['sometimes', 'boolean'],
         ];
     }
 }
