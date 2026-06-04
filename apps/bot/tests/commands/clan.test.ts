@@ -2,12 +2,17 @@
 //
 // Source: .planning/phases/05-discord-bot-v1/05-09-PLAN.md task 3.
 // Updated in Phase 10-05: apply branch flipped from redirect-to-web stub to
-// live api.post assertions. Asserts SC-1:
+// live api.post assertions.
+// Updated in Phase 12-03: /clan list pagination render tests (BOT-01).
+// Asserts SC-1:
 //   - 3 subcommands declared on the SlashCommandBuilder data (info/list/apply)
 //   - info + list call api.get with actsAsDiscordId
 //   - apply calls api.post(/clans/{slug}/applications) with actsAsDiscordId
 //   - every branch defers reply ephemeral as the FIRST awaited statement
 //     (Pitfall 1 — 3s window mitigation)
+//   - /clan list fetches /clans?page=1 from { data, meta } envelope
+//   - pagination buttons + "Page X of Y" emitted only when meta.last_page > 1
+//   - no pagination components when empty or single-page
 
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -56,6 +61,30 @@ function makeInteraction(sub: string, opts: Record<string, string> = {}): MockIn
     };
 }
 
+const CLAN_DATA = {
+    id: 'c-uuid',
+    slug: 'redwave',
+    tag: 'RW',
+    name: 'Red Wave',
+    status: 'active',
+    active_member_count: 12,
+};
+
+// Helpers to build paginated API responses.
+function singlePageResponse() {
+    return {
+        data: [CLAN_DATA],
+        meta: { current_page: 1, per_page: 25, total: 1, last_page: 1 },
+    };
+}
+
+function multiPageResponse(page = 1, lastPage = 3) {
+    return {
+        data: [CLAN_DATA],
+        meta: { current_page: page, per_page: 25, total: lastPage * 25, last_page: lastPage },
+    };
+}
+
 beforeEach(() => {
     vi.clearAllMocks();
 });
@@ -81,14 +110,6 @@ describe('/clan info subcommand', () => {
     // mock MUST mirror that shape. A bare DTO here would let a regression to
     // `api.get<ClanData>` (no .data unwrap) pass silently — exactly the bug that
     // rendered "Clan undefined [undefined]".
-    const CLAN_DATA = {
-        id: 'c-uuid',
-        slug: 'redwave',
-        tag: 'RW',
-        name: 'Red Wave',
-        status: 'active',
-        active_member_count: 12,
-    };
 
     it('defers reply ephemeral first', async () => {
         vi.mocked(api.get).mockResolvedValue({ data: CLAN_DATA });
@@ -120,20 +141,58 @@ describe('/clan info subcommand', () => {
 });
 
 describe('/clan list subcommand', () => {
-    it('calls api.get(/clans) with actsAsDiscordId', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [] });
+    it('calls api.get with path /clans?page=1 and actsAsDiscordId', async () => {
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
-        expect(api.get).toHaveBeenCalledWith('/clans', {
+        expect(api.get).toHaveBeenCalledWith('/clans?page=1', {
             actsAsDiscordId: INVOKER_DISCORD_ID,
         });
     });
 
     it('editReplies "No clans." when API returns empty list', async () => {
-        vi.mocked(api.get).mockResolvedValue({ data: [] });
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
         const interaction = makeInteraction('list');
         await execute(interaction as unknown as ChatInputCommandInteraction);
         expect(interaction.editReply).toHaveBeenCalledWith('No clans.');
+    });
+
+    it('does NOT include components when data is empty', async () => {
+        vi.mocked(api.get).mockResolvedValue({ data: [], meta: { current_page: 1, per_page: 25, total: 0, last_page: 1 } });
+        const interaction = makeInteraction('list');
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const arg = interaction.editReply.mock.calls[0]?.[0];
+        // Empty state uses plain string — no components object
+        expect(typeof arg).toBe('string');
+    });
+
+    it('does NOT include pagination components when meta.last_page === 1', async () => {
+        vi.mocked(api.get).mockResolvedValue(singlePageResponse());
+        const interaction = makeInteraction('list');
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const arg = interaction.editReply.mock.calls[0]?.[0] as Record<string, unknown>;
+        // When last_page === 1, components must be absent or empty
+        const components = arg?.components as unknown[] | undefined;
+        expect(!components || components.length === 0).toBe(true);
+    });
+
+    it('includes pagination components (Prev/Next ActionRow) when meta.last_page > 1', async () => {
+        vi.mocked(api.get).mockResolvedValue(multiPageResponse(1, 3));
+        const interaction = makeInteraction('list');
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const arg = interaction.editReply.mock.calls[0]?.[0] as Record<string, unknown>;
+        const components = arg?.components as unknown[] | undefined;
+        expect(components).toBeDefined();
+        expect(components!.length).toBeGreaterThan(0);
+    });
+
+    it('includes "Page 1 of N" text in the reply when meta.last_page > 1', async () => {
+        vi.mocked(api.get).mockResolvedValue(multiPageResponse(1, 3));
+        const interaction = makeInteraction('list');
+        await execute(interaction as unknown as ChatInputCommandInteraction);
+        const arg = interaction.editReply.mock.calls[0]?.[0];
+        const argStr = JSON.stringify(arg);
+        expect(argStr).toContain('Page 1 of 3');
     });
 });
 
