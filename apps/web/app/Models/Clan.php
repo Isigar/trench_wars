@@ -57,9 +57,26 @@ class Clan extends Model implements HasMedia, Sitemapable
         'country_code',
         'owner_user_id',
         'status',
+        'accepts_applications',
         'discord_role_id',
         'discord_announce_channel_id',
     ];
+
+    /**
+     * Attribute casts.
+     *
+     * accepts_applications is cast to boolean so callers get bool not the
+     * Postgres '1'/'0' string representation.  Plan 10-02 ClanApplicationService::apply()
+     * checks $clan->accepts_applications directly.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'accepts_applications' => 'boolean',
+        ];
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
