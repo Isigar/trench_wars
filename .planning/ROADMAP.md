@@ -60,7 +60,13 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
   2. When seeding a tournament bracket, an admin can choose "by rank" and the bracket is seeded by ELO-derived player rating rather than signup order
   3. Swiss standings show median Buchholz alongside plain Buchholz, and the tiebreaker column is visible on the public bracket view
   4. An admin can set a different GameMatchType on an individual tournament stage (overriding the tournament-level default), and matches in that stage are created with the overridden type
-**Plans**: TBD
+**Plans**: 5 plans
+- [ ] 11-01-PLAN.md — Schema markers (clans.elo_rating/elo_matches_count, brackets.rated_at, standings.median_buchholz, stages.game_match_type_id) + model wiring + DTO field + 4 RED test scaffolds
+- [ ] 11-02-PLAN.md — Pure logic (TDD): EloRatingService (K=32, base 1500) + median Buchholz (Cut 1) in SwissStandingsCalculator
+- [ ] 11-03-PLAN.md — BracketAdvancementService hooks: Elo apply (rated_at-guarded, once per bracket) + Swiss auto-advance (idempotent) + by_rank seeding by elo_rating
+- [ ] 11-04-PLAN.md — TOUR-04 stage override: materialiser stage.game_match_type_id fallback + cross-game-scoped Filament Select + i18n
+- [ ] 11-05-PLAN.md — Public median Buchholz column + shared-types regen + phase-close full web/bot gate suite + TOUR traceability
+**UI hint**: yes
 
 ### Phase 12: Notifications & bot polish
 **Goal**: Users have full control over which notifications they receive and how, and the Discord bot's list commands support pagination
@@ -86,5 +92,5 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
 | 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
-| 11. Tournament depth | v1.1 | 0/TBD | Not started | - |
+| 11. Tournament depth | v1.1 | 0/5 | Planned | - |
 | 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |
