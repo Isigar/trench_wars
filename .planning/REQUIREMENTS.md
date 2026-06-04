@@ -27,7 +27,7 @@ Requirements for the v1.1 "Completion" milestone — finishing the partially-bui
 
 ### Discord UX (BOT)
 
-- [ ] **BOT-01**: `/match list` and `/clan list` let the user page through results beyond the first page.
+- [x] **BOT-01**: `/match list` and `/clan list` let the user page through results beyond the first page.
 
 ## Future Requirements
 
@@ -84,7 +84,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TOUR-03 | 11 | Complete |
 | TOUR-04 | 11 | Complete |
 | NOTF-01 | 12 | Complete |
-| BOT-01 | 12 | Pending |
+| BOT-01 | 12 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 10 total
