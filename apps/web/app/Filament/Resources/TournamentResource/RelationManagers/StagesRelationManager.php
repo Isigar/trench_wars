@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\TournamentResource\RelationManagers;
 
+use App\Models\Tournament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -13,16 +14,24 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Source: .planning/phases/06-tournaments-brackets/06-11-PLAN.md Task 1.
+ *         + .planning/phases/11-tournament-depth/11-04-PLAN.md Task 2 (TOUR-04).
  *
- * READ-ONLY. Stages are owned by BracketGeneratorService (plan 06-06) and the
- * SwissGenerator (plan 06-07). The admin views them but does not author them —
- * inline editing of `ordinal` or `type` would invalidate the generator output.
+ * MOSTLY READ-ONLY. Stages are owned by BracketGeneratorService (plan 06-06) and
+ * the SwissGenerator (plan 06-07). The admin views them but does not author them —
+ * inline editing of `ordinal`, `type`, or `name` would invalidate the generator
+ * output.
  *
- * No headerActions (no CreateAction). Row actions: ViewAction only.
+ * TOUR-04 exception: game_match_type_id is editable. This is the stage-level
+ * override — admin can set a different GameMatchType per stage, scoped to the
+ * tournament's own game (Pattern 3 cross-game guard). ordinal/type/name stay
+ * disabled (T-06-11-04 invariant preserved).
  *
- * T-06-11-04 mitigation: read-only RelationManagers prevent admin tampering of
- * the bracket structure via Filament UI; all writes flow through the generator
- * services with their idempotency + transactional invariants.
+ * Row actions: ViewAction + EditAction (game_match_type_id only).
+ * No headerActions (no CreateAction). No DeleteAction.
+ *
+ * T-11-04-01 mitigation: Select options scoped to stage.tournament.game.matchTypes —
+ * admin cannot pick a type from a different game via the UI.
+ * T-11-04-03 mitigation: ordinal/type/name remain ->disabled in the form.
  *
  * Pitfall 3: $relationship MUST match Tournament::stages() HasMany method.
  */
@@ -37,10 +46,8 @@ class StagesRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        // Form is required by the RelationManager contract even though the table
-        // exposes no CreateAction / EditAction — keeping all fields disabled so an
-        // accidental wiring surface stays harmless.
         return $form->schema([
+            // Structure fields — remain disabled (T-06-11-04 invariant: generator owns stage structure).
             Forms\Components\TextInput::make('type')
                 ->label(__('admin.tournament_stage.fields.type'))
                 ->disabled(),
@@ -53,6 +60,30 @@ class StagesRelationManager extends RelationManager
             Forms\Components\TextInput::make('name')
                 ->label(__('admin.tournament_stage.fields.name'))
                 ->disabled(),
+
+            // TOUR-04: editable match-type override scoped to the tournament's game.
+            // Pattern 3 (mirrors RoleLimitsRelationManager): getOwnerRecord() resolves
+            // the parent Tournament, then ->game yields ONLY that tournament's game's
+            // match types. Admin cannot pick a type from a different game (T-11-04-01).
+            Forms\Components\Select::make('game_match_type_id')
+                ->label(__('admin.tournament_stage.fields.game_match_type_id'))
+                ->options(function (RelationManager $livewire): array {
+                    /** @var Tournament $tournament */
+                    $tournament = $livewire->getOwnerRecord();
+                    $game = $tournament->game;
+
+                    if ($game === null) {
+                        return [];
+                    }
+
+                    return $game->matchTypes()
+                        ->orderBy('key')
+                        ->get()
+                        ->mapWithKeys(fn ($mt): array => [$mt->id => $mt->key])
+                        ->toArray();
+                })
+                ->nullable()
+                ->searchable(),
         ]);
     }
 
@@ -75,12 +106,22 @@ class StagesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('brackets_count')
                     ->label(__('admin.tournament_stage.fields.brackets_count'))
                     ->counts('brackets'),
+
+                // TOUR-04: effective stage-level match type override column.
+                // Shows null/inherited as '—' (placeholder) via the gameMatchType relation
+                // added by plan 11-01.
+                Tables\Columns\TextColumn::make('gameMatchType.key')
+                    ->label(__('admin.tournament_stage.fields.game_match_type_id'))
+                    ->placeholder('—'),
             ])
             ->defaultSort('ordinal')
             // No headerActions — stages are immutable from the admin UI.
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                // INTENTIONALLY no EditAction / DeleteAction (T-06-11-04 mitigation).
+                // TOUR-04: EditAction exposes ONLY the game_match_type_id Select.
+                // ordinal/type/name stay read-only via the form's ->disabled() rules
+                // (T-06-11-04 mitigation — generator output stays authoritative).
+                Tables\Actions\EditAction::make(),
             ]);
     }
 }

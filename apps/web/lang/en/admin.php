@@ -544,6 +544,7 @@ return [
             'ordinal' => 'Order',
             'name' => 'Name',
             'brackets_count' => 'Brackets',
+            'game_match_type_id' => 'Match type override',
         ],
     ],
 

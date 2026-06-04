@@ -15,7 +15,6 @@ use App\Models\TournamentStage;
 use App\Services\BracketMatchMaterialiserService;
 use App\Services\Brackets\BracketGeneratorService;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use RuntimeException;
 
 /*
 | Source: 11-01-PLAN.md Task 2 — RED scaffold; turned GREEN by 11-04.
