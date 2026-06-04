@@ -46,6 +46,18 @@ export type {
 // Bot-specific contracts not generated from spatie/laravel-data.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Pagination meta — shape of Laravel paginate() meta envelope.
+// Used by list endpoints (/matches, /clans) when returning { data, meta }.
+// ---------------------------------------------------------------------------
+
+export interface ListMeta {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+}
+
 // Shape of a row from `discord_outbound_messages` as returned by
 // /api/bot/outbound-messages?status=pending (plan 05-04 BotApiOutboundController).
 // The `payload` field is discriminated by `message_type` — concrete payload

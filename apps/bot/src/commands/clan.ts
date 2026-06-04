@@ -17,9 +17,10 @@ import {
     SlashCommandBuilder,
 } from 'discord.js';
 
-import { api } from '../services/api.js';
 import { translateError } from '../components/rsvpButton.js';
-import type { ClanData } from '../types/apiContracts.js';
+import { paginationButtons } from '../lib/buttons.js';
+import { api } from '../services/api.js';
+import type { ClanData, ListMeta } from '../types/apiContracts.js';
 
 export const data = new SlashCommandBuilder()
     .setName('clan')
@@ -61,11 +62,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     }
 
     if (sub === 'list') {
-        const clans = await api.get<{ data: ClanData[] }>('/clans', {
-            actsAsDiscordId: interaction.user.id,
-        });
-        await interaction.editReply(formatClanList(clans.data));
-        return;
+        return await renderClanListPage(interaction, 1);
     }
 
     if (sub === 'apply') {
@@ -97,4 +94,43 @@ function formatClanInfo(c: ClanData): string {
 function formatClanList(clans: ClanData[]): string {
     if (clans.length === 0) return 'No clans.';
     return clans.map((c) => `- [${c.tag}] ${c.name} (${c.slug})`).join('\n');
+}
+
+/**
+ * renderClanListPage — fetches and renders a page of clans.
+ *
+ * Exported so plan 12-04's button handler can call the same builder without
+ * duplicating fetch/render logic.
+ *
+ * - Fetches /clans?page=N with the invoking user's Discord ID forwarded.
+ * - Empty data → plain-string reply; no components.
+ * - last_page === 1 → plain-text content only; no pagination components.
+ * - last_page > 1  → plain-text content + Prev/Next ActionRow + "Page X of Y".
+ */
+export async function renderClanListPage(
+    interaction: ChatInputCommandInteraction,
+    page: number,
+): Promise<void> {
+    const result = await api.get<{ data: ClanData[]; meta: ListMeta }>(
+        `/clans?page=${page}`,
+        { actsAsDiscordId: interaction.user.id },
+    );
+    const { data: clans, meta } = result;
+
+    const listText = formatClanList(clans);
+
+    if (clans.length === 0) {
+        await interaction.editReply(listText);
+        return;
+    }
+
+    if (meta.last_page <= 1) {
+        await interaction.editReply(listText);
+        return;
+    }
+
+    // Multi-page: include Prev/Next row and a page indicator.
+    const components = [paginationButtons('clan', meta.current_page, meta.last_page)];
+    const content = `${listText}\nPage ${meta.current_page} of ${meta.last_page}`;
+    await interaction.editReply({ content, components });
 }

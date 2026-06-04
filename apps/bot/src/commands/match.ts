@@ -39,9 +39,10 @@ import {
 } from 'discord.js';
 
 import { buildSignupModal } from '../components/signupModal.js';
+import { paginationButtons } from '../lib/buttons.js';
 import { matchCard } from '../lib/embeds.js';
 import { api } from '../services/api.js';
-import type { PublicMatchData } from '../types/apiContracts.js';
+import type { ListMeta, PublicMatchData } from '../types/apiContracts.js';
 
 export const data = new SlashCommandBuilder()
     .setName('match')
@@ -96,19 +97,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     if (sub === 'list') {
-        const matches = await api.get<{ data: PublicMatchData[] }>('/matches', {
-            actsAsDiscordId: interaction.user.id,
-        });
-        if (matches.data.length === 0) {
-            await interaction.editReply('No open matches.');
-            return;
-        }
-        // Discord allows up to 10 embeds per reply; top-5 keeps the message
-        // readable. Pagination polish deferred to plan 05-12.
-        const top = matches.data.slice(0, 5);
-        const embeds = top.flatMap((m) => matchCard(m).embeds);
-        await interaction.editReply({ embeds });
-        return;
+        return await renderMatchListPage(interaction, 1);
     }
 
     if (sub === 'info') {
@@ -142,4 +131,43 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         }
         return;
     }
+}
+
+/**
+ * renderMatchListPage — fetches and renders a page of matches.
+ *
+ * Exported so plan 12-04's button handler can call the same builder without
+ * duplicating fetch/render logic.
+ *
+ * - Fetches /matches?page=N with the invoking user's Discord ID forwarded.
+ * - Empty data → plain-string reply; no components.
+ * - last_page === 1 → embeds only; no pagination components.
+ * - last_page > 1  → embeds + Prev/Next ActionRow + "Page X of Y" content.
+ */
+export async function renderMatchListPage(
+    interaction: ChatInputCommandInteraction,
+    page: number,
+): Promise<void> {
+    const result = await api.get<{ data: PublicMatchData[]; meta: ListMeta }>(
+        `/matches?page=${page}`,
+        { actsAsDiscordId: interaction.user.id },
+    );
+    const { data: matches, meta } = result;
+
+    if (matches.length === 0) {
+        await interaction.editReply('No open matches.');
+        return;
+    }
+
+    const embeds = matches.flatMap((m) => matchCard(m).embeds);
+
+    if (meta.last_page <= 1) {
+        await interaction.editReply({ embeds });
+        return;
+    }
+
+    // Multi-page: include Prev/Next row and a page indicator.
+    const components = [paginationButtons('match', meta.current_page, meta.last_page)];
+    const content = `Page ${meta.current_page} of ${meta.last_page}`;
+    await interaction.editReply({ content, embeds, components });
 }
