@@ -45,7 +45,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 - [x] 10-01-PLAN.md — Schema (accepts_applications column + pending-per-clan partial unique index), Clan model cast, 3 typed exceptions
 - [x] 10-02-PLAN.md — ClanApplicationService::apply() with the 3 eligibility guards + service test + web/bot i18n keys
 - [x] 10-03-PLAN.md — Bot + web submit controllers, routes, and PHP tests (bot 201/422 + abilities, web feature)
-- [ ] 10-04-PLAN.md — CLAN-04 recruiting toggle surfaces (ClanData DTO, MyClan settings UI, Filament admin)
+- [x] 10-04-PLAN.md — CLAN-04 recruiting toggle surfaces (ClanData DTO, MyClan settings UI, Filament admin)
 - [x] 10-05-PLAN.md — Bot wiring: /clan apply + clan_apply button → api.post, translateError extension, bot tests
 - [ ] 10-06-PLAN.md — Web "Apply to join" form on the clan show page + eligibility props + feature test
 - [ ] 10-07-PLAN.md — Phase close: full web+bot gate suite, SC traceability, REQUIREMENTS/ROADMAP updates
@@ -85,6 +85,6 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 7. CMS | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 8. RCON automation | v1.0 | 13/13 | Complete | 2026-05-14 |
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
-| 10. Clan applications | v1.1 | 4/7 | In Progress|  |
+| 10. Clan applications | v1.1 | 5/7 | In Progress|  |
 | 11. Tournament depth | v1.1 | 0/TBD | Not started | - |
 | 12. Notifications & bot polish | v1.1 | 0/TBD | Not started | - |
