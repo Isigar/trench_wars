@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Completion
 status: executing
-stopped_at: "Completed Phase 11 Plan 02: EloRatingService + median Buchholz Cut-1"
-last_updated: "2026-06-04T11:20:01.622Z"
+stopped_at: "Completed Phase 11 Plan 01: schema migrations + RED scaffolds for tournament depth"
+last_updated: "2026-06-04T11:30:22.759Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 10
   percent: 33
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-03)
 ## Current Position
 
 Phase: 11 (Tournament depth) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-06-04
 
@@ -167,6 +167,7 @@ v1.1 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 | Phase 10 P04 | 120s | 2 tasks | 7 files |
 | Phase 11-tournament-depth P01 | 408 | 2 tasks | 13 files |
 | Phase 11-tournament-depth P02 | 121 | 2 tasks | 2 files |
+| Phase 11-tournament-depth P04 | 350 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -558,6 +559,10 @@ Plan-level decisions logged during execution:
 - [Phase ?]: D-11-01-C: elo_rating NOT NULL default 1500 for all clans — no null-rating leak into Elo seeding
 - [Phase 11]: D-11-02-A: BASE=1500 const removed from EloRatingService — DB column default handles it; PHPStan L8 classConstant.unused would fail the gate
 - [Phase 11]: D-11-02-B: EloRatingService re-fetches both clan rows with lockForUpdate inside DB::transaction; stale caller models never used for math (T-11-02-02 concurrent-write serialisation)
+- [Phase 11]: D-11-04-A: BracketMatchMaterialiserService stage resolution uses $locked->stage()->first() query inside DB::transaction (not the relation property) — ensures stage is fetched within the lockForUpdate scope
+- [Phase 11]: D-11-04-B: PHPStan L8 nullsafe.neverNull rule prefers ternary null-check over ?-> when receiver can be proved non-null; used explicit ternary for game_match_type_id access in materialiser
+- [Phase 11]: D-11-04-C: StagesRelationManager getOwnerRecord() returns parent Tournament; options closure traverses tournament->game->matchTypes() (Pattern 3 cross-game guard analog to RoleLimitsRelationManager)
+- [Phase 11]: D-11-04-D: mountTableAction scoping test replaced with unit closure approach — ViewAction registers infolist that conflicts with form(Form) signature in Filament v3.3 Livewire tests (TypeError: Infolist given where Form expected)
 
 ### Pending Todos
 
@@ -579,7 +584,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-04T11:20:01.611Z
+Last session: 2026-06-04T11:30:22.749Z
 Stopped at: Completed Phase 11 Plan 01: schema migrations + RED scaffolds for tournament depth
 Resume file: None
 Next: `/gsd:plan-phase 10` — Clan applications (CLAN-01..04). Start with Wave 0 test scaffolding (ClanApplicationService::apply + clans.is_accepting_applications toggle + BotApiClanApplicationController). Key open product questions to resolve at plan-phase time: one pending application per clan or total? cover message required?
