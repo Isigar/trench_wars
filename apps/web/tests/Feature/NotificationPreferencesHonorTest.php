@@ -19,8 +19,9 @@ use App\Notifications\MatchStartingSoon;
 
 it('disabling discord for match_starting_soon removes it from enabledNotificationChannels', function (): void {
     // Arrange: user with a discord_id so discord is default-ON for match_starting_soon.
+    // Distinct snowflake per test to avoid unique-constraint collision under --parallel.
     /** @var User $user */
-    $user = User::factory()->create(['discord_id' => '123456789012345678']);
+    $user = User::factory()->create(['discord_id' => '123456789012345601']);
 
     // Confirm default includes discord.
     expect($user->enabledNotificationChannels('match_starting_soon'))
@@ -43,8 +44,9 @@ it('disabling discord for match_starting_soon removes it from enabledNotificatio
 
 it('notification via() reflects the disabled discord channel for match_starting_soon', function (): void {
     // Arrange: user with discord_id, disable discord for match_starting_soon.
+    // Distinct snowflake per test to avoid unique-constraint collision under --parallel.
     /** @var User $user */
-    $user = User::factory()->create(['discord_id' => '123456789012345678']);
+    $user = User::factory()->create(['discord_id' => '123456789012345602']);
 
     $this->actingAs($user)
         ->post(route('account.notification-preferences.update'), [
