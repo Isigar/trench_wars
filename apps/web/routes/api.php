@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\BotApi\BotApiClanApplicationController;
 use App\Http\Controllers\BotApi\BotApiClanController;
 use App\Http\Controllers\BotApi\BotApiDiscordEventController;
 use App\Http\Controllers\BotApi\BotApiMatchController;
@@ -45,6 +46,8 @@ Route::prefix('bot')->middleware(['auth:sanctum', 'abilities:bot:read'])->group(
     // Acts-as-user — additional abilities:bot:act-as-user + bot.acts-as middleware.
     Route::middleware(['abilities:bot:act-as-user', 'bot.acts-as'])->group(function (): void {
         Route::get('/users/me', [BotApiUserController::class, 'me'])->name('bot.users.me');
+        Route::post('/clans/{clan:slug}/applications', [BotApiClanApplicationController::class, 'store'])
+            ->name('bot.clans.applications.store');
         Route::post('/matches/{match}/signups', [BotApiMatchSignupController::class, 'store'])
             ->name('bot.matches.signups.store');
         Route::delete('/matches/{match}/signups/{gameRole}', [BotApiMatchSignupController::class, 'destroy'])

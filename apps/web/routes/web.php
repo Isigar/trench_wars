@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BlogIndexController;
 use App\Http\Controllers\BlogShowController;
 use App\Http\Controllers\ClanDirectoryController;
+use App\Http\Controllers\Clans\ClanApplyController;
 use App\Http\Controllers\Clans\ClanCreateController;
 use App\Http\Controllers\ClanShowController;
 use App\Http\Controllers\ClansJsonController;
@@ -141,6 +142,10 @@ Route::middleware('auth')->group(function (): void {
     // Application cancel — NOT under /my-clan prefix because the applicant may not
     // yet have any clan membership.
     Route::post('/applications/{application}/cancel', [ClanApplicationController::class, 'cancel'])->name('applications.cancel');
+
+    // Application submit — authenticated user applies to join a clan.
+    // NOT under /my-clan prefix: applicant may not yet have any clan membership.
+    Route::post('/clans/{clan:slug}/apply', [ClanApplyController::class, 'store'])->name('clans.apply');
 
     // Match signups (SC-2 + SC-5 — REQ-goal-match-workflows). MatchSignupService
     // is the SOLE production write path to match_slots.occupant_user_id.
