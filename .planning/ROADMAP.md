@@ -28,7 +28,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 
 - [x] **Phase 10: Clan applications** — Submission flow on web and Discord, eligibility enforcement, and per-clan recruiting toggle
 - [x] **Phase 11: Tournament depth** — Swiss auto-advance, ELO seeding, median Buchholz tiebreaker, and stage-level GameMatchType override
-- [ ] **Phase 12: Notifications & bot polish** — Notification-preferences account-settings UX and bot list pagination
+- [x] **Phase 12: Notifications & bot polish** — Notification-preferences account-settings UX and bot list pagination
 
 ## Phase Details
 
@@ -80,7 +80,7 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
   - [x] 12-02-PLAN.md — BOT-01: list_page customId + Prev/Next pagination button factory (TDD)
   - [x] 12-03-PLAN.md — BOT-01: in-message pagination render in /match list + /clan list (page + "Page X of Y")
   - [x] 12-04-PLAN.md — BOT-01: Prev/Next handler re-fetches page and interaction.update()s the same message
-  - [ ] 12-05-PLAN.md — Phase close: full web + bot gate suites green; trace NOTF-01 + BOT-01 to Met
+  - [x] 12-05-PLAN.md — Phase close: full web + bot gate suites green; trace NOTF-01 + BOT-01 to Met
 **UI hint**: yes
 
 ## Progress
@@ -98,4 +98,4 @@ Full details, plan-level breakdown, decisions, deferred items, and operator manu
 | 9. Polish | v1.0 | 12/12 | Complete | 2026-05-15 |
 | 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
 | 11. Tournament depth | v1.1 | 5/5 | Complete   | 2026-06-04 |
-| 12. Notifications & bot polish | v1.1 | 4/5 | In Progress|  |
+| 12. Notifications & bot polish | v1.1 | 5/5 | Complete   | 2026-06-04 |
