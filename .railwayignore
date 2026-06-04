@@ -1,0 +1,14 @@
+.git
+.github
+.planning
+.docs
+.claude
+.idea
+.pnpm-store
+node_modules
+**/node_modules
+**/vendor
+apps/web/public/build
+apps/web/public/hot
+apps/web/bootstrap/ssr
+**/*.log

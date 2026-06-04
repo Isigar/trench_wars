@@ -994,3 +994,11 @@ This is the mechanical proof of REQ-success-end-to-end-scrim — no manual entry
 
 **Research date:** 2026-05-14
 **Valid until:** ~2026-06-13 (30 days — stable except CRCON which iterates fast; re-check CRCON version pin if Phase 8 ships >2 weeks from research date).
+
+## Open Questions — RESOLVED at planning time (2026-05-14)
+
+1. **CRCON version standardisation** — **RESOLVED**: pin v10.0.0+ via `config('rcon.crcon_version_pin')` default '10.0.0' (plan 08-05 config/rcon.php). Manual smoke A (plan 08-13 PENDING_MANUAL_SMOKE) verifies against the league's actual deployed version.
+2. **Steam ID linkage flow for players** — **RESOLVED**: orphan events silently skipped at the aggregator (Pitfall 5, plan 08-08 MatchPlayerStatAggregatorTest case 4). Player self-registration of `steam_id_64` via the public profile editor remains deferred from round 1 (Phase 2 column nullable; UI exposure flagged as a future enhancement — Phase 9+ polish).
+3. **MatchServer connection test path** — **RESOLVED**: web→CRCON direct via async Horizon job (plan 08-09 CrconHealthProbe + TestMatchServerConnectionJob); D-021-consistent because the web container has outbound HTTPS in dev + prod, and the test no longer depends on rcon-worker liveness.
+4. **Persist CRCON chat capture for moderation audit** — **RESOLVED**: out of scope; chat actions NOT included in the SUBSCRIBE_ACTIONS list (plan 08-10 CrconClient). Re-affirmed in CONTEXT.md deferred list.
+5. **Cross-clan/ringer player Steam ID** — **RESOLVED**: MatchPlayerStat is per `player_id` not per clan; aggregator records all KILL events regardless of clan affiliation. No special handling needed.
