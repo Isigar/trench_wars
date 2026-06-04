@@ -262,9 +262,12 @@ it('odd-N Swiss tournament auto-completes when last real match resolves (bye mus
     // for any odd-N Swiss tournament because byes (match_id=null, winner_participant_id≠null)
     // were mistakenly counted as "unmaterialised pending rounds".
     //
-    // Setup: 1-round swiss stage (final round), 1 real match + 1 bye bracket.
-    // All materialised matches are already resolved. When we advance the last real
-    // match, the tournament must transition to 'completed'.
+    // Setup: 1-round swiss stage (the FINAL round — currentRound=1, totalRounds=1 so
+    // no next-round generation fires), 1 real match + 1 bye bracket.
+    // 2 active participants → totalRounds = ceil(log2(2)) = 1, so currentRound(1) is
+    // NOT < totalRounds(1) and the auto-advance code skips generateNextRound().
+    // The bye bracket is added manually to exercise the allBracketsComplete() guard.
+    // When the last real match resolves, the tournament must transition to 'completed'.
     $game = Game::factory()->create();
     $matchType = GameMatchType::factory()->for($game)->create();
     $role = GameRole::factory()->for($game)->create();
@@ -280,11 +283,14 @@ it('odd-N Swiss tournament auto-completes when last real match resolves (bye mus
         ->for($game)
         ->create(['default_game_match_type_id' => $matchType->id]);
 
-    // 3 participants: clan A vs clan B (real match) + clan C bye.
+    // 2 active participants → totalRounds=1 (the final round, so no next-round fires).
+    // $pC uses status='withdrawn' so it is NOT counted as 'active' by the totalRounds
+    // calculation, keeping totalRounds=1. The bye bracket for $pC is from a prior round
+    // and is represented here to prove it does not block allBracketsComplete().
     $clans = Clan::factory()->count(3)->create();
     $pA = TournamentParticipant::factory()->for($tournament)->create(['seed' => 1, 'status' => 'active', 'clan_id' => $clans[0]->id]);
     $pB = TournamentParticipant::factory()->for($tournament)->create(['seed' => 2, 'status' => 'active', 'clan_id' => $clans[1]->id]);
-    $pC = TournamentParticipant::factory()->for($tournament)->create(['seed' => 3, 'status' => 'active', 'clan_id' => $clans[2]->id]);
+    $pC = TournamentParticipant::factory()->for($tournament)->create(['seed' => 3, 'status' => 'withdrawn', 'clan_id' => $clans[2]->id]);
 
     /** @var TournamentStage $stage */
     $stage = TournamentStage::factory()->for($tournament)->create([
