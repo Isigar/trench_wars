@@ -15,6 +15,7 @@ use App\Models\TournamentStage;
 use App\Services\BracketMatchMaterialiserService;
 use App\Services\Brackets\BracketGeneratorService;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use RuntimeException;
 
 /*
 | Source: 11-01-PLAN.md Task 2 — RED scaffold; turned GREEN by 11-04.
@@ -139,4 +140,38 @@ it('materialises a GameMatch with the tournament default when stage override is 
     // No override → falls back to tournament default matchTypeA.
     // This path already works today (plan 11-04 must not break it).
     expect($match->game_match_type_id)->toBe($matchTypeA->id);
+});
+
+// ---------------------------------------------------------------------------
+// Both null: RuntimeException with extended message (TOUR-04 guard)
+// ---------------------------------------------------------------------------
+
+it('throws RuntimeException when both stage override and tournament default are null', function (): void {
+    // Tournament with NO default_game_match_type_id.
+    $game = Game::factory()->create();
+    $tournament = Tournament::factory()
+        ->ofFormat('single_elimination')
+        ->inStatus('running')
+        ->for($game)
+        ->create(['default_game_match_type_id' => null]);
+
+    $stage = TournamentStage::factory()->for($tournament)->create([
+        'game_match_type_id' => null, // no stage override either
+    ]);
+
+    /** @var TournamentParticipant $a */
+    $a = TournamentParticipant::factory()->for($tournament)->create();
+    /** @var TournamentParticipant $b */
+    $b = TournamentParticipant::factory()->for($tournament)->create();
+    /** @var TournamentBracket $bracket */
+    $bracket = TournamentBracket::factory()->create([
+        'tournament_stage_id' => $stage->id,
+        'participant_a_id' => $a->id,
+        'participant_b_id' => $b->id,
+    ]);
+
+    // TOUR-04: the extended RuntimeException message must mention both the missing
+    // tournament default AND the missing stage override.
+    expect(fn () => app(BracketMatchMaterialiserService::class)->materialiseFor($bracket, $tournament))
+        ->toThrow(RuntimeException::class, 'stage has no override');
 });

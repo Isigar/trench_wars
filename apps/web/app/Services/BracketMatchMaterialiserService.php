@@ -106,9 +106,10 @@ final class BracketMatchMaterialiserService
      * Pre-conditions:
      *   - $bracket has both participant_a_id + participant_b_id assigned (a bye
      *     has no GameMatch — caller filters them out via materialiseFirstRound).
-     *   - The owning tournament has a non-null default_game_match_type_id.
+     *   - Either the bracket's stage has game_match_type_id set OR the owning
+     *     tournament has a non-null default_game_match_type_id (TOUR-04).
      *
-     * @throws RuntimeException if the tournament has no default_game_match_type_id
+     * @throws RuntimeException if both stage.game_match_type_id and tournament.default_game_match_type_id are null
      */
     public function materialiseFor(TournamentBracket $bracket, ?Tournament $tournament = null): GameMatch
     {
@@ -138,16 +139,23 @@ final class BracketMatchMaterialiserService
                 $t = $tFromStage;
             }
 
-            if ($t->default_game_match_type_id === null) {
+            // TOUR-04: stage-level GameMatchType override.
+            // Prefer the bracket's stage game_match_type_id over the tournament default.
+            // If both are null, throw with an extended message covering both sources.
+            $stage = $locked->stage()->first();
+            $stageOverrideId = ($stage !== null) ? $stage->game_match_type_id : null;
+            $effectiveMatchTypeId = $stageOverrideId ?? $t->default_game_match_type_id;
+
+            if ($effectiveMatchTypeId === null) {
                 throw new RuntimeException(
-                    "Tournament {$t->id} has no default_game_match_type_id — cannot materialise bracket GameMatch."
+                    "Tournament {$t->id} has no default_game_match_type_id and stage has no override — cannot materialise bracket GameMatch."
                 );
             }
 
             $match = GameMatch::create([
                 'organiser_user_id' => $t->organiser_user_id,
                 'host_clan_id' => null,                    // A10 LOCKED — bracket matches have no host clan
-                'game_match_type_id' => $t->default_game_match_type_id,
+                'game_match_type_id' => $effectiveMatchTypeId,
                 'status' => 'open',                        // signups open automatically
                 'scheduled_at' => $t->starts_at ?? now()->addDay(),
                 'title' => $t->getTranslations('title'),    // D-013 — inherit tournament title (JSONB locales)
