@@ -46,7 +46,7 @@ it('builds a PublicArticleData from an Article model', function (): void {
     expect($dto->categoryName)->toBe('News');
     expect($dto->authorName)->toBe('commandant_rommel');
     expect($dto->allowDiscordAnnounce)->toBeTrue();
-    expect($dto->url)->toBe('/news/rifleman-tactics-guide');
+    expect($dto->url)->toBe('/blog/rifleman-tactics-guide');
     expect($dto->publishedAt)->toContain('2026-05-14');
 });
 

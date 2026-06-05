@@ -215,7 +215,7 @@ class Article extends Model implements HasMedia, Sitemapable
     }
 
     /**
-     * Route model binding uses slug (e.g. /news/{slug}). Mirrors Tournament + Clan.
+     * Route model binding uses slug (e.g. /blog/{slug}). Mirrors Tournament + Clan.
      */
     public function getRouteKeyName(): string
     {

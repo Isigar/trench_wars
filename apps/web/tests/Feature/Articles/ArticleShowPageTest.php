@@ -185,3 +185,30 @@ it('allows a cms-editor with articles.update permission to view their own draft 
                 ->where('article.slug', 'editor-draft')
         );
 });
+
+it('emits a public permalink that resolves to a live route (regression: /news 404 → /blog)', function (): void {
+    // Guard against the dead-link class where DTOs emitted /news/{slug} but only
+    // /blog/{slug} was ever registered. Every producer of the public article URL
+    // (search results, og:url meta, Discord announce) must point at a route that 200s.
+    $category = Category::factory()->create();
+    $article = Article::factory()->for($category, 'category')->create([
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+        'slug' => 'permalink-resolves',
+        'title' => ['en' => 'Permalink resolves'],
+    ]);
+
+    // 1. SearchResultData (search results href) + 2. PublicArticleData (og:url meta)
+    //    both produce a relative /blog/{slug} path that must resolve.
+    $searchUrl = \App\Data\SearchResultData::fromArticle($article)->url;
+    $ogUrl = \App\Data\PublicArticleData::fromModel($article)->url;
+    expect($searchUrl)->toBe('/blog/permalink-resolves')
+        ->and($ogUrl)->toBe('/blog/permalink-resolves');
+    $this->get($searchUrl)->assertOk();
+    $this->get($ogUrl)->assertOk();
+
+    // 3. Discord announce embed url is absolute but must end in the same live path.
+    $announceUrl = \App\Support\DiscordOutboundPayloadBuilder::buildArticleAnnounce($article)['embeds'][0]['url'];
+    expect(str_ends_with((string) $announceUrl, '/blog/permalink-resolves'))->toBeTrue();
+    $this->get((string) parse_url((string) $announceUrl, PHP_URL_PATH))->assertOk();
+});

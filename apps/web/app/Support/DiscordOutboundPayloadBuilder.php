@@ -219,12 +219,11 @@ final class DiscordOutboundPayloadBuilder
                 [
                     'title' => $titleEn,
                     'description' => Str::limit($excerptEn, 300, '…'),
-                    // Public permalink — plan 07-09 lands the route('blog.show', ...) binding;
-                    // until then we emit url('/news/' . $slug) which matches the canonical
-                    // permalink used by PublicArticleData::fromModel (07-05) and the
-                    // articles slug column (07-02 unique constraint). The bot worker
-                    // does not differentiate — it forwards the literal URL.
-                    'url' => url('/news/' . $a->slug),
+                    // Public permalink — canonical route('blog.show', $slug) registered
+                    // in plan 07-09 as GET /blog/{slug}. Absolute URL (host-qualified)
+                    // so the Discord embed link resolves from outside the app. Matches
+                    // the permalink used by PublicArticleData::fromModel + SearchResultData.
+                    'url' => route('blog.show', $a->slug),
                     'color' => '#10B981',
                     'thumbnail' => [
                         'url' => $thumbnailUrl,

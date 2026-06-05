@@ -59,7 +59,7 @@ class Category extends Model
     }
 
     /**
-     * Route model binding uses slug (e.g. /news/category/{slug}).
+     * Route model binding uses slug (e.g. /blog?category={slug}).
      */
     public function getRouteKeyName(): string
     {

@@ -40,7 +40,7 @@ it('fromArticle populates type, slug, url, and title from translatable fields', 
     expect($row->slug)->toBe('rifleman-tactics');
     expect($row->title)->toBe('Rifleman Tactics');
     expect($row->excerpt)->toBe('Frontline basics.');
-    expect($row->url)->toBe('/news/rifleman-tactics');  // route('blog.show') lands in plan 07-09
+    expect($row->url)->toBe('/blog/rifleman-tactics');  // canonical route('blog.show', $slug) → GET /blog/{slug}
     expect($row->rank)->toBe(3.5);
 });
 

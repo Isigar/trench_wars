@@ -99,7 +99,7 @@ final class PublicArticleData extends Data
             heroOgImageUrl: $ogImageUrl !== '' ? $ogImageUrl : null,
             publishedAt: $publishedAt?->toIso8601String(),
             allowDiscordAnnounce: $article->allow_discord_announce,
-            url: '/news/' . $article->slug,
+            url: '/blog/' . $article->slug,
         );
     }
 }

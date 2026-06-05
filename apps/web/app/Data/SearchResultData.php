@@ -58,10 +58,9 @@ final class SearchResultData extends Data
      * `excerpt` resolves via HasTranslations with explicit `useFallbackLocale=true`
      * — articles authored only in English still surface to any locale.
      *
-     * `url` uses the literal /news/{slug} path rather than route('blog.show', ...)
-     * because the route binding lands in plan 07-09; calling a non-existent
-     * named route here would throw RouteNotFoundException at FTS-build time.
-     * Plan 07-09 lifts this to route('blog.show', $a->slug) once registered.
+     * `url` is the canonical public article permalink — route('blog.show', $slug)
+     * (registered in plan 07-09 as GET /blog/{slug}). Relative path keeps it
+     * consistent with ArticleSummaryData::fromModel and the in-app Inertia router.
      */
     public static function fromArticle(Article $a, float $rank = 0.0): self
     {
@@ -83,7 +82,7 @@ final class SearchResultData extends Data
             slug: (string) $a->slug,
             title: (string) $title,
             excerpt: (string) $excerpt,
-            url: '/news/' . $a->slug,
+            url: '/blog/' . $a->slug,
             thumbnailUrl: $thumbnailUrl !== '' ? $thumbnailUrl : null,
             rank: $rank,
         );

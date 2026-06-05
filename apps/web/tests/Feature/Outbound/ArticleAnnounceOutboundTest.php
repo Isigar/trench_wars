@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
 | (2026_05_15_120400_extend_discord_outbound_message_types_for_article_announce):
 |
 |   1. payload shape — embeds[0].title, embeds[0].color=#10B981 (Open Question 6),
-|      embeds[0].url=/news/{slug} (canonical permalink — route('blog.show') lands in 07-09)
+|      embeds[0].url=/blog/{slug} (canonical permalink — route('blog.show', $slug))
 |   2. CHECK constraint permits article_announce (validates 07-02 migration)
 |   3. CHECK constraint REJECTS unknown message_type (regression guard)
 |   4. causer_user_id null when no auth user (T-07-06-04 scheduler-driven publish)
@@ -67,7 +67,7 @@ it('inserts article_announce row with correct payload shape', function (): void 
     expect($embed['title'])->toBe('Tournament Bracket Drama')
         ->and($embed['color'])->toBe('#10B981')        // Open Question 6 LOCKED — CMS green
         ->and($embed['url'])->toBeString()
-        ->and(str_ends_with((string) $embed['url'], '/news/' . $a->slug))->toBeTrue();
+        ->and(str_ends_with((string) $embed['url'], '/blog/' . $a->slug))->toBeTrue();
 });
 
 it('truncates excerpt to 300 chars in the embed description', function (): void {
