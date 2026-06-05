@@ -30,9 +30,12 @@ declare(strict_types=1);
 | uses(...)->in('Feature')).
 */
 
+use App\Data\PublicArticleData;
+use App\Data\SearchResultData;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
+use App\Support\DiscordOutboundPayloadBuilder;
 use Database\Seeders\PermissionSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -200,15 +203,15 @@ it('emits a public permalink that resolves to a live route (regression: /news 40
 
     // 1. SearchResultData (search results href) + 2. PublicArticleData (og:url meta)
     //    both produce a relative /blog/{slug} path that must resolve.
-    $searchUrl = \App\Data\SearchResultData::fromArticle($article)->url;
-    $ogUrl = \App\Data\PublicArticleData::fromModel($article)->url;
+    $searchUrl = SearchResultData::fromArticle($article)->url;
+    $ogUrl = PublicArticleData::fromModel($article)->url;
     expect($searchUrl)->toBe('/blog/permalink-resolves')
         ->and($ogUrl)->toBe('/blog/permalink-resolves');
     $this->get($searchUrl)->assertOk();
     $this->get($ogUrl)->assertOk();
 
     // 3. Discord announce embed url is absolute but must end in the same live path.
-    $announceUrl = \App\Support\DiscordOutboundPayloadBuilder::buildArticleAnnounce($article)['embeds'][0]['url'];
+    $announceUrl = DiscordOutboundPayloadBuilder::buildArticleAnnounce($article)['embeds'][0]['url'];
     expect(str_ends_with((string) $announceUrl, '/blog/permalink-resolves'))->toBeTrue();
     $this->get((string) parse_url((string) $announceUrl, PHP_URL_PATH))->assertOk();
 });
