@@ -96,7 +96,47 @@ class MatchShowController extends Controller
             'roleGroups' => $roleGroups,
             'signupAllowed' => $this->computeSignupAllowed($match, $viewer),
             'viewerSlotId' => $this->findViewerSlot($match, $viewer)?->id,
+            'canDispute' => $this->computeCanDispute($match, $viewer),
+            'hasOpenDispute' => $this->viewerHasOpenDispute($match, $viewer),
         ]);
+    }
+
+    /**
+     * UI hint for the "Dispute the result" affordance. Mirrors
+     * StoreMatchDisputeRequest::authorize (which is the canonical gate at POST
+     * time): a played match disputed by its organiser or a slot participant.
+     */
+    private function computeCanDispute(GameMatch $match, ?User $viewer): bool
+    {
+        if ($viewer === null || $match->status !== 'played') {
+            return false;
+        }
+
+        if ($match->organiser_user_id === $viewer->id) {
+            return true;
+        }
+
+        return MatchSlot::query()
+            ->where('match_id', $match->id)
+            ->where('occupant_user_id', $viewer->id)
+            ->exists();
+    }
+
+    /**
+     * True when the viewer already has an OPEN dispute on this match — the UI
+     * swaps the form for a "dispute under review" note (the partial UNIQUE index
+     * would reject a second open dispute anyway).
+     */
+    private function viewerHasOpenDispute(GameMatch $match, ?User $viewer): bool
+    {
+        if ($viewer === null) {
+            return false;
+        }
+
+        return $match->disputes()
+            ->where('raised_by_user_id', $viewer->id)
+            ->where('status', 'open')
+            ->exists();
     }
 
     /**

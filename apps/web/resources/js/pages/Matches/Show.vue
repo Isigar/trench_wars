@@ -4,8 +4,9 @@ import MatchStatusBadge from '@/components/matches/MatchStatusBadge.vue';
 import RoleSlotGroup, { type RoleGroup } from '@/components/matches/RoleSlotGroup.vue';
 import ReportButton from '@/components/ReportButton.vue';
 import Button from '@/components/ui/Button.vue';
+import Textarea from '@/components/ui/Textarea.vue';
 import { useT } from '@/composables/useT';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { computed } from 'vue';
 
@@ -26,6 +27,10 @@ const props = defineProps<{
     signupAllowed: boolean;
     /** Set when the viewer occupies a slot — drives "Cancel signup" affordance. */
     viewerSlotId: string | null;
+    /** UI hint — mirrors StoreMatchDisputeRequest::authorize (played + organiser/participant). */
+    canDispute: boolean;
+    /** True when the viewer already has an open dispute — swaps the form for a note. */
+    hasOpenDispute: boolean;
 }>();
 
 const titleText = computed<string>(
@@ -66,6 +71,16 @@ function cancelSignup(): void {
         route('matches.signups.destroy', { match: props.match.id, slot: props.viewerSlotId }),
         { preserveScroll: true },
     );
+}
+
+// Raise-a-dispute form (shown when canDispute && !hasOpenDispute).
+const disputeForm = useForm({ body: '' });
+
+function submitDispute(): void {
+    disputeForm.post(route('matches.disputes.store', { match: props.match.id }), {
+        preserveScroll: true,
+        onSuccess: () => disputeForm.reset(),
+    });
 }
 </script>
 
@@ -130,6 +145,54 @@ function cancelSignup(): void {
                 <p class="text-base text-[var(--color-text-muted)]">
                     {{ t('matches.show.no_roles_yet') }}
                 </p>
+            </div>
+
+            <!-- Raise-a-dispute surface — reachable entry point into the moderator
+                 dispute queue. Eligibility mirrored server-side in
+                 StoreMatchDisputeRequest::authorize. -->
+            <div
+                v-if="canDispute"
+                class="pt-4 border-t border-[var(--color-border)] flex flex-col gap-3"
+            >
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-semibold text-[var(--color-text)]">
+                        {{ t('matches.dispute.heading') }}
+                    </h2>
+                    <p class="text-sm text-[var(--color-text-muted)]">
+                        {{ t('matches.dispute.help') }}
+                    </p>
+                </div>
+
+                <p
+                    v-if="hasOpenDispute"
+                    class="text-sm text-[var(--color-text-muted)] italic"
+                >
+                    {{ t('matches.dispute.pending_note') }}
+                </p>
+
+                <form
+                    v-else
+                    class="flex flex-col gap-3"
+                    @submit.prevent="submitDispute"
+                >
+                    <Textarea
+                        id="dispute-body"
+                        v-model="disputeForm.body"
+                        :label="t('matches.dispute.body_label')"
+                        :placeholder="t('matches.dispute.body_placeholder')"
+                        :rows="4"
+                        :errors="disputeForm.errors.body ? [disputeForm.errors.body] : []"
+                    />
+                    <div class="flex justify-end">
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            :disabled="disputeForm.processing"
+                        >
+                            {{ t('matches.dispute.submit') }}
+                        </Button>
+                    </div>
+                </form>
             </div>
 
             <!-- Plan 09-11 — inline report CTA for authenticated visitors.

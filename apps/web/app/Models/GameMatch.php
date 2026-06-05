@@ -153,6 +153,12 @@ class GameMatch extends Model
         return $this->hasOne(MatchResult::class, 'match_id');
     }
 
+    /** @return HasMany<MatchDispute, $this> */
+    public function disputes(): HasMany
+    {
+        return $this->hasMany(MatchDispute::class, 'match_id');
+    }
+
     /**
      * HasManyThrough: Match → MatchResult → MatchMvp
      *

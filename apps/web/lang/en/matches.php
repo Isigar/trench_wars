@@ -85,4 +85,16 @@ return [
         'no_roles_yet' => 'Slots have not been created for this match yet.',
         'login_to_signup' => 'Log in to sign up.',
     ],
+
+    // Raise-a-dispute surface on the match detail page + controller flashes.
+    'dispute' => [
+        'heading' => 'Dispute the result',
+        'help' => 'Disagree with how this match was recorded? Open a dispute and a moderator will review it.',
+        'body_label' => 'What is wrong?',
+        'body_placeholder' => 'Describe the problem with this match result…',
+        'submit' => 'Open dispute',
+        'submitted' => 'Your dispute has been submitted. A moderator will review it.',
+        'already_open' => 'You already have an open dispute on this match.',
+        'pending_note' => 'You have an open dispute on this match. A moderator is reviewing it.',
+    ],
 ];

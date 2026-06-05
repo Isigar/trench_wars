@@ -17,6 +17,7 @@ use App\Http\Controllers\EventsCalendarController;
 use App\Http\Controllers\EventsFeedJsonController;
 use App\Http\Controllers\LeaderboardsController;
 use App\Http\Controllers\MatchCalendarController;
+use App\Http\Controllers\Matches\MatchDisputeController;
 use App\Http\Controllers\Matches\MatchSignupController;
 use App\Http\Controllers\MatchShowController;
 use App\Http\Controllers\MyClan\ClanApplicationController;
@@ -155,6 +156,14 @@ Route::middleware('auth')->group(function (): void {
     // is the SOLE production write path to match_slots.occupant_user_id.
     Route::post('/matches/{match}/signups', [MatchSignupController::class, 'store'])->name('matches.signups.store');
     Route::delete('/matches/{match}/signups/{slot}', [MatchSignupController::class, 'destroy'])->name('matches.signups.destroy');
+
+    // Raise a match dispute — the reachable entry point into the moderator
+    // dispute queue (DisputeService::open). Eligibility (played match +
+    // organiser/participant) enforced in StoreMatchDisputeRequest; light
+    // throttle bounds spam (the one-open-per-match unique index is the real cap).
+    Route::post('/matches/{match}/disputes', [MatchDisputeController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('matches.disputes.store');
 
     // Phase 9 plan 09-06 — notifications hub + per-user preference matrix (SC-1).
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
