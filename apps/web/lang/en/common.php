@@ -34,6 +34,7 @@ return [
         'my_clan' => 'My Clan',
         'my_profile' => 'My Profile',
         'notification_preferences' => 'Notification preferences',
+        'privacy_settings' => 'Privacy settings',
     ],
 
     /*

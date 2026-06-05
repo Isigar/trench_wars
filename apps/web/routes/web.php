@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Account\NotificationPreferencesController;
+use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Auth\DiscordController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BlogIndexController;
@@ -168,6 +169,13 @@ Route::middleware('auth')->group(function (): void {
         ->name('account.notification-preferences.edit');
     Route::post('/account/notification-preferences', [NotificationPreferencesController::class, 'update'])
         ->name('account.notification-preferences.update');
+
+    // Self-service profile privacy (D-018 — user-controllable per-section + global
+    // tier). Writes the auth user's own PlayerPrivacy row; mirrors notification-prefs.
+    Route::get('/account/privacy', [PrivacyController::class, 'edit'])
+        ->name('account.privacy.edit');
+    Route::post('/account/privacy', [PrivacyController::class, 'update'])
+        ->name('account.privacy.update');
 });
 
 // Plan 09-11 — Report Abuse flow (SC-5). Auth-required + per-user throttle

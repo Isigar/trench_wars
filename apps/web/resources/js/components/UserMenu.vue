@@ -112,6 +112,19 @@ function logout(): void {
                 </a>
             </DropdownMenuItem>
 
+            <!-- Profile privacy — self-service D-018 tiers -->
+            <DropdownMenuItem as-child>
+                <a
+                    href="/account/privacy"
+                    class="flex items-center gap-2 px-3 py-2 rounded-sm text-sm
+                           text-[var(--color-text)] cursor-pointer
+                           hover:bg-[var(--color-surface)] focus-visible:outline-none
+                           data-[highlighted]:bg-[var(--color-surface)]"
+                >
+                    {{ t('common.nav.privacy_settings') }}
+                </a>
+            </DropdownMenuItem>
+
             <!-- Divider -->
             <div class="my-1 h-px bg-[var(--color-border)]" role="separator" />
 
