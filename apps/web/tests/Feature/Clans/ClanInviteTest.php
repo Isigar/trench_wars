@@ -6,6 +6,7 @@ use App\Models\Clan;
 use App\Models\ClanInvite;
 use App\Models\ClanMembership;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia;
 use Spatie\Activitylog\Models\Activity;
 
 /*
@@ -400,4 +401,80 @@ it('Invite with future expires_at remains pending (no automatic expiry job in P2
 
     // Re-fetch from DB — status should still be pending.
     expect($invite->fresh()->status)->toBe('pending');
+});
+
+// ===========================================================================
+// Invitee-facing surface on /my-clan — the only in-product entry point to act
+// on a received invite (reachability-audit gap #2).
+// ===========================================================================
+
+it('surfaces a pending received invite to the invitee on GET /my-clan with clan + inviter display fields', function (): void {
+    [$clan, $leader] = setupInviteClan();
+    $invitee = User::factory()->create(); // no clan of their own
+
+    ClanInvite::factory()->create([
+        'clan_id' => $clan->id,
+        'inviting_user_id' => $leader->id,
+        'invited_user_id' => $invitee->id,
+        'status' => 'pending',
+        'message' => 'Join us!',
+    ]);
+
+    $this->actingAs($invitee)
+        ->get('/my-clan')
+        ->assertStatus(200)
+        ->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('MyClan/Index', false)
+                ->where('clan', null)
+                ->has('received_invites', 1)
+                ->where('received_invites.0.clan_name', $clan->name)
+                ->where('received_invites.0.clan_slug', $clan->slug)
+                ->where('received_invites.0.inviter_username', $leader->username)
+                ->where('received_invites.0.message', 'Join us!')
+        );
+});
+
+it('does not surface declined/accepted/revoked invites in received_invites', function (): void {
+    [$clan, $leader] = setupInviteClan();
+    $invitee = User::factory()->create();
+
+    foreach (['declined', 'accepted', 'revoked'] as $status) {
+        ClanInvite::factory()->create([
+            'clan_id' => $clan->id,
+            'inviting_user_id' => $leader->id,
+            'invited_user_id' => $invitee->id,
+            'status' => $status,
+            'decided_at' => now(),
+        ]);
+    }
+
+    $this->actingAs($invitee)
+        ->get('/my-clan')
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('received_invites', 0));
+});
+
+it('lets the invitee accept their invite from the /my-clan surface and join the clan', function (): void {
+    [$clan, $leader] = setupInviteClan();
+    $invitee = User::factory()->create();
+
+    $invite = ClanInvite::factory()->create([
+        'clan_id' => $clan->id,
+        'inviting_user_id' => $leader->id,
+        'invited_user_id' => $invitee->id,
+        'status' => 'pending',
+    ]);
+
+    // The surface posts to the same route the buttons use.
+    $this->actingAs($invitee)
+        ->post(route('invites.accept', $invite->id))
+        ->assertRedirect(route('my-clan.index'));
+
+    expect($invite->fresh()->status)->toBe('accepted');
+    expect(
+        ClanMembership::where('user_id', $invitee->id)->where('clan_id', $clan->id)->whereNull('left_at')->exists()
+    )->toBeTrue();
+
+    // The invite is no longer pending, so it would not be surfaced again.
+    expect(ClanInvite::where('invited_user_id', $invitee->id)->where('status', 'pending')->exists())->toBeFalse();
 });

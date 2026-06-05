@@ -8,6 +8,7 @@ use App\Data\ClanApplicationData;
 use App\Data\ClanData;
 use App\Data\ClanInviteData;
 use App\Data\ClanMembershipData;
+use App\Data\ReceivedClanInviteData;
 use App\Http\Controllers\Controller;
 use App\Models\Clan;
 use App\Models\ClanApplication;
@@ -47,6 +48,22 @@ class MyClanController extends Controller
             ->with(['clan', 'clan.tags', 'clan.activeMembers', 'clan.activeMembers.user'])
             ->first();
 
+        // Pending invites addressed TO this user (the invitee view). Surfaced in
+        // every rendered state so an unaffiliated player can accept/decline —
+        // this is the only in-product entry point to act on a received invite.
+        /** @var Collection<int, ClanInvite> $receivedInvites */
+        $receivedInvites = ClanInvite::query()
+            ->where('invited_user_id', $user->id)
+            ->where('status', 'pending')
+            ->with(['clan', 'inviter'])
+            ->latest()
+            ->get();
+
+        $receivedInviteData = $receivedInvites
+            ->map(fn (ClanInvite $invite) => ReceivedClanInviteData::fromModel($invite))
+            ->values()
+            ->all();
+
         if ($membership === null) {
             return Inertia::render('MyClan/Index', [
                 'membership' => null,
@@ -54,6 +71,7 @@ class MyClanController extends Controller
                 'members' => [],
                 'invites' => [],
                 'applications' => [],
+                'received_invites' => $receivedInviteData,
             ]);
         }
 
@@ -89,6 +107,7 @@ class MyClanController extends Controller
             'members' => $activeMembers->map(fn (ClanMembership $m) => ClanMembershipData::fromModel($m))->values()->all(),
             'invites' => ClanInviteData::collect($pendingInvites),
             'applications' => ClanApplicationData::collectFromModels($pendingApplications),
+            'received_invites' => $receivedInviteData,
         ]);
     }
 }

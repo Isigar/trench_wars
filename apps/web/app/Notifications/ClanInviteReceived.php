@@ -71,7 +71,7 @@ final class ClanInviteReceived extends Notification implements ShouldQueue
                     'inviter' => '—',
                     'clan' => '—',
                 ]),
-                'cta_url' => url('/clans'),
+                'cta_url' => url('/my-clan'),
                 'color_token' => 'info',
             ],
         ];

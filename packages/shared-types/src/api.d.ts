@@ -295,6 +295,15 @@ participants: App.Data.TournamentParticipantData[] | null,
 etag: string,
 last_modified_at: string,
 };
+export type ReceivedClanInviteData = {
+id: string,
+clan_name: string,
+clan_tag: string,
+clan_slug: string,
+inviter_username: string | null,
+message: string | null,
+expires_at: string | null,
+};
 export type SearchResultData = {
 type: string,
 id: string,

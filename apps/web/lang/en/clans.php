@@ -76,6 +76,13 @@ return [
             'invites' => 'Invites',
             'applications' => 'Applications',
         ],
+        // Invitee-facing "You've been invited" section (received invites).
+        'received_invites' => [
+            'heading' => 'You\'ve been invited',
+            'invited_by' => 'Invited by :inviter',
+            'accept' => 'Accept',
+            'decline' => 'Decline',
+        ],
     ],
 
     'form' => [

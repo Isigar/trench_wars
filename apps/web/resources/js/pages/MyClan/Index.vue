@@ -21,6 +21,7 @@ type ClanData = App.Data.ClanData;
 type ClanMembershipData = App.Data.ClanMembershipData;
 type ClanInviteData = App.Data.ClanInviteData;
 type ClanApplicationData = App.Data.ClanApplicationData;
+type ReceivedClanInviteData = App.Data.ReceivedClanInviteData;
 
 const props = defineProps<{
     clan: ClanData | null;
@@ -28,6 +29,7 @@ const props = defineProps<{
     members: ClanMembershipData[];
     invites: ClanInviteData[];
     applications: ClanApplicationData[];
+    received_invites: ReceivedClanInviteData[];
 }>();
 
 // ---------------------------------------------------------------------------
@@ -115,6 +117,18 @@ function revokeInvite(inviteId: string): void {
 }
 
 // ---------------------------------------------------------------------------
+// Received invites — invitee accept / decline (the only in-product entry point
+// to act on an invite addressed to you)
+// ---------------------------------------------------------------------------
+function acceptInvite(inviteId: string): void {
+    router.post(route('invites.accept', inviteId), {}, { preserveScroll: true });
+}
+
+function declineInvite(inviteId: string): void {
+    router.post(route('invites.decline', inviteId), {}, { preserveScroll: true });
+}
+
+// ---------------------------------------------------------------------------
 // Applications tab — accept / decline
 // ---------------------------------------------------------------------------
 function acceptApplication(appId: string): void {
@@ -154,6 +168,61 @@ function truncateMessage(msg: string | null, max = 120): string {
 
     <PublicLayout>
         <div class="max-w-3xl mx-auto px-4 md:px-6 py-8">
+
+            <!-- ================================================================
+                 Received invitations (invitee accept/decline) — shown in every
+                 state so an unaffiliated player can act on an invite.
+            ================================================================ -->
+            <section
+                v-if="received_invites.length"
+                class="mb-8 border border-[var(--color-border)] rounded-lg p-5
+                       bg-[var(--color-surface-elevated)]"
+            >
+                <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">
+                    {{ t('clans.my_clan.received_invites.heading') }}
+                </h2>
+                <ul class="flex flex-col gap-3">
+                    <li
+                        v-for="invite in received_invites"
+                        :key="invite.id"
+                        class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between
+                               border border-[var(--color-border)] rounded-md p-3
+                               bg-[var(--color-surface)]"
+                    >
+                        <div class="flex flex-col gap-1 min-w-0">
+                            <a
+                                :href="`/clans/${invite.clan_slug}`"
+                                class="font-semibold text-[var(--color-text)] hover:underline truncate"
+                            >
+                                [{{ invite.clan_tag }}] {{ invite.clan_name }}
+                            </a>
+                            <span class="text-xs text-[var(--color-text-muted)]">
+                                {{ t('clans.my_clan.received_invites.invited_by', { inviter: invite.inviter_username ?? '—' }) }}
+                            </span>
+                            <p
+                                v-if="invite.message"
+                                class="text-sm text-[var(--color-text-muted)] mt-1"
+                            >
+                                {{ truncateMessage(invite.message) }}
+                            </p>
+                        </div>
+                        <div class="flex gap-2 shrink-0">
+                            <Button
+                                variant="primary"
+                                @click="acceptInvite(invite.id)"
+                            >
+                                {{ t('clans.my_clan.received_invites.accept') }}
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                @click="declineInvite(invite.id)"
+                            >
+                                {{ t('clans.my_clan.received_invites.decline') }}
+                            </Button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
 
             <!-- ================================================================
                  No-clan state
