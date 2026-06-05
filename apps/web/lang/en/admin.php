@@ -653,6 +653,7 @@ return [
         'label' => 'Server booking',
         'plural_label' => 'Server bookings',
         'nav' => 'Server bookings',
+        'overlap' => 'That server is already booked for an overlapping time window. Pick another server or window.',
         'fields' => [
             'match_id' => 'Match',
             'server_id' => 'Server',

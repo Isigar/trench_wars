@@ -159,6 +159,12 @@ class GameMatch extends Model
         return $this->hasMany(MatchDispute::class, 'match_id');
     }
 
+    /** @return HasMany<MatchServerBooking, $this> */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(MatchServerBooking::class, 'match_id');
+    }
+
     /**
      * HasManyThrough: Match → MatchResult → MatchMvp
      *
