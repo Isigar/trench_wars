@@ -157,7 +157,7 @@ final class BracketAdvancementService
                     ->lockForUpdate()
                     ->first();
                 if ($lNext !== null) {
-                    $lSlot = $this->resolveSlot($bracket->position);
+                    $lSlot = $this->resolveLoserSlot($bracket);
                     $lNext->update(["participant_{$lSlot}_id" => $loserParticipant->id]);
                 }
             }
@@ -295,6 +295,31 @@ final class BracketAdvancementService
     private function resolveSlot(int $fromPosition): string
     {
         return $fromPosition % 2 === 1 ? 'a' : 'b';
+    }
+
+    /**
+     * Destination slot for a double-elim loser dropping into the losers bracket.
+     *
+     * The loser-drop slot must NOT be derived from the SOURCE bracket's position
+     * parity the way winner-advance is — that overwrites a real participant. The
+     * two cases (see DoubleEliminationGenerator drop rules, lines 164-175):
+     *
+     *   - W-round-1 losers are PAIRED into LB-round-1: both slots come from
+     *     W-round-1, so position parity (odd→a, even→b) is the correct split.
+     *   - W-round-k (k≥2) losers drop into an LB *major* round whose slot 'a' is
+     *     already reserved for the LB-internal winner that advanced there. They
+     *     MUST take slot 'b'. Using position parity here makes an odd-positioned
+     *     W bracket (e.g. W-r2-p1, position 1) resolve to 'a' and overwrite the
+     *     LB winner — the N≥8 double-elim collision this guards against.
+     *
+     * Only winners-bracket rows ever carry loser_advances_to_bracket_id, so the
+     * source round_number alone distinguishes the two cases.
+     */
+    private function resolveLoserSlot(TournamentBracket $bracket): string
+    {
+        return $bracket->round_number === 1
+            ? $this->resolveSlot($bracket->position)
+            : 'b';
     }
 
     /**

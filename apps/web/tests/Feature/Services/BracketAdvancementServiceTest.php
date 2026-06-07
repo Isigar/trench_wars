@@ -388,3 +388,117 @@ it('lazily creates the grand-final reset bracket when W-winner loses the GF and 
     expect($reset->participant_a_id)->toBe($wWinner->id);
     expect($reset->participant_b_id)->toBe($lWinner->id);
 });
+
+// ---------------------------------------------------------------------------
+// Double-elim N≥8 — W-round-k (k≥2) loser drops into LB major-round slot B,
+// never overwriting the LB-internal winner already in slot A (REACH-02).
+// Regression for the resolveSlot collision: resolveSlot(W-r2-p1.position=1)='a'
+// previously overwrote the LB winner sitting in slot a.
+// ---------------------------------------------------------------------------
+
+it('drops a W-round-2 loser into LB major-round slot B without overwriting the LB winner in slot A (N=8)', function (): void {
+    $tournament = makeAdvancementTournament('double_elimination', 'running');
+    makeAdvancementParticipants($tournament, 8);
+    app(BracketGeneratorService::class)->generate($tournament);
+
+    $participants = $tournament->participants()->orderBy('seed')->get();
+
+    /** @var TournamentStage $wStage */
+    $wStage = $tournament->stages()->where('type', 'winners-bracket')->firstOrFail();
+    /** @var TournamentBracket $wR2P1 */
+    $wR2P1 = $wStage->brackets()->where('round_number', 2)->where('position', 1)->firstOrFail();
+
+    // W-r2-p1 drops its loser into an LB major round (LB-r2-p1 for N=8).
+    expect($wR2P1->loser_advances_to_bracket_id)->not->toBeNull();
+    /** @var TournamentBracket $lbMajor */
+    $lbMajor = TournamentBracket::query()->whereKey($wR2P1->loser_advances_to_bracket_id)->firstOrFail();
+
+    // Slot A of that LB major round is reserved for the LB-internal winner that
+    // advanced there. Simulate it already being filled with a sentinel participant.
+    /** @var TournamentParticipant $lbWinner */
+    $lbWinner = $participants[7];
+    $lbMajor->update(['participant_a_id' => $lbWinner->id]);
+
+    // Wire W-r2-p1 with two semifinalists + a materialised match.
+    /** @var TournamentParticipant $wWinner */
+    $wWinner = $participants[0];
+    /** @var TournamentParticipant $wLoser */
+    $wLoser = $participants[1];
+    $matchType = GameMatchType::query()->firstOrFail();
+    $wMatch = GameMatch::factory()->create([
+        'game_match_type_id' => $matchType->id,
+        'organiser_user_id' => $tournament->organiser_user_id,
+    ]);
+    $wR2P1->update([
+        'participant_a_id' => $wWinner->id,
+        'participant_b_id' => $wLoser->id,
+        'match_id' => $wMatch->id,
+    ]);
+
+    /** @var MatchResult $result */
+    $result = MatchResult::factory()->create([
+        'match_id' => $wMatch->id,
+        'winner_clan_id' => $wWinner->clan_id,
+    ]);
+
+    app(BracketAdvancementService::class)->advance($result);
+
+    $lbMajor->refresh();
+    // Slot A is UNTOUCHED (the LB winner is preserved) and the W-r2 loser landed in slot B.
+    expect($lbMajor->participant_a_id)->toBe($lbWinner->id);
+    expect($lbMajor->participant_b_id)->toBe($wLoser->id);
+});
+
+it('drops the W-final loser into the L-final slot B (N=8, odd source position)', function (): void {
+    $tournament = makeAdvancementTournament('double_elimination', 'running');
+    makeAdvancementParticipants($tournament, 8);
+    app(BracketGeneratorService::class)->generate($tournament);
+
+    $participants = $tournament->participants()->orderBy('seed')->get();
+
+    /** @var TournamentStage $wStage */
+    $wStage = $tournament->stages()->where('type', 'winners-bracket')->firstOrFail();
+    // W-final is the highest W round (3 for N=8), position 1. NOTE: the brackets()
+    // relation carries a default ascending order, so a plain orderByDesc would be
+    // appended after it and ignored — select the max round explicitly.
+    $maxRound = (int) $wStage->brackets()->max('round_number');
+    expect($maxRound)->toBe(3); // sanity: N=8 winners bracket has 3 rounds
+    /** @var TournamentBracket $wFinal */
+    $wFinal = $wStage->brackets()->where('round_number', $maxRound)->where('position', 1)->firstOrFail();
+    expect($wFinal->loser_advances_to_bracket_id)->not->toBeNull();
+
+    /** @var TournamentBracket $lFinal */
+    $lFinal = TournamentBracket::query()->whereKey($wFinal->loser_advances_to_bracket_id)->firstOrFail();
+
+    // L-final slot A reserved for the LB winner.
+    /** @var TournamentParticipant $lbWinner */
+    $lbWinner = $participants[7];
+    $lFinal->update(['participant_a_id' => $lbWinner->id]);
+
+    /** @var TournamentParticipant $wWinner */
+    $wWinner = $participants[0];
+    /** @var TournamentParticipant $wLoser */
+    $wLoser = $participants[1];
+    $matchType = GameMatchType::query()->firstOrFail();
+    $wMatch = GameMatch::factory()->create([
+        'game_match_type_id' => $matchType->id,
+        'organiser_user_id' => $tournament->organiser_user_id,
+    ]);
+    $wFinal->update([
+        'participant_a_id' => $wWinner->id,
+        'participant_b_id' => $wLoser->id,
+        'match_id' => $wMatch->id,
+    ]);
+
+    /** @var MatchResult $result */
+    $result = MatchResult::factory()->create([
+        'match_id' => $wMatch->id,
+        'winner_clan_id' => $wWinner->clan_id,
+    ]);
+
+    app(BracketAdvancementService::class)->advance($result);
+
+    $lFinal->refresh();
+    expect($lFinal->participant_a_id)->toBe($lbWinner->id);
+    expect($lFinal->participant_b_id)->toBe($wLoser->id);
+});
