@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Round-1** — Phases 1-9 (shipped 2026-05-17 — see [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md))
 - ✅ **v1.1 Completion** — Phases 10-12 (shipped 2026-06-04 — see [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md))
-- 🚧 **v1.2 Reachability completion** — Phases 13-14 (in progress; closes the 2026-06-06 feature-reachability audit gaps)
+- ✅ **v1.2 Reachability completion** — Phases 13-14 (shipped 2026-06-07; closes the 2026-06-06 feature-reachability audit gaps)
 
 ## Phases
 
@@ -31,10 +31,10 @@ Plans:
 
 Plans:
 
-- [ ] 14-01 — Ban enforcement middleware blocks banned users from authenticated access; remove dead docblock (REACH-04)
-- [ ] 14-02 — Filament article form-publish sets published_at via ArticleStatusService (REACH-05)
-- [ ] 14-03 — MatchPlayerStat admin correction relation manager on MatchResource (REACH-06)
-- [ ] 14-04 — MatchEvent read-only relation manager on MatchResource (REACH-07)
+- [x] 14-01 — Ban enforcement middleware blocks banned users from authenticated access; remove dead docblock (REACH-04)
+- [x] 14-02 — Filament article form-publish sets published_at (ArticleObserver::saving) (REACH-05)
+- [x] 14-03 — MatchPlayerStat admin correction relation manager on MatchResource (REACH-06)
+- [x] 14-04 — MatchEvent read-only relation manager on MatchResource (REACH-07)
 
 **Details:**
 `BanService::isCurrentlyBanned` + `User::activeBan` exist but nothing calls them in the request lifecycle, and a dead docblock references a never-built "ban-check middleware (plan 09-11)" — add the middleware so a banned user is denied authenticated access. Publishing an article by flipping the Filament status Select to `published` does not set `published_at` (only the scheduler path does), so it sorts unpredictably on `/blog` — route the form publish through `ArticleStatusService`. `MatchPlayerStat` documents an "admin manually corrects a stat" flow with no Filament surface; `MatchEvent` (the RCON event stream feeding stat aggregation + result inference) has no admin view — add the two relation managers on `MatchResource`.
@@ -84,4 +84,4 @@ Full details, plan-level breakdown, decisions, and test counts: [milestones/v1.1
 | 11. Tournament depth | v1.1 | 5/5 | Complete   | 2026-06-04 |
 | 12. Notifications & bot polish | v1.1 | 5/5 | Complete   | 2026-06-04 |
 | 13. Reachability — MEDIUM gaps | v1.2 | 3/3 | Complete | 2026-06-07 |
-| 14. Reachability — LOW gaps | v1.2 | 0/4 | In Progress | — |
+| 14. Reachability — LOW gaps | v1.2 | 4/4 | Complete | 2026-06-07 |

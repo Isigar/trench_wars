@@ -1,5 +1,28 @@
 # Milestones
 
+## v1.2 Reachability completion (Shipped: 2026-06-07)
+
+**Phases completed:** 2 phases (13 MEDIUM, 14 LOW), 7 plans
+
+Closes the 13 reachability gaps found by the 2026-06-06 feature-completeness audit — features whose
+backend was tested-green but had no reachable entry point. The 5 HIGH gaps were fixed first on the same
+branch; this milestone tracks the 7 MEDIUM+LOW fixes.
+
+**Key accomplishments (full branch — 5 HIGH + 7 MED/LOW):**
+
+- HIGH: RCON capture reachable (MatchServerBooking creation on MatchResource); clan-invite accept/decline
+  UI; match-dispute raise entry point; article permalinks fixed (/news→/blog dead links); self-service
+  privacy editor (/account/privacy).
+- MEDIUM: applicant withdraw-application UI; double-elim N≥8 losers-bracket slot-collision fix
+  (a correctness bug — the loser overwrote the LB winner); public /players index page (nav + sitemap 404).
+- LOW: ban enforcement at the auth layer (bans were audit-only); Filament form-publish stamps
+  published_at; MatchPlayerStat admin correction surface; MatchEvent read-only admin view.
+
+40 new tests. All gates green at close: web Pest 1410, bot Vitest 238, rcon-worker Vitest 40, PHPStan L8
+clean, Pint clean (692 files), vue-tsc clean. Multi-agent adversarial code review run on the diff.
+
+---
+
 ## v1.1 Completion (Shipped: 2026-06-04)
 
 **Phases completed:** 3 phases, 17 plans, 23 tasks
