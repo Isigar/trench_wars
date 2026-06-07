@@ -16,9 +16,9 @@
 
 Plans:
 
-- [ ] 13-01 — Applicant withdraw-application UI on /my-clan (REACH-01)
-- [ ] 13-02 — Fix double-elim N≥8 losers-bracket slot collision in BracketAdvancementService (REACH-02)
-- [ ] 13-03 — Public Players index page (route + controller + Vue), remove stale nav TODO (REACH-03)
+- [x] 13-01 — Applicant withdraw-application UI on /my-clan (REACH-01)
+- [x] 13-02 — Fix double-elim N≥8 losers-bracket slot collision in BracketAdvancementService (REACH-02)
+- [x] 13-03 — Public Players index page (route + controller + Vue), remove stale nav TODO (REACH-03)
 
 **Details:**
 `ClanApplicationService::cancel` + `applications.cancel` route already work but had no UI; surface the applicant's own pending application with a Withdraw button (mirrors the v1.2 received-invites surface). `BracketAdvancementService::resolveSlot` derives the destination slot from the SOURCE bracket's position parity only, so for N≥8 an LB-internal winner and a dropped WB loser both target the same slot and one real participant is overwritten — fixed with a focused N=8 repro test. `/players` is linked from `PublicLayout` nav and emitted into `sitemap.xml` but no route exists (404); build the public index consuming the existing `PublicPlayerData` projection.
@@ -83,5 +83,5 @@ Full details, plan-level breakdown, decisions, and test counts: [milestones/v1.1
 | 10. Clan applications | v1.1 | 7/7 | Complete   | 2026-06-04 |
 | 11. Tournament depth | v1.1 | 5/5 | Complete   | 2026-06-04 |
 | 12. Notifications & bot polish | v1.1 | 5/5 | Complete   | 2026-06-04 |
-| 13. Reachability — MEDIUM gaps | v1.2 | 0/3 | In Progress | — |
-| 14. Reachability — LOW gaps | v1.2 | 0/4 | Not Started | — |
+| 13. Reachability — MEDIUM gaps | v1.2 | 3/3 | Complete | 2026-06-07 |
+| 14. Reachability — LOW gaps | v1.2 | 0/4 | In Progress | — |

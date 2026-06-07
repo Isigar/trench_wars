@@ -75,6 +75,12 @@ class DiscordController extends Controller
             ],
         );
 
+        // Banned users are denied a session entirely — no point logging them in
+        // just for the ban-check middleware to tear it down on the next request.
+        if ($user->activeBan() !== null) {
+            return redirect()->route('home')->with('error', __('auth.banned'));
+        }
+
         Auth::login($user, remember: true);
         $request->session()->regenerate();
 

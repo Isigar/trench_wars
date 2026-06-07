@@ -121,7 +121,7 @@ Route::middleware(['guest', 'throttle:auth'])->group(function (): void {
         ->name('auth.discord.callback');
 });
 
-Route::middleware('auth')->group(function (): void {
+Route::middleware(['auth', 'banned'])->group(function (): void {
     Route::post('/auth/logout', LogoutController::class)->name('auth.logout');
 
     // Clan create — any authenticated user may create one clan (D-009 one-active enforced in controller).
@@ -197,7 +197,7 @@ Route::middleware('auth')->group(function (): void {
 // (5/hour, T-09-11-03 mitigation). FormRequest validation lives in
 // StoreAbuseReportRequest; activity_log write + abuse_reports row insert
 // inside ReportsController::store under a DB transaction.
-Route::middleware(['auth', 'throttle:report-abuse'])->group(function (): void {
+Route::middleware(['auth', 'banned', 'throttle:report-abuse'])->group(function (): void {
     Route::get('/reports/create', [ReportsController::class, 'create'])->name('reports.create');
     Route::post('/reports', [ReportsController::class, 'store'])->name('reports.store');
 });

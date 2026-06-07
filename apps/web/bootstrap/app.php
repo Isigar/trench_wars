@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserNotBanned;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\ResolveBotActsAsUser;
 use App\Http\Middleware\VerifyRconSignature;
@@ -39,6 +40,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'ability' => CheckForAnyAbility::class,
             'bot.acts-as' => ResolveBotActsAsUser::class,
             'rcon.signature' => VerifyRconSignature::class,
+            // Denies authenticated access to a currently-banned user. Mounted on
+            // the authenticated web route groups in routes/web.php.
+            'banned' => EnsureUserNotBanned::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

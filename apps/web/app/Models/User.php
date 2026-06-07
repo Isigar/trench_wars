@@ -100,6 +100,12 @@ class User extends Authenticatable implements FilamentUser, HasName
             return false;
         }
 
+        // A currently-banned admin loses panel access too (ban = no authenticated
+        // access anywhere, not just the public web routes).
+        if ($this->activeBan() !== null) {
+            return false;
+        }
+
         return $this->hasPermissionTo('admin-access', 'web');
     }
 
@@ -225,11 +231,11 @@ class User extends Authenticatable implements FilamentUser, HasName
     /**
      * Currently-active ban (lifted_at NULL AND not expired) if any.
      *
-     * Used by the ban-check middleware (plan 09-11). Returns the first row
-     * matched by Ban::scopeActive() ordered by created_at DESC — for the
-     * lookup-by-id semantics the middleware uses, ordering is immaterial,
-     * but ordering by created_at DESC makes the result deterministic when
-     * a user has stacked bans.
+     * Consumed by EnsureUserNotBanned (the ban-check middleware on the
+     * authenticated web route groups), DiscordController::callback (login gate),
+     * and canAccessPanel (Filament gate). Returns the first row matched by
+     * Ban::scopeActive() ordered by created_at DESC — deterministic when a user
+     * has stacked bans.
      */
     public function activeBan(): ?Ban
     {

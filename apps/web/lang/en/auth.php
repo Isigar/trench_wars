@@ -14,6 +14,10 @@ return [
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
+    // Shown when a currently-banned user is denied authenticated access
+    // (EnsureUserNotBanned middleware + OAuth callback login gate).
+    'banned' => 'Your account is suspended. Contact a league administrator if you believe this is a mistake.',
+
     // Discord OAuth — UI-SPEC.md § Copywriting Contract.
     'discord' => [
         'button_label' => 'Log in with Discord',
