@@ -236,6 +236,13 @@ show_clan_history: boolean,
 show_match_history: boolean,
 show_stats: boolean,
 };
+export type PlayerSummaryData = {
+id: string,
+slug: string,
+displayName: string,
+avatarUrl: string,
+countryCode: string | null,
+};
 export type PublicArticleData = {
 id: string,
 slug: string,

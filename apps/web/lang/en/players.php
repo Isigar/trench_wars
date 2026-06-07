@@ -41,6 +41,18 @@ return [
         ],
     ],
 
+    // Public player directory index (/players).
+    'index' => [
+        'title' => 'Players',
+        'subtitle' => 'Browse players across the league.',
+        'search_label' => 'Search players',
+        'search_placeholder' => 'Search by name…',
+        'empty' => 'No players found.',
+        'pagination_prev' => 'Previous',
+        'pagination_next' => 'Next',
+        'pagination_page_indicator' => 'Page :current of :last',
+    ],
+
     // Phase 9 plan 09-09 — PlayerAvatar.vue alt text (WebP avatar conversions).
     // Parameter: :name (player display name).
     'avatar_alt' => ':name avatar',

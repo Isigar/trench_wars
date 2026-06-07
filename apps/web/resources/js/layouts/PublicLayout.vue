@@ -98,8 +98,7 @@ function isActive(path: string): boolean {
                         {{ t('common.nav.tournaments') }}
                     </Link>
 
-                    <!-- Players nav link — /players index does NOT exist in P2.
-                         TODO Phase 9: wire to /players index page when it lands. -->
+                    <!-- Players nav link — public /players directory index. -->
                     <a
                         href="/players"
                         :class="[

@@ -27,6 +27,7 @@ use App\Http\Controllers\MyClan\MyClanMemberController;
 use App\Http\Controllers\MyClan\MyClanProfileController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\PlayerProfileController;
+use App\Http\Controllers\PlayersIndexController;
 use App\Http\Controllers\PlayersJsonController;
 use App\Http\Controllers\Reports\ReportsController;
 use App\Http\Controllers\SearchController;
@@ -51,6 +52,11 @@ Route::get('/clans.json', ClansJsonController::class)
 Route::get('/players.json', PlayersJsonController::class)
     ->middleware('throttle:public-api')
     ->name('players.json');
+
+// Public player directory index. MUST be declared BEFORE /players/{player:slug}
+// so the literal /players path is not bound as a slug. Linked from the header
+// nav + emitted into sitemap.xml (previously 404 — no route existed).
+Route::get('/players', PlayersIndexController::class)->name('players.index');
 
 Route::get('/clans/{clan:slug}', ClanShowController::class)->name('clans.show');
 Route::get('/players/{player:slug}', PlayerProfileController::class)->name('players.show');
