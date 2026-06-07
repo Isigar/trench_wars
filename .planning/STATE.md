@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Completion
-status: completed
-stopped_at: v1.1 Completion milestone archived 2026-06-04 — 3 phases / 17 plans / 1370 web Pest + 238 bot Vitest GREEN; all 10 v1.1 requirements (CLAN-01..04, TOUR-01..04, NOTF-01, BOT-01) Complete
-last_updated: "2026-06-04T13:00:00Z"
-last_activity: 2026-06-04 — v1.1 milestone archived; next milestone not yet planned
+milestone: v1.2
+milestone_name: Reachability completion
+status: in_progress
+stopped_at: v1.2 milestone opened 2026-06-07 — closing the 2026-06-06 feature-reachability audit gaps (5 HIGH already fixed on branch fix/high-reachability-gaps; 7 MEDIUM+LOW in phases 13-14)
+last_updated: "2026-06-07T00:00:00Z"
+last_activity: 2026-06-07 — v1.2 milestone opened; phases 13 (MEDIUM) + 14 (LOW) planned
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 17
-  completed_plans: 17
-  percent: 100
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 7
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State

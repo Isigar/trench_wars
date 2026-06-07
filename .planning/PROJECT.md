@@ -74,7 +74,16 @@ All 15 round-1 (v1.0) requirements shipped 2026-05-17 (see `milestones/v1.0-REQU
 
 ### Active
 
-<!-- No active milestone — v1.1 shipped; next milestone not yet planned. -->
+<!-- v1.2 Reachability completion — closing the 2026-06-06 feature-reachability audit gaps.
+     5 HIGH gaps already fixed on branch fix/high-reachability-gaps. The 7 below are MEDIUM+LOW. -->
+
+- ☐ REACH-01 — Applicants can withdraw their own pending clan application from the UI (MEDIUM) — v1.2
+- ☐ REACH-02 — Double-elimination losers bracket never overwrites a participant for N≥8 (MEDIUM, correctness) — v1.2
+- ☐ REACH-03 — Public Players index page exists at /players (nav + sitemap no longer 404) (MEDIUM) — v1.2
+- ☐ REACH-04 — Issued bans are enforced at the authentication layer, not just recorded (LOW) — v1.2
+- ☐ REACH-05 — Articles published via the Filament form get a published_at timestamp (LOW) — v1.2
+- ☐ REACH-06 — Admins can correct per-player match stats through a Filament surface (LOW) — v1.2
+- ☐ REACH-07 — Admins can inspect the normalised RCON event timeline for a match (LOW) — v1.2
 
 (None — v1.1 shipped; next milestone not yet planned.)
 
