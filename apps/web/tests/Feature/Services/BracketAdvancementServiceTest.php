@@ -502,3 +502,94 @@ it('drops the W-final loser into the L-final slot B (N=8, odd source position)',
     expect($lFinal->participant_a_id)->toBe($lbWinner->id);
     expect($lFinal->participant_b_id)->toBe($wLoser->id);
 });
+
+// ---------------------------------------------------------------------------
+// Double-elim — EVEN-positioned feeder collision (REACH-02 completeness).
+// resolveLoserSlot alone was insufficient: the LB-internal winner-advance for an
+// EVEN-positioned minor feeder (e.g. LB-r1-p2, resolveSlot(2)='b') collided with
+// the W-loser-drop's hardcoded 'b'. resolveWinnerSlot routes the LB minor winner
+// to slot 'a' instead. Adversarial-review finding (N=8 LB-r2-p2 collision).
+// ---------------------------------------------------------------------------
+
+/**
+ * Wire a bracket with two participants + a materialised match, then advance it
+ * with $winner winning. Returns nothing — caller asserts on the destination(s).
+ */
+function wireAndAdvance(
+    TournamentBracket $bracket,
+    TournamentParticipant $winner,
+    TournamentParticipant $loser,
+    Tournament $tournament,
+): void {
+    $matchType = GameMatchType::query()->firstOrFail();
+    $match = GameMatch::factory()->create([
+        'game_match_type_id' => $matchType->id,
+        'organiser_user_id' => $tournament->organiser_user_id,
+    ]);
+    $bracket->update([
+        'participant_a_id' => $winner->id,
+        'participant_b_id' => $loser->id,
+        'match_id' => $match->id,
+    ]);
+    $result = MatchResult::factory()->create([
+        'match_id' => $match->id,
+        'winner_clan_id' => $winner->clan_id,
+    ]);
+    app(BracketAdvancementService::class)->advance($result);
+}
+
+it('routes an even-positioned LB minor winner to slot A so the W-loser drop (slot B) does not collide (N=8)', function (): void {
+    $tournament = makeAdvancementTournament('double_elimination', 'running');
+    makeAdvancementParticipants($tournament, 8);
+    app(BracketGeneratorService::class)->generate($tournament);
+    $p = $tournament->participants()->orderBy('seed')->get();
+
+    $lStage = $tournament->stages()->where('type', 'losers-bracket')->firstOrFail();
+    $wStage = $tournament->stages()->where('type', 'winners-bracket')->firstOrFail();
+
+    // LB-r1-p2 (minor, EVEN position) winner must advance to LB-r2-p2 slot A.
+    $lbR1P2 = $lStage->brackets()->where('round_number', 1)->where('position', 2)->firstOrFail();
+    $lbR2P2 = TournamentBracket::query()->whereKey($lbR1P2->advances_to_bracket_id)->firstOrFail();
+    expect($lbR2P2->round_number)->toBe(2)->and($lbR2P2->position)->toBe(2);
+
+    // W-r2-p2 (EVEN position) loser drops into that SAME LB-r2-p2.
+    $wR2P2 = $wStage->brackets()->where('round_number', 2)->where('position', 2)->firstOrFail();
+    expect($wR2P2->loser_advances_to_bracket_id)->toBe($lbR2P2->id);
+
+    // Advance LB-r1-p2 → winner into LB-r2-p2 slot A.
+    wireAndAdvance($lbR1P2, $p[0], $p[1], $tournament);
+    $lbR2P2->refresh();
+    expect($lbR2P2->participant_a_id)->toBe($p[0]->id); // LB winner in slot A
+
+    // Advance W-r2-p2 → loser into LB-r2-p2 slot B, WITHOUT overwriting slot A.
+    wireAndAdvance($wR2P2, $p[2], $p[3], $tournament);
+    $lbR2P2->refresh();
+    expect($lbR2P2->participant_a_id)->toBe($p[0]->id);  // LB winner preserved
+    expect($lbR2P2->participant_b_id)->toBe($p[3]->id);  // W-r2-p2 loser
+});
+
+it('sends W-final winner to grand-final slot A and L-final winner to slot B (no GF collision, N=8)', function (): void {
+    $tournament = makeAdvancementTournament('double_elimination', 'running');
+    makeAdvancementParticipants($tournament, 8);
+    app(BracketGeneratorService::class)->generate($tournament);
+    $p = $tournament->participants()->orderBy('seed')->get();
+
+    $wStage = $tournament->stages()->where('type', 'winners-bracket')->firstOrFail();
+    $lStage = $tournament->stages()->where('type', 'losers-bracket')->firstOrFail();
+    $gfStage = $tournament->stages()->where('type', 'grand-final')->firstOrFail();
+    $gf = $gfStage->brackets()->firstOrFail();
+
+    $wMax = (int) $wStage->brackets()->max('round_number');
+    $wFinal = $wStage->brackets()->where('round_number', $wMax)->where('position', 1)->firstOrFail();
+    $lMax = (int) $lStage->brackets()->max('round_number');
+    $lFinal = $lStage->brackets()->where('round_number', $lMax)->where('position', 1)->firstOrFail();
+    expect($wFinal->advances_to_bracket_id)->toBe($gf->id);
+    expect($lFinal->advances_to_bracket_id)->toBe($gf->id);
+
+    wireAndAdvance($wFinal, $p[0], $p[1], $tournament);
+    wireAndAdvance($lFinal, $p[2], $p[3], $tournament);
+
+    $gf->refresh();
+    expect($gf->participant_a_id)->toBe($p[0]->id); // W-final champion → slot A
+    expect($gf->participant_b_id)->toBe($p[2]->id); // L-final champion → slot B
+});

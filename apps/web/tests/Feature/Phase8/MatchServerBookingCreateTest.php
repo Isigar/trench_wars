@@ -29,8 +29,11 @@ use Livewire\Livewire;
 beforeEach(function (): void {
     $this->seed(PermissionSeeder::class);
 
+    // Booking management is an RCON-ops privilege — the actor needs manage-rcon
+    // (the gate BookingsRelationManager enforces, mirroring MatchServerResource).
     $this->admin = User::factory()->create();
     $this->admin->givePermissionTo('admin-access');
+    $this->admin->givePermissionTo('manage-rcon');
     $this->actingAs($this->admin);
 
     Filament::setCurrentPanel(Filament::getPanel('admin'));
@@ -39,6 +42,20 @@ beforeEach(function (): void {
 it('registers the Bookings relation manager on MatchResource', function (): void {
     expect(MatchResource::getRelations())
         ->toContain(BookingsRelationManager::class);
+});
+
+it('hides the Bookings relation manager from an admin WITHOUT manage-rcon (T-08-09-03)', function (): void {
+    $match = GameMatch::factory()->create();
+
+    // The manage-rcon admin (from beforeEach) CAN see it.
+    expect(BookingsRelationManager::canViewForRecord($match, EditMatch::class))->toBeTrue();
+
+    // A non-RCON admin (cms-editor scope: admin-access only) CANNOT — so the
+    // create/delete actions on CRCON bookings are unreachable for them.
+    $cmsAdmin = User::factory()->create();
+    $cmsAdmin->givePermissionTo('admin-access');
+    $this->actingAs($cmsAdmin);
+    expect(BookingsRelationManager::canViewForRecord($match, EditMatch::class))->toBeFalse();
 });
 
 it('admin creates a booking through the relation manager and the worker poll picks it up', function (): void {

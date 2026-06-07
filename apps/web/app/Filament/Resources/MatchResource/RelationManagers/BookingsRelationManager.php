@@ -38,6 +38,19 @@ class BookingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'bookings';
 
+    /**
+     * Gate this relation manager behind `manage-rcon` — creating/cancelling a
+     * CRCON server reservation is an RCON-ops privilege, the same one the
+     * standalone MatchServerResource enforces (T-08-09-03). MatchResource itself
+     * is reachable by any `admin-access` holder (e.g. cms-editor), so without
+     * this a non-RCON admin could reserve league-owned servers + drive the
+     * capture pipeline. Hiding the manager blocks its create/edit/delete actions.
+     */
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()?->can('manage-rcon') ?? false;
+    }
+
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('admin.match_server_bookings.plural_label');

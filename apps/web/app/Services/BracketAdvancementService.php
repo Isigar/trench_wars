@@ -141,10 +141,11 @@ final class BracketAdvancementService
                 /** @var TournamentBracket|null $next */
                 $next = TournamentBracket::query()
                     ->whereKey($bracket->advances_to_bracket_id)
+                    ->with('stage')
                     ->lockForUpdate()
                     ->first();
                 if ($next !== null) {
-                    $slot = $this->resolveSlot($bracket->position);
+                    $slot = $this->resolveWinnerSlot($bracket, $next);
                     $next->update(["participant_{$slot}_id" => $winnerParticipant->id]);
                 }
             }
@@ -295,6 +296,37 @@ final class BracketAdvancementService
     private function resolveSlot(int $fromPosition): string
     {
         return $fromPosition % 2 === 1 ? 'a' : 'b';
+    }
+
+    /**
+     * Destination slot for a WINNER advancing via advances_to_bracket_id.
+     *
+     * Most edges fold by source-position parity (winners-bracket rounds, and the
+     * losers-bracket major→minor fold). Two edges do NOT:
+     *
+     *   - A losers-bracket MINOR round (odd round_number) advances its winner
+     *     into the same-position MAJOR round's slot A. Slot B there is reserved
+     *     for the fresh winners-bracket loser (resolveLoserSlot). Folding by
+     *     parity would send an even-positioned minor winner (e.g. LB-r1-p2,
+     *     position 2 → 'b') into slot B and overwrite that loser drop — the N≥8
+     *     even-feeder collision (e.g. LB-r2-p2 for N=8).
+     *   - Into the grand final, the winners-bracket champion takes slot A and the
+     *     losers-bracket champion takes slot B (DoubleEliminationGenerator: "LB
+     *     final winner → grand-final slot b"); parity would put both in slot A.
+     *
+     * Matches DoubleEliminationGenerator's documented advancement chain.
+     */
+    private function resolveWinnerSlot(TournamentBracket $source, TournamentBracket $dest): string
+    {
+        if ($dest->stage?->type === 'grand-final') {
+            return $source->stage?->type === 'losers-bracket' ? 'b' : 'a';
+        }
+
+        if ($source->stage?->type === 'losers-bracket' && $source->round_number % 2 === 1) {
+            return 'a';
+        }
+
+        return $this->resolveSlot($source->position);
     }
 
     /**
