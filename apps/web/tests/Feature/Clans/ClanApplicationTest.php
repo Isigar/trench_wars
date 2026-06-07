@@ -6,6 +6,7 @@ use App\Models\Clan;
 use App\Models\ClanApplication;
 use App\Models\ClanMembership;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia;
 use Spatie\Activitylog\Models\Activity;
 
 /*
@@ -387,4 +388,74 @@ it('accept() flash message contains the applicant username, not the acceptor use
 
     // The success flash must contain the applicant's name, not the leader's.
     $response->assertSessionHas('success', fn (string $msg): bool => str_contains($msg, 'applicant-user-wr01'));
+});
+
+// ===========================================================================
+// Applicant-facing surface on /my-clan — the only in-product entry point to
+// withdraw an application you submitted (reachability-audit gap REACH-01).
+// ===========================================================================
+
+it('surfaces the applicant\'s own pending application on GET /my-clan with clan display fields', function (): void {
+    [$clan] = setupApplicationClan();
+    $applicant = User::factory()->create(); // no clan of their own
+
+    ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+        'message' => 'Please let me in.',
+    ]);
+
+    $this->actingAs($applicant)
+        ->get('/my-clan')
+        ->assertStatus(200)
+        ->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('MyClan/Index', false)
+                ->has('my_applications', 1)
+                ->where('my_applications.0.clan_name', $clan->name)
+                ->where('my_applications.0.clan_slug', $clan->slug)
+                ->where('my_applications.0.message', 'Please let me in.')
+        );
+});
+
+it('does not surface decided (accepted/declined/cancelled) applications in my_applications', function (): void {
+    [$clan] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    foreach (['accepted', 'declined', 'cancelled'] as $status) {
+        ClanApplication::factory()->create([
+            'clan_id' => $clan->id,
+            'applicant_user_id' => $applicant->id,
+            'status' => $status,
+            'decided_at' => now(),
+        ]);
+    }
+
+    $this->actingAs($applicant)
+        ->get('/my-clan')
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('my_applications', 0));
+});
+
+it('lets the applicant withdraw their application from the /my-clan surface', function (): void {
+    [$clan] = setupApplicationClan();
+    $applicant = User::factory()->create();
+
+    $app = ClanApplication::factory()->create([
+        'clan_id' => $clan->id,
+        'applicant_user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    // The surface posts to the same route the Withdraw button uses.
+    $this->actingAs($applicant)
+        ->post(route('applications.cancel', $app->id))
+        ->assertRedirect();
+
+    expect($app->fresh()->status)->toBe('cancelled');
+
+    // Once withdrawn, it is no longer surfaced.
+    $this->actingAs($applicant)
+        ->get('/my-clan')
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('my_applications', 0));
 });

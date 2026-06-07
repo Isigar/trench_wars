@@ -204,6 +204,13 @@ occupant_user_id: string | null,
 confirmed_at: string | null,
 sort_order: number,
 };
+export type MyClanApplicationData = {
+id: string,
+clan_name: string,
+clan_tag: string,
+clan_slug: string,
+message: string | null,
+};
 export type ParticipantSummary = {
 id: string,
 clan_name: string,

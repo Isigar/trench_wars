@@ -22,6 +22,7 @@ type ClanMembershipData = App.Data.ClanMembershipData;
 type ClanInviteData = App.Data.ClanInviteData;
 type ClanApplicationData = App.Data.ClanApplicationData;
 type ReceivedClanInviteData = App.Data.ReceivedClanInviteData;
+type MyClanApplicationData = App.Data.MyClanApplicationData;
 
 const props = defineProps<{
     clan: ClanData | null;
@@ -30,6 +31,7 @@ const props = defineProps<{
     invites: ClanInviteData[];
     applications: ClanApplicationData[];
     received_invites: ReceivedClanInviteData[];
+    my_applications: MyClanApplicationData[];
 }>();
 
 // ---------------------------------------------------------------------------
@@ -128,6 +130,12 @@ function declineInvite(inviteId: string): void {
     router.post(route('invites.decline', inviteId), {}, { preserveScroll: true });
 }
 
+// Withdraw the applicant's own pending application (the only in-product entry
+// point to cancel an application).
+function withdrawApplication(applicationId: string): void {
+    router.post(route('applications.cancel', applicationId), {}, { preserveScroll: true });
+}
+
 // ---------------------------------------------------------------------------
 // Applications tab — accept / decline
 // ---------------------------------------------------------------------------
@@ -218,6 +226,55 @@ function truncateMessage(msg: string | null, max = 120): string {
                                 @click="declineInvite(invite.id)"
                             >
                                 {{ t('clans.my_clan.received_invites.decline') }}
+                            </Button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- ================================================================
+                 Your pending applications (applicant withdraw) — shown in every
+                 state so an applicant can cancel an application they submitted.
+            ================================================================ -->
+            <section
+                v-if="my_applications.length"
+                class="mb-8 border border-[var(--color-border)] rounded-lg p-5
+                       bg-[var(--color-surface-elevated)]"
+            >
+                <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">
+                    {{ t('clans.my_clan.my_applications.heading') }}
+                </h2>
+                <ul class="flex flex-col gap-3">
+                    <li
+                        v-for="application in my_applications"
+                        :key="application.id"
+                        class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between
+                               border border-[var(--color-border)] rounded-md p-3
+                               bg-[var(--color-surface)]"
+                    >
+                        <div class="flex flex-col gap-1 min-w-0">
+                            <a
+                                :href="`/clans/${application.clan_slug}`"
+                                class="font-semibold text-[var(--color-text)] hover:underline truncate"
+                            >
+                                [{{ application.clan_tag }}] {{ application.clan_name }}
+                            </a>
+                            <span class="text-xs text-[var(--color-text-muted)]">
+                                {{ t('clans.my_clan.my_applications.applied_to') }}
+                            </span>
+                            <p
+                                v-if="application.message"
+                                class="text-sm text-[var(--color-text-muted)] mt-1"
+                            >
+                                {{ truncateMessage(application.message) }}
+                            </p>
+                        </div>
+                        <div class="flex gap-2 shrink-0">
+                            <Button
+                                variant="secondary"
+                                @click="withdrawApplication(application.id)"
+                            >
+                                {{ t('clans.my_clan.my_applications.withdraw') }}
                             </Button>
                         </div>
                     </li>

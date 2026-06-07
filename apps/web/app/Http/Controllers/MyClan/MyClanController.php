@@ -8,6 +8,7 @@ use App\Data\ClanApplicationData;
 use App\Data\ClanData;
 use App\Data\ClanInviteData;
 use App\Data\ClanMembershipData;
+use App\Data\MyClanApplicationData;
 use App\Data\ReceivedClanInviteData;
 use App\Http\Controllers\Controller;
 use App\Models\Clan;
@@ -64,6 +65,21 @@ class MyClanController extends Controller
             ->values()
             ->all();
 
+        // Pending applications submitted BY this user (the applicant view) so they
+        // can withdraw — the only in-product entry point to cancel an application.
+        /** @var Collection<int, ClanApplication> $myApplications */
+        $myApplications = ClanApplication::query()
+            ->where('applicant_user_id', $user->id)
+            ->where('status', 'pending')
+            ->with('clan')
+            ->latest()
+            ->get();
+
+        $myApplicationData = $myApplications
+            ->map(fn (ClanApplication $application) => MyClanApplicationData::fromModel($application))
+            ->values()
+            ->all();
+
         if ($membership === null) {
             return Inertia::render('MyClan/Index', [
                 'membership' => null,
@@ -72,6 +88,7 @@ class MyClanController extends Controller
                 'invites' => [],
                 'applications' => [],
                 'received_invites' => $receivedInviteData,
+                'my_applications' => $myApplicationData,
             ]);
         }
 
@@ -108,6 +125,7 @@ class MyClanController extends Controller
             'invites' => ClanInviteData::collect($pendingInvites),
             'applications' => ClanApplicationData::collectFromModels($pendingApplications),
             'received_invites' => $receivedInviteData,
+            'my_applications' => $myApplicationData,
         ]);
     }
 }

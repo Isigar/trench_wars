@@ -83,6 +83,12 @@ return [
             'accept' => 'Accept',
             'decline' => 'Decline',
         ],
+        // Applicant-facing "Your applications" section (own pending applications).
+        'my_applications' => [
+            'heading' => 'Your pending applications',
+            'applied_to' => 'You applied to join this clan.',
+            'withdraw' => 'Withdraw',
+        ],
     ],
 
     'form' => [
