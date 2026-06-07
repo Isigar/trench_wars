@@ -54,6 +54,28 @@ use App\Support\DiscordOutboundPayloadBuilder;
 class ArticleObserver
 {
     /**
+     * Saving hook — stamp published_at on any path that sets status='published'
+     * without an explicit timestamp.
+     *
+     * The Filament edit form publishes by flipping the status Select to
+     * 'published' (its published_at DateTimePicker is ->disabled() so the form
+     * never submits one, and EditArticle has no afterSave hook). Without this,
+     * a form-published article has published_at=null and sorts unpredictably
+     * under orderByDesc('published_at') on /blog. ArticleStatusService sets
+     * published_at explicitly, so this only fills the gap when it is still null
+     * (and re-publishing an already-published article preserves the original).
+     */
+    public function saving(Article $a): void
+    {
+        if ($a->status === 'published' && $a->published_at === null) {
+            // setAttribute (not direct property assignment) mirrors the array-update
+            // idiom in ArticleStatusService and keeps the datetime cast happy without
+            // tripping the larastan string|null property inference.
+            $a->setAttribute('published_at', now());
+        }
+    }
+
+    /**
      * Created hook — covers the rare insert-as-published path (admin or
      * seeder directly creating an Article with status='published') + always
      * syncs the Event row.

@@ -253,3 +253,48 @@ it('bulk Article::query()->update bypasses the observer (documented limitation)'
     // Observer did NOT fire — Eloquent model events are bypassed by raw queries.
     expect(DiscordOutboundMessage::where('message_type', 'article_announce')->count())->toBe(0);
 });
+
+// ---------------------------------------------------------------------------
+// saving() — published_at stamped when status flips to published without one
+// (REACH-05: the Filament edit-form publish path).
+// ---------------------------------------------------------------------------
+
+it('stamps published_at when a draft is updated to published without an explicit timestamp', function (): void {
+    // A draft with no published_at — exactly the state the Filament edit form
+    // saves when an editor flips the status Select to "published".
+    $a = Article::factory()->create([
+        'status' => 'draft',
+        'published_at' => null,
+        'allow_discord_announce' => false,
+    ]);
+    expect($a->published_at)->toBeNull();
+
+    // Plain Eloquent update (no published_at) — what the form save does.
+    $a->update(['status' => 'published']);
+
+    expect($a->fresh()->published_at)->not->toBeNull();
+});
+
+it('preserves the original published_at when re-saving an already-published article', function (): void {
+    $original = now()->subDays(3);
+    $a = Article::factory()->create([
+        'status' => 'published',
+        'published_at' => $original,
+        'allow_discord_announce' => false,
+    ]);
+
+    // Edit an unrelated field on the published article — published_at must not move.
+    $a->update(['allow_discord_announce' => true]);
+
+    expect($a->fresh()->published_at->timestamp)->toBe($original->timestamp);
+});
+
+it('stamps published_at on a fresh article created directly as published without one', function (): void {
+    $a = Article::factory()->create([
+        'status' => 'published',
+        'published_at' => null,
+        'allow_discord_announce' => false,
+    ]);
+
+    expect($a->fresh()->published_at)->not->toBeNull();
+});
