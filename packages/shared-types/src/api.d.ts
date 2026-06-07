@@ -65,9 +65,11 @@ export type ClanInviteData = {
 id: string,
 clan_id: string,
 invited_user_id: string,
+invited_username: string | null,
 inviting_user_id: string,
 status: string,
 message: string | null,
+created_at: string | null,
 decided_at: string | null,
 expires_at: string | null,
 };

@@ -38,6 +38,13 @@ return [
         'leader_transfer_warning' => 'You are about to transfer leadership of this clan. This cannot be undone without admin action.',
         'remove_confirm' => 'Remove :name from the clan?',
         'remove_yes' => 'Yes, remove',
+        // Per-member 3-dots actions menu + modals.
+        'actions' => 'Member actions',
+        'change_role' => 'Change role',
+        'remove' => 'Remove from clan',
+        'role_modal_title' => 'Change member role',
+        'role_label' => 'Role',
+        'remove_modal_title' => 'Remove member',
         'role' => [
             'update' => [
                 'success' => 'Member role updated.',
@@ -140,6 +147,9 @@ return [
         'sent' => 'Invite sent.',
         'revoke' => 'Revoke',
         'revoked' => 'Invite revoked.',
+        'invited_at' => 'Invited :time',
+        'revoke_modal_title' => 'Revoke invite',
+        'revoke_confirm' => 'Revoke the invite for :name? They will no longer be able to accept it.',
         'accepted' => 'You have joined the clan.',
         'declined' => 'Invite declined.',
         'error' => [

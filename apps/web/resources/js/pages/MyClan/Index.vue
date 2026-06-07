@@ -5,6 +5,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useForm, router, Head } from '@inertiajs/vue3';
+import {
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuRoot,
+    DropdownMenuTrigger,
+} from 'reka-ui';
 import { useT } from '@/composables/useT';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import TabGroup from '@/components/ui/TabGroup.vue';
@@ -14,6 +20,24 @@ import Button from '@/components/ui/Button.vue';
 import TextInput from '@/components/ui/TextInput.vue';
 import Textarea from '@/components/ui/Textarea.vue';
 import StatusBadge from '@/components/ui/StatusBadge.vue';
+
+// Inertia visit options shared by every mutating action on this page. preserveState
+// keeps the page component instance (so the active TabGroup tab + open modals are NOT
+// reset to defaults on the redirect-back), preserveScroll keeps the scroll position.
+const KEEP = { preserveState: true, preserveScroll: true } as const;
+
+function formatDateTime(iso: string | null | undefined): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(d);
+}
 
 const { t } = useT();
 
@@ -60,35 +84,49 @@ const profileForm = useForm({
 
 function saveProfile(): void {
     if (!props.clan) return;
-    profileForm.patch(route('my-clan.profile.update', props.clan.slug));
+    profileForm.patch(route('my-clan.profile.update', props.clan.slug), KEEP);
 }
 
 // ---------------------------------------------------------------------------
-// Members tab — role update + inline remove confirm
+// Members tab — per-member actions via a 3-dots menu + modals
 // ---------------------------------------------------------------------------
-const confirmingRemoveId = ref<string | null>(null);
-
 function handleChangeRole(membershipId: string, newRole: string): void {
     router.patch(
         route('my-clan.members.role', membershipId),
         { role: newRole },
-        { preserveScroll: true },
+        KEEP,
     );
 }
 
-function handleRemove(membershipId: string): void {
-    confirmingRemoveId.value = membershipId;
+// Change-role modal.
+const roleModalMember = ref<ClanMembershipData | null>(null);
+const roleModalValue = ref<string>('member');
+const roleOptions = ['leader', 'officer', 'member', 'recruit'] as const;
+
+function openRoleModal(member: ClanMembershipData): void {
+    roleModalMember.value = member;
+    roleModalValue.value = member.role;
 }
 
-function confirmRemove(membershipId: string): void {
-    router.delete(route('my-clan.members.remove', membershipId), {
-        preserveScroll: true,
-        onSuccess: () => { confirmingRemoveId.value = null; },
+function submitRoleChange(): void {
+    if (roleModalMember.value === null) return;
+    handleChangeRole(roleModalMember.value.id, roleModalValue.value);
+    roleModalMember.value = null;
+}
+
+// Remove-member confirmation modal.
+const removeModalMember = ref<ClanMembershipData | null>(null);
+
+function openRemoveModal(member: ClanMembershipData): void {
+    removeModalMember.value = member;
+}
+
+function submitRemove(): void {
+    if (removeModalMember.value === null) return;
+    router.delete(route('my-clan.members.remove', removeModalMember.value.id), {
+        ...KEEP,
+        onSuccess: () => { removeModalMember.value = null; },
     });
-}
-
-function cancelRemove(): void {
-    confirmingRemoveId.value = null;
 }
 
 // ---------------------------------------------------------------------------
@@ -102,6 +140,7 @@ const inviteForm = useForm({
 
 function sendInvite(): void {
     inviteForm.post(route('my-clan.invites.store'), {
+        ...KEEP,
         onSuccess: () => {
             inviteModalOpen.value = false;
             inviteForm.reset();
@@ -110,11 +149,19 @@ function sendInvite(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Invites tab — revoke
+// Invites tab — revoke (danger action behind a confirmation modal)
 // ---------------------------------------------------------------------------
-function revokeInvite(inviteId: string): void {
-    router.delete(route('my-clan.invites.destroy', inviteId), {
-        preserveScroll: true,
+const revokeModalInvite = ref<ClanInviteData | null>(null);
+
+function openRevokeModal(invite: ClanInviteData): void {
+    revokeModalInvite.value = invite;
+}
+
+function submitRevoke(): void {
+    if (revokeModalInvite.value === null) return;
+    router.delete(route('my-clan.invites.destroy', revokeModalInvite.value.id), {
+        ...KEEP,
+        onSuccess: () => { revokeModalInvite.value = null; },
     });
 }
 
@@ -123,36 +170,28 @@ function revokeInvite(inviteId: string): void {
 // to act on an invite addressed to you)
 // ---------------------------------------------------------------------------
 function acceptInvite(inviteId: string): void {
-    router.post(route('invites.accept', inviteId), {}, { preserveScroll: true });
+    router.post(route('invites.accept', inviteId), {}, KEEP);
 }
 
 function declineInvite(inviteId: string): void {
-    router.post(route('invites.decline', inviteId), {}, { preserveScroll: true });
+    router.post(route('invites.decline', inviteId), {}, KEEP);
 }
 
 // Withdraw the applicant's own pending application (the only in-product entry
 // point to cancel an application).
 function withdrawApplication(applicationId: string): void {
-    router.post(route('applications.cancel', applicationId), {}, { preserveScroll: true });
+    router.post(route('applications.cancel', applicationId), {}, KEEP);
 }
 
 // ---------------------------------------------------------------------------
 // Applications tab — accept / decline
 // ---------------------------------------------------------------------------
 function acceptApplication(appId: string): void {
-    router.post(
-        route('my-clan.applications.accept', appId),
-        {},
-        { preserveScroll: true },
-    );
+    router.post(route('my-clan.applications.accept', appId), {}, KEEP);
 }
 
 function declineApplication(appId: string): void {
-    router.post(
-        route('my-clan.applications.decline', appId),
-        {},
-        { preserveScroll: true },
-    );
+    router.post(route('my-clan.applications.decline', appId), {}, KEEP);
 }
 
 // ---------------------------------------------------------------------------
@@ -440,55 +479,54 @@ function truncateMessage(msg: string | null, max = 120): string {
                                 :key="m.id"
                                 :member="m"
                                 :show-actions="true"
-                                @change-role="handleChangeRole"
-                                @remove="handleRemove"
                             >
                                 <template #actions="{ member }">
-                                    <select
-                                        :value="member.role"
-                                        class="h-8 px-2 text-sm rounded-md border border-[var(--color-border)]
-                                               bg-[var(--color-surface)] text-[var(--color-text)]
-                                               focus:outline-2 focus:outline-[var(--color-focus-ring)]"
-                                        :aria-label="t('clans.members.role.update.success')"
-                                        @change="(e) => handleChangeRole(member.id, (e.target as HTMLSelectElement).value)"
-                                    >
-                                        <option value="leader">Leader</option>
-                                        <option value="officer">Officer</option>
-                                        <option value="member">Member</option>
-                                        <option value="recruit">Recruit</option>
-                                    </select>
-
-                                    <!-- Inline remove confirmation -->
-                                    <template v-if="confirmingRemoveId === member.id">
-                                        <span class="text-sm text-[var(--color-text-muted)]">
-                                            {{ t('clans.members.remove_confirm', { name: member.username ?? member.id }) }}
-                                        </span>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            class="text-[var(--color-danger)]"
-                                            @click="confirmRemove(member.id)"
+                                    <DropdownMenuRoot>
+                                        <DropdownMenuTrigger
+                                            :aria-label="t('clans.members.actions')"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-md
+                                                   text-[var(--color-text-muted)]
+                                                   hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-text)]
+                                                   focus-visible:outline-2 focus-visible:outline-[var(--color-focus-ring)]
+                                                   transition-colors duration-[var(--motion-duration-fast)]"
                                         >
-                                            {{ t('clans.members.remove_yes') }}
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            @click="cancelRemove"
+                                            <svg
+                                                class="h-5 w-5"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                                aria-hidden="true"
+                                            >
+                                                <circle cx="10" cy="4" r="1.6" />
+                                                <circle cx="10" cy="10" r="1.6" />
+                                                <circle cx="10" cy="16" r="1.6" />
+                                            </svg>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent
+                                            align="end"
+                                            :side-offset="4"
+                                            class="z-50 min-w-[10rem] rounded-md border border-[var(--color-border)]
+                                                   bg-[var(--color-surface-elevated)] p-1 shadow-lg"
                                         >
-                                            {{ t('common.actions.cancel') }}
-                                        </Button>
-                                    </template>
-                                    <template v-else>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            class="text-[var(--color-danger)]"
-                                            @click="handleRemove(member.id)"
-                                        >
-                                            {{ t('clans.members.remove_yes') }}
-                                        </Button>
-                                    </template>
+                                            <DropdownMenuItem
+                                                class="flex items-center px-3 py-2 rounded-sm text-sm cursor-pointer
+                                                       text-[var(--color-text)]
+                                                       hover:bg-[var(--color-surface)] focus-visible:outline-none
+                                                       data-[highlighted]:bg-[var(--color-surface)]"
+                                                @select="openRoleModal(member)"
+                                            >
+                                                {{ t('clans.members.change_role') }}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                class="flex items-center px-3 py-2 rounded-sm text-sm cursor-pointer
+                                                       text-[var(--color-danger)]
+                                                       hover:bg-[var(--color-surface)] focus-visible:outline-none
+                                                       data-[highlighted]:bg-[var(--color-surface)]"
+                                                @select="openRemoveModal(member)"
+                                            >
+                                                {{ t('clans.members.remove') }}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenuRoot>
                                 </template>
                             </MemberRow>
                         </div>
@@ -508,15 +546,22 @@ function truncateMessage(msg: string | null, max = 120): string {
                                        border border-[var(--color-border)]
                                        bg-[var(--color-surface)]"
                             >
-                                <span class="flex-1 text-sm text-[var(--color-text)]">
-                                    {{ invite.invited_user_id }}
-                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-sm font-semibold text-[var(--color-text)] truncate">
+                                        {{ invite.invited_username ?? invite.invited_user_id }}
+                                    </span>
+                                    <span
+                                        v-if="invite.created_at"
+                                        class="block text-xs text-[var(--color-text-muted)]"
+                                    >
+                                        {{ t('clans.invites.invited_at', { time: formatDateTime(invite.created_at) }) }}
+                                    </span>
+                                </div>
                                 <StatusBadge variant="pending" :label="invite.status" />
                                 <Button
                                     size="sm"
-                                    variant="ghost"
-                                    class="text-[var(--color-danger)]"
-                                    @click="revokeInvite(invite.id)"
+                                    variant="danger"
+                                    @click="openRevokeModal(invite)"
                                 >
                                     {{ t('clans.invites.revoke') }}
                                 </Button>
@@ -616,5 +661,88 @@ function truncateMessage(msg: string | null, max = 120): string {
                 </Button>
             </div>
         </form>
+    </Modal>
+
+    <!-- ===================================================================
+         Change member role modal
+    =================================================================== -->
+    <Modal
+        :open="roleModalMember !== null"
+        :title="t('clans.members.role_modal_title')"
+        @update:open="(v) => { if (!v) roleModalMember = null; }"
+    >
+        <form class="flex flex-col gap-4" @submit.prevent="submitRoleChange">
+            <div class="flex flex-col gap-2">
+                <label for="role-select" class="text-sm font-semibold text-[var(--color-text)]">
+                    {{ t('clans.members.role_label') }}
+                </label>
+                <select
+                    id="role-select"
+                    v-model="roleModalValue"
+                    class="h-10 px-3 rounded-md text-sm
+                           bg-[var(--color-surface-elevated)] text-[var(--color-text)]
+                           border border-[var(--color-border)]
+                           focus-visible:outline-2 focus-visible:outline-[var(--color-focus-ring)]"
+                >
+                    <option v-for="role in roleOptions" :key="role" :value="role">
+                        {{ t(`common.role.${role}`) }}
+                    </option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3">
+                <Button type="button" variant="secondary" @click="roleModalMember = null">
+                    {{ t('common.actions.cancel') }}
+                </Button>
+                <Button type="submit" variant="primary">
+                    {{ t('common.actions.save') }}
+                </Button>
+            </div>
+        </form>
+    </Modal>
+
+    <!-- ===================================================================
+         Remove member confirmation modal
+    =================================================================== -->
+    <Modal
+        :open="removeModalMember !== null"
+        :title="t('clans.members.remove_modal_title')"
+        @update:open="(v) => { if (!v) removeModalMember = null; }"
+    >
+        <div class="flex flex-col gap-5">
+            <p class="text-sm text-[var(--color-text)]">
+                {{ t('clans.members.remove_confirm', { name: removeModalMember?.username ?? removeModalMember?.id ?? '' }) }}
+            </p>
+            <div class="flex justify-end gap-3">
+                <Button type="button" variant="secondary" @click="removeModalMember = null">
+                    {{ t('common.actions.cancel') }}
+                </Button>
+                <Button type="button" variant="danger" @click="submitRemove">
+                    {{ t('clans.members.remove_yes') }}
+                </Button>
+            </div>
+        </div>
+    </Modal>
+
+    <!-- ===================================================================
+         Revoke invite confirmation modal
+    =================================================================== -->
+    <Modal
+        :open="revokeModalInvite !== null"
+        :title="t('clans.invites.revoke_modal_title')"
+        @update:open="(v) => { if (!v) revokeModalInvite = null; }"
+    >
+        <div class="flex flex-col gap-5">
+            <p class="text-sm text-[var(--color-text)]">
+                {{ t('clans.invites.revoke_confirm', { name: revokeModalInvite?.invited_username ?? revokeModalInvite?.invited_user_id ?? '' }) }}
+            </p>
+            <div class="flex justify-end gap-3">
+                <Button type="button" variant="secondary" @click="revokeModalInvite = null">
+                    {{ t('common.actions.cancel') }}
+                </Button>
+                <Button type="button" variant="danger" @click="submitRevoke">
+                    {{ t('clans.invites.revoke') }}
+                </Button>
+            </div>
+        </div>
     </Modal>
 </template>

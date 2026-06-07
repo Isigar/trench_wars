@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
 const props = withDefaults(
@@ -24,6 +24,7 @@ const variantClasses = computed(() => ({
     primary: 'bg-[var(--color-accent)] text-[var(--color-accent-fg)] hover:opacity-90',
     secondary: 'bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-surface-elevated)]',
     ghost: 'bg-transparent text-[var(--color-text)] hover:bg-[var(--color-surface)]',
+    danger: 'bg-[var(--color-danger)] text-white hover:opacity-90',
 })[props.variant]);
 
 const sizeClasses = computed(() => ({

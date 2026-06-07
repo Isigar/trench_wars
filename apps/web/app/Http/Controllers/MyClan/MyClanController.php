@@ -122,7 +122,7 @@ class MyClanController extends Controller
             'membership' => ClanMembershipData::fromModel($membership),
             'clan' => ClanData::fromModel($clan),
             'members' => $activeMembers->map(fn (ClanMembership $m) => ClanMembershipData::fromModel($m))->values()->all(),
-            'invites' => ClanInviteData::collect($pendingInvites),
+            'invites' => $pendingInvites->map(fn (ClanInvite $invite) => ClanInviteData::fromModel($invite))->values()->all(),
             'applications' => ClanApplicationData::collectFromModels($pendingApplications),
             'received_invites' => $receivedInviteData,
             'my_applications' => $myApplicationData,
