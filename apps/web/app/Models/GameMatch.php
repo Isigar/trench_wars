@@ -165,6 +165,18 @@ class GameMatch extends Model
         return $this->hasMany(MatchServerBooking::class, 'match_id');
     }
 
+    /** @return HasMany<MatchPlayerStat, $this> */
+    public function playerStats(): HasMany
+    {
+        return $this->hasMany(MatchPlayerStat::class, 'match_id');
+    }
+
+    /** @return HasMany<MatchEvent, $this> */
+    public function matchEvents(): HasMany
+    {
+        return $this->hasMany(MatchEvent::class, 'match_id');
+    }
+
     /**
      * HasManyThrough: Match → MatchResult → MatchMvp
      *

@@ -352,6 +352,8 @@ class MatchResource extends Resource
             RelationManagers\ResultRelationManager::class,
             RelationManagers\MvpsRelationManager::class,
             RelationManagers\BookingsRelationManager::class,
+            RelationManagers\PlayerStatsRelationManager::class,
+            RelationManagers\EventsRelationManager::class,
         ];
     }
 

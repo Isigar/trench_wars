@@ -662,4 +662,29 @@ return [
             'status' => 'Status',
         ],
     ],
+
+    // Per-player match stats — admin correction relation manager on MatchResource.
+    'match_player_stats' => [
+        'label' => 'Player stat',
+        'plural_label' => 'Player stats',
+        'fields' => [
+            'player_id' => 'Player',
+            'kills' => 'Kills',
+            'deaths' => 'Deaths',
+            'team_kills' => 'Team kills',
+            'score' => 'Score',
+            'role_played' => 'Role played',
+        ],
+    ],
+
+    // Normalised CRCON event stream — read-only relation manager on MatchResource.
+    'match_events' => [
+        'label' => 'Match event',
+        'plural_label' => 'Match events',
+        'fields' => [
+            'occurred_at' => 'Occurred at',
+            'event_type' => 'Event type',
+            'crcon_action' => 'CRCON action',
+        ],
+    ],
 ];
