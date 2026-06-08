@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\MatchServerResource\Pages;
 
+use App\Filament\Base\ListRecords;
 use App\Filament\Resources\MatchServerResource;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Resources\Pages\ListRecords;
 
 class ListMatchServers extends ListRecords
 {

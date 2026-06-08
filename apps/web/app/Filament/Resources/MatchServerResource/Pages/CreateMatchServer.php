@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\MatchServerResource\Pages;
 
+use App\Filament\Base\CreateRecord;
 use App\Filament\Resources\MatchServerResource;
-use Filament\Resources\Pages\CreateRecord;
 
 class CreateMatchServer extends CreateRecord
 {

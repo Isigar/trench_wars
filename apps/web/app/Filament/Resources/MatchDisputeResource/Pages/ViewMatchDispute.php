@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\MatchDisputeResource\Pages;
 
+use App\Filament\Base\ViewRecord;
 use App\Filament\Resources\MatchDisputeResource;
-use Filament\Resources\Pages\ViewRecord;
 
 /**
  * Source: .planning/phases/09-polish/09-07-PLAN.md task 2.

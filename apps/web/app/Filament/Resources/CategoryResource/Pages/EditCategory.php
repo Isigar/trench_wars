@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\CategoryResource\Pages;
 
+use App\Filament\Base\EditRecord;
 use App\Filament\Resources\CategoryResource;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\EditRecord;
 
 /**
  * Source: .planning/phases/07-cms/07-05-PLAN.md task 1.

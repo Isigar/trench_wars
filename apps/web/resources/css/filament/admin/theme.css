@@ -27,25 +27,40 @@
 }
 
 /* Bridge UI-SPEC tokens into the Filament panel via CSS custom properties.
-   The dark/light mode toggling on the public site uses [data-theme=...]. Filament has
-   its own dark-class strategy; we keep both in lockstep by re-declaring our palette
-   variables on Filament's expected selectors. */
+   These feed the bespoke Filament blade partials (audit-tab / audit page) which
+   reference var(--color-border) / var(--color-text-muted) directly.
+
+   Admin palette = neutral "gunmetal" charcoal (NOT the public site's olive-green
+   trench palette — the admin panel is a back-office surface and reads cleaner in
+   neutral zinc) + a brass primary. The Filament chrome itself (sidebar, buttons,
+   bg) is driven by the gray + primary colours registered in AdminPanelProvider
+   (gray => Color::Zinc, primary => #C7A23A); these vars keep our custom partials
+   in lockstep with that neutral chrome. Red is reserved for danger/destructive. */
 
 :root {
-    /* Filament inherits the same trench palette as the public site — see app.css :root. */
-    --color-bg: #1A1B16;
-    --color-surface: #232518;
-    --color-surface-elevated: #2C2E20;
-    --color-border: #3A3D2C;
-    --color-text: #EDEAD9;
-    --color-text-muted: #A8A693;
-    --color-accent: #A4262C;
-    --color-accent-fg: #FFFFFF;
-    --color-focus-ring: #C7A23A;
+    --color-bg: #18181B;               /* zinc-900 — neutral charcoal, no green */
+    --color-surface: #27272A;          /* zinc-800 */
+    --color-surface-elevated: #3F3F46; /* zinc-700 */
+    --color-border: #3F3F46;           /* zinc-700 */
+    --color-text: #E4E4E7;             /* zinc-200 */
+    --color-text-muted: #A1A1AA;       /* zinc-400 */
+    --color-accent: #C7A23A;           /* brass — primary accent */
+    --color-accent-fg: #18181B;        /* dark text on brass for contrast */
+    --color-focus-ring: #C7A23A;       /* brass */
 }
 
 .fi-body,
 .fi-main {
     background-color: var(--color-bg);
     color: var(--color-text);
+}
+
+/* Brass primary is a LIGHT colour, but Filament hardcodes `text-white` on solid
+   buttons (bg-custom-600 light / -500 dark). White on brass is ~2.4–3.0:1 — below
+   WCAG-AA. Force dark ink on SOLID primary buttons only; outlined / link primary
+   keep brass text on a transparent background (which reads fine on dark chrome).
+   The 3-class selector outranks Tailwind's single-class `.text-white` utility
+   (specificity 0,3,0 > 0,1,0), so no !important is needed. */
+.fi-btn.fi-color-primary:not(.fi-btn-outlined) {
+    color: var(--color-accent-fg);
 }

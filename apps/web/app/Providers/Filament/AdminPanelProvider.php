@@ -42,8 +42,18 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName(__('admin.brand.name'))
+            // Neutral "gunmetal" chrome + brass primary. Red is reserved for
+            // danger/destructive actions (so primary buttons like "New match" no
+            // longer read as danger). gray => Zinc drives the neutral sidebar/bg;
+            // the bespoke audit partials pick up the matching neutral palette from
+            // resources/css/filament/admin/theme.css.
             ->colors([
-                'primary' => Color::hex('#A4262C'),
+                'primary' => Color::hex('#C7A23A'),   // brass
+                'gray' => Color::Zinc,                 // neutral charcoal chrome (no green)
+                'danger' => Color::hex('#C03A2B'),     // red — destructive only
+                'success' => Color::hex('#6B8E3D'),    // olive — positive badges
+                'warning' => Color::hex('#C8932A'),    // amber
+                'info' => Color::Blue,
             ])
             ->darkMode()
             ->font('Inter')

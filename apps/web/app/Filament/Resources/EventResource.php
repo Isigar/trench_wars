@@ -7,6 +7,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
 use App\Models\GameMatch;
+use Filament\Infolists\Components;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -47,6 +49,50 @@ class EventResource extends Resource
         return __('admin.event.plural_label');
     }
 
+    /**
+     * Read-only View-page infolist. Without this, Filament falls back to the
+     * (intentionally empty) form and the View page renders blank.
+     */
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(2)
+            ->schema([
+                Components\TextEntry::make('title')
+                    ->label(__('admin.event.fields.title'))
+                    ->getStateUsing(function (Event $record): string {
+                        $translations = $record->getTranslations('title');
+
+                        return $translations['en'] ?? (array_values($translations)[0] ?? '—');
+                    }),
+
+                Components\TextEntry::make('eventable_type')
+                    ->label(__('admin.event.fields.eventable'))
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        GameMatch::class => __('admin.match.label'),
+                        default => $state !== null ? class_basename($state) : '—',
+                    }),
+
+                Components\TextEntry::make('starts_at')
+                    ->label(__('admin.event.fields.starts_at'))
+                    ->dateTime(),
+
+                Components\TextEntry::make('ends_at')
+                    ->label(__('admin.event.fields.ends_at'))
+                    ->dateTime()
+                    ->placeholder('—'),
+
+                Components\IconEntry::make('is_public')
+                    ->label(__('admin.event.fields.is_public'))
+                    ->boolean(),
+
+                Components\TextEntry::make('created_at')
+                    ->label(__('admin.event.fields.created_at'))
+                    ->dateTime(),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -59,7 +105,7 @@ class EventResource extends Resource
                 Tables\Columns\BadgeColumn::make('eventable_type')
                     ->label(__('admin.event.fields.eventable'))
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        GameMatch::class => 'Match',
+                        GameMatch::class => __('admin.match.label'),
                         default => $state !== null ? class_basename($state) : '—',
                     })
                     ->colors([

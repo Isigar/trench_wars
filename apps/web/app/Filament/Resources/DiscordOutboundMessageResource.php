@@ -7,6 +7,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DiscordOutboundMessageResource\Pages;
 use App\Models\DiscordOutboundMessage;
 use Filament\Forms\Form;
+use Filament\Infolists\Components;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
@@ -59,6 +61,78 @@ class DiscordOutboundMessageResource extends Resource
     {
         // View-only — Filament still requires form() but no fields are editable.
         return $form->schema([]);
+    }
+
+    /**
+     * Read-only View-page infolist. Without this, Filament falls back to the
+     * empty form() above and the View page renders blank.
+     */
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(2)
+            ->schema([
+                Components\TextEntry::make('message_type')
+                    ->label(__('admin.discord_outbound_message.fields.message_type'))
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'match_announce' => 'info',
+                        'role_sync' => 'warning',
+                        default => 'gray',
+                    }),
+
+                Components\TextEntry::make('status')
+                    ->label(__('admin.discord_outbound_message.fields.status'))
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'dispatching' => 'info',
+                        'sent' => 'success',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    }),
+
+                Components\TextEntry::make('channel_id')
+                    ->label(__('admin.discord_outbound_message.fields.channel_id'))
+                    ->fontFamily('mono')
+                    ->copyable(),
+
+                Components\TextEntry::make('sent_message_id')
+                    ->label(__('admin.discord_outbound_message.fields.sent_message_id'))
+                    ->fontFamily('mono')
+                    ->placeholder('—'),
+
+                Components\TextEntry::make('attempts')
+                    ->label(__('admin.discord_outbound_message.fields.attempts'))
+                    ->numeric(),
+
+                Components\TextEntry::make('backoff_until')
+                    ->label(__('admin.discord_outbound_message.fields.backoff_until'))
+                    ->dateTime()
+                    ->placeholder('—'),
+
+                Components\TextEntry::make('causer.username')
+                    ->label(__('admin.discord_outbound_message.fields.causer'))
+                    ->placeholder('system'),
+
+                Components\TextEntry::make('created_at')
+                    ->label(__('admin.discord_outbound_message.fields.created_at'))
+                    ->dateTime(),
+
+                Components\TextEntry::make('last_error')
+                    ->label(__('admin.discord_outbound_message.fields.last_error'))
+                    ->placeholder('—')
+                    ->columnSpanFull(),
+
+                Components\TextEntry::make('payload')
+                    ->label(__('admin.discord_outbound_message.fields.payload'))
+                    ->fontFamily('mono')
+                    ->columnSpanFull()
+                    ->getStateUsing(fn (DiscordOutboundMessage $record): string => json_encode(
+                        $record->payload,
+                        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                    ) ?: '—'),
+            ]);
     }
 
     public static function table(Table $table): Table

@@ -49,6 +49,11 @@ class Audit extends Page implements HasTable
         return __('admin.audit.title');
     }
 
+    public function getSubheading(): string|Htmlable|null
+    {
+        return __('admin.audit.subheading');
+    }
+
     public function table(Table $table): Table
     {
         return $table

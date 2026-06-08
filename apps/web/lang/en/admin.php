@@ -14,8 +14,37 @@ return [
     'brand' => [
         'name' => 'Trenchwars',
     ],
+
+    // One-line descriptive subheading rendered under the page title on every
+    // resource page. Keyed by the snake_case resource slug (UserResource ->
+    // user); resolved automatically by App\Filament\Concerns\HasResourceSubheading.
+    'subheadings' => [
+        'user' => 'Discord-authenticated accounts — roles, bans, locale, and linked players.',
+        'player' => 'In-game player identities, their clan history, and privacy settings.',
+        'role' => 'Permission roles for the admin panel and league staff.',
+        'permission' => 'Seeded capabilities, read-only here — grant them to roles instead.',
+        'clan' => 'League clans with their tags, members, applications, and invites.',
+        'clan_tag' => 'Reusable tags you can attach to clans for grouping and filtering.',
+        'clan_membership' => 'Player-to-clan membership records, including past (inactive) history.',
+        'clan_application' => 'Requests from players to join a clan, awaiting owner review.',
+        'clan_invite' => 'Invitations sent by clans to players, with their current status.',
+        'discord_guild' => 'The league\'s single Discord server. Fill in the guild ID, name, and icon after adding the bot, then Save.',
+        'discord_outbound_message' => 'Read-only outbox of every Discord message the system queues. Retry failed sends here.',
+        'event' => 'Read-only calendar feed — rows are generated automatically from matches.',
+        'game' => 'Supported games with their roles and match types. HLL ships seeded.',
+        'game_match_type' => 'Match formats per game and the role-slot limits each one allows.',
+        'match' => 'Scheduled and played matches — slots, results, MVPs, and disputes.',
+        'match_server' => 'Game servers available for booking. Gated behind the manage-rcon permission.',
+        'match_dispute' => 'Player-raised disputes over match results, awaiting moderator resolution.',
+        'tournament' => 'Tournaments, brackets, stages, participants, and standings across four formats.',
+        'abuse_report' => 'User-submitted abuse reports. Moderators dismiss them or action them with an optional ban.',
+        'article' => 'News articles published to the public site.',
+        'category' => 'Categories used to organise news articles.',
+    ],
+
     'audit' => [
         'nav' => 'Audit log',
+        'subheading' => 'Append-only record of every admin action across the panel.',
         'title' => 'Audit log',
         'col' => [
             'created_at' => 'When',
@@ -432,6 +461,7 @@ return [
             'ends_at' => 'Ends at',
             'title' => 'Title',
             'is_public' => 'Public',
+            'created_at' => 'Created',
         ],
     ],
 
@@ -455,6 +485,9 @@ return [
             // gap (DiscordOutboundMessageResource references the key for the
             // `causer.username` table column).
             'causer' => 'Caused by',
+            // Added for the View-page infolist (admin-panel polish pass).
+            'payload' => 'Payload',
+            'backoff_until' => 'Retry after',
         ],
         'actions' => [
             'retry' => 'Retry',

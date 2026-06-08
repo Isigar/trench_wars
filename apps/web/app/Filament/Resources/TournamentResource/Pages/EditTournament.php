@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\TournamentResource\Pages;
 
+use App\Filament\Base\EditRecord;
 use App\Filament\Resources\TournamentResource;
 use App\Models\Tournament;
 use App\Models\TournamentBracket;
@@ -17,7 +18,6 @@ use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\EditRecord;
 
 /**
  * Source: .planning/phases/06-tournaments-brackets/06-11-PLAN.md Task 1.

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ArticleResource\Pages;
 
+use App\Filament\Base\CreateRecord;
 use App\Filament\Resources\ArticleResource;
 use App\Models\User;
-use Filament\Resources\Pages\CreateRecord;
 
 /**
  * Source: .planning/phases/07-cms/07-05-PLAN.md task 1.

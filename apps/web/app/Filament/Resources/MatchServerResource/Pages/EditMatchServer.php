@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\MatchServerResource\Pages;
 
+use App\Filament\Base\EditRecord;
 use App\Filament\Resources\MatchServerResource;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\EditRecord;
 
 class EditMatchServer extends EditRecord
 {

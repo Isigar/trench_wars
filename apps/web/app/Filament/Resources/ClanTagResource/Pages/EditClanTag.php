@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ClanTagResource\Pages;
 
+use App\Filament\Base\EditRecord;
 use App\Filament\Resources\ClanTagResource;
-use Filament\Resources\Pages\EditRecord;
 
 class EditClanTag extends EditRecord
 {

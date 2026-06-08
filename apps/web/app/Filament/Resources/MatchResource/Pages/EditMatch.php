@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\MatchResource\Pages;
 
+use App\Filament\Base\EditRecord;
 use App\Filament\Resources\MatchResource;
 use App\Models\GameMatch;
 use App\Services\MatchStatusService;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\EditRecord;
 
 /**
  * Source: .planning/phases/04-matches-manual/04-09-PLAN.md task 1.

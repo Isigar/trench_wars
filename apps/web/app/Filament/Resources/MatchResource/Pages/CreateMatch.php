@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\MatchResource\Pages;
 
+use App\Filament\Base\CreateRecord;
 use App\Filament\Resources\MatchResource;
 use App\Models\GameMatch;
 use App\Services\MatchSlotMaterialiserService;
 use Filament\Forms;
 use Filament\Forms\Components\Wizard\Step;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\CreateRecord\Concerns\HasWizard;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CreateMatch extends CreateRecord
 {
-    use CreateRecord\Concerns\HasWizard;
+    use HasWizard;
 
     protected static string $resource = MatchResource::class;
 

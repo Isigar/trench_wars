@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\DiscordOutboundMessageResource\Pages;
 
+use App\Filament\Base\ListRecords;
 use App\Filament\Resources\DiscordOutboundMessageResource;
-use Filament\Resources\Pages\ListRecords;
 
 class ListDiscordOutboundMessages extends ListRecords
 {

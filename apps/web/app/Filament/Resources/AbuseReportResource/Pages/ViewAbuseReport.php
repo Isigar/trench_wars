@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\AbuseReportResource\Pages;
 
+use App\Filament\Base\ViewRecord;
 use App\Filament\Resources\AbuseReportResource;
-use Filament\Resources\Pages\ViewRecord;
 
 /**
  * Source: .planning/phases/09-polish/09-11-PLAN.md task 2.

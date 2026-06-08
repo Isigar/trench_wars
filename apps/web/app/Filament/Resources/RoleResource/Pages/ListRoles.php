@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\RoleResource\Pages;
 
+use App\Filament\Base\ListRecords;
 use App\Filament\Resources\RoleResource;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\ListRecords;
 
 class ListRoles extends ListRecords
 {

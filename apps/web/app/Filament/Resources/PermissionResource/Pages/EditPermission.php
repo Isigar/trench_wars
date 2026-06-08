@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\PermissionResource\Pages;
 
+use App\Filament\Base\EditRecord;
 use App\Filament\Resources\PermissionResource;
-use Filament\Resources\Pages\EditRecord;
 
 class EditPermission extends EditRecord
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\TournamentResource\Pages;
 
+use App\Filament\Base\CreateRecord;
 use App\Filament\Resources\TournamentResource;
-use Filament\Resources\Pages\CreateRecord;
 
 /**
  * Source: .planning/phases/06-tournaments-brackets/06-11-PLAN.md Task 1.
