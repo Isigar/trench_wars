@@ -62,6 +62,42 @@ it('view page mounts on /admin/discord-outbound-messages/{record}', function ():
         ->assertOk();
 });
 
+it('view page retry header action is visible on failed rows and re-queues + audits', function (): void {
+    $failed = DiscordOutboundMessage::factory()->create([
+        'status' => 'failed',
+        'attempts' => 3,
+        'last_error' => 'Cannot send messages to this user',
+        'backoff_until' => now()->addMinutes(5),
+    ]);
+
+    Livewire::test(ViewDiscordOutboundMessage::class, ['record' => $failed->id])
+        ->assertActionVisible('retry')
+        ->callAction('retry')
+        ->assertHasNoActionErrors();
+
+    $fresh = $failed->fresh();
+    expect($fresh)->not->toBeNull();
+    expect($fresh->status)->toBe('pending');
+    expect($fresh->attempts)->toBe(0);
+    expect($fresh->last_error)->toBeNull();
+    expect($fresh->backoff_until)->toBeNull();
+
+    $retry = Activity::query()
+        ->where('subject_type', DiscordOutboundMessage::class)
+        ->where('subject_id', $failed->id)
+        ->where('event', 'retry')
+        ->first();
+    expect($retry)->not->toBeNull();
+    expect($retry->causer_id)->toBe($this->admin->id);
+});
+
+it('view page retry header action is hidden on non-failed rows', function (): void {
+    $sent = DiscordOutboundMessage::factory()->sent()->create();
+
+    Livewire::test(ViewDiscordOutboundMessage::class, ['record' => $sent->id])
+        ->assertActionHidden('retry');
+});
+
 // -----------------------------------------------------------------------------
 // READ-ONLY contract — T-05-07-01 mitigation
 // -----------------------------------------------------------------------------

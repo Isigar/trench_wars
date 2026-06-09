@@ -219,26 +219,41 @@ class DiscordOutboundMessageResource extends Resource
                     ->color('warning')
                     ->visible(fn (DiscordOutboundMessage $record): bool => $record->status === 'failed')
                     ->action(function (DiscordOutboundMessage $record): void {
-                        $record->update([
-                            'status' => 'pending',
-                            'attempts' => 0,
-                            'last_error' => null,
-                            'backoff_until' => null,
-                        ]);
-
-                        activity()
-                            ->causedBy(auth()->user())
-                            ->performedOn($record)
-                            ->event('retry')
-                            ->log('admin re-queued failed outbound message');
-
-                        Notification::make()
-                            ->title(__('admin.discord_outbound_message.actions.retry_success'))
-                            ->success()
-                            ->send();
+                        self::retry($record);
                     }),
             ])
             ->bulkActions([]); // INTENTIONALLY no bulk actions — append-only audit semantics.
+    }
+
+    /**
+     * Re-queue a failed outbound row for redelivery. Shared by the List-page
+     * table action and the View-page header action (ViewDiscordOutboundMessage)
+     * so the two retry surfaces cannot drift.
+     *
+     * Flips status=failed -> pending, zeros attempts, clears last_error +
+     * backoff_until, and writes an activity_log `retry` row with the admin
+     * causer (T-05-07-05 repudiation defence). Only ever invoked from an action
+     * whose visible() gates on status === 'failed'.
+     */
+    public static function retry(DiscordOutboundMessage $record): void
+    {
+        $record->update([
+            'status' => 'pending',
+            'attempts' => 0,
+            'last_error' => null,
+            'backoff_until' => null,
+        ]);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($record)
+            ->event('retry')
+            ->log('admin re-queued failed outbound message');
+
+        Notification::make()
+            ->title(__('admin.discord_outbound_message.actions.retry_success'))
+            ->success()
+            ->send();
     }
 
     /** @return array<class-string> */
