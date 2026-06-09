@@ -59,17 +59,26 @@ final class ClanInviteReceived extends Notification implements ShouldQueue
     /** @return array<string, mixed> */
     public function toDiscord(User $notifiable): array
     {
+        // Read the column values directly (returns mixed, narrowed via is_string)
+        // rather than chaining off the relation property — Larastan's relation
+        // nullability inference is unstable across the ?-> vs -> access operators.
+        $clanName = $this->invite->clan()->value('name');
+        $inviterName = $this->invite->inviter()->value('username');
+
+        $clan = is_string($clanName) ? $clanName : '—';
+        $inviter = is_string($inviterName) ? $inviterName : '—';
+
         return [
             'message_type' => 'user_dm',
             'channel_id' => '',
             'recipient_id' => (string) $notifiable->discord_id,
             'payload' => [
                 'embed_title' => __('notifications.clan_invite_received.title', [
-                    'clan' => '—',
+                    'clan' => $clan,
                 ]),
                 'embed_description' => __('notifications.clan_invite_received.body', [
-                    'inviter' => '—',
-                    'clan' => '—',
+                    'inviter' => $inviter,
+                    'clan' => $clan,
                 ]),
                 'cta_url' => url('/my-clan'),
                 'color_token' => 'info',
